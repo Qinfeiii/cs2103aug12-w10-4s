@@ -67,7 +67,7 @@
         </Grid>
 
         <Grid Grid.Row="1">
-            <TextBlock Name="txbEnterCommand" Grid.Row="1" Text="enter command" Margin="16,6" Style="{StaticResource NormalTextStyle}" />
+            <TextBlock Name="txbEnterCommand" Grid.Row="1" Text="enter command" Margin="22,7" Style="{StaticResource NormalTextStyle}" />
             <TextBox Name="tbxCommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="18" Foreground="DarkSlateGray" Style="{StaticResource TransparentWithBorder}" LostFocus="tbxCommandBar_LostFocus" GotFocus="tbxCommandBar_GotFocus"/>
         </Grid>
 
