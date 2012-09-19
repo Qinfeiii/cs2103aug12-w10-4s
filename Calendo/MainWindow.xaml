@@ -78,9 +78,6 @@
             <ListBoxItem>
                 <TextBlock Text="2. Work on Calendo" Style="{StaticResource ListBoxItemTextStyle}"/>
             </ListBoxItem>
-            <ListBoxItem>
-                <TextBlock Text="3. Post mockup on Twitter" Style="{StaticResource ListBoxItemTextStyle}" />
-            </ListBoxItem>
         </ListBox>
     </Grid>
 </Window>
