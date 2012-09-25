@@ -97,6 +97,7 @@ namespace Calendo
         {
             if (e.Key == Key.Down)
             {
+                // Select the first item in the auto-suggest list, and give it focus.
                 lsbAutoSuggestList.SelectedIndex = 0;
                 ListBoxItem selectedItem = (ListBoxItem)lsbAutoSuggestList.SelectedItem;
                 selectedItem.Focus();
@@ -105,6 +106,8 @@ namespace Calendo
 
         private void lsbAutoSuggestList_KeyDown(object sender, KeyEventArgs e)
         {
+            // This is on KeyDown, as KeyUp triggers after the SelectedIndex has already changed.
+            // (Results in the first item being impossible to select via keyboard.)
             if (e.Key == Key.Up && lsbAutoSuggestList.SelectedIndex == 0)
             {
                 tbxCommandBar.Focus();
@@ -113,6 +116,7 @@ namespace Calendo
 
         private void lsbAutoSuggestList_LostFocus(object sender, RoutedEventArgs e)
         {
+            // Deselect the item in the auto-suggest list.
             lsbAutoSuggestList.SelectedIndex = -1;
         }
     }
