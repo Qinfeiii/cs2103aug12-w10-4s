@@ -92,5 +92,28 @@ namespace Calendo
                 btnMaximise.Visibility = Visibility.Visible;
             }
         }
+
+        private void tbxCommandBar_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Down)
+            {
+                lsbAutoSuggestList.SelectedIndex = 0;
+                ListBoxItem selectedItem = (ListBoxItem)lsbAutoSuggestList.SelectedItem;
+                selectedItem.Focus();
+            }
+        }
+
+        private void lsbAutoSuggestList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Up && lsbAutoSuggestList.SelectedIndex == 0)
+            {
+                tbxCommandBar.Focus();
+            }
+        }
+
+        private void lsbAutoSuggestList_LostFocus(object sender, RoutedEventArgs e)
+        {
+            lsbAutoSuggestList.SelectedIndex = -1;
+        }
     }
 }

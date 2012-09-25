@@ -21,6 +21,11 @@
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" />
             </Style>
+            <Style x:Key="AutoCompleteBoxStyle" TargetType="Border">
+                <Setter Property="Margin" Value="12,0,12,0" />
+                <Setter Property="Background" Value="#FFEAEAEA" />
+                <Setter Property="VerticalAlignment" Value="Top" />
+            </Style>
         </Grid.Resources>
 
         <Grid.RowDefinitions>
@@ -68,10 +73,10 @@
 
         <Grid Grid.Row="1">
             <TextBlock Name="txbEnterCommand" Grid.Row="1" Text="enter command" Margin="22,7" Style="{StaticResource NormalTextStyle}" />
-            <TextBox Name="tbxCommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="18" Foreground="DarkSlateGray" Style="{StaticResource TransparentWithBorder}" LostFocus="tbxCommandBar_LostFocus" GotFocus="tbxCommandBar_GotFocus"/>
+            <TextBox Name="tbxCommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="18" Foreground="DarkSlateGray" Style="{StaticResource TransparentWithBorder}" LostFocus="tbxCommandBar_LostFocus" GotFocus="tbxCommandBar_GotFocus" KeyUp="tbxCommandBar_KeyUp"/>
         </Grid>
 
-        <ListBox Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,6" Style="{StaticResource TransparentWithBorder}">
+        <ListBox Name="lsbItemsList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,6" Style="{StaticResource TransparentWithBorder}">
             <ListBoxItem>
                 <TextBlock Text="1. Meeting at 9AM" Style="{StaticResource ListBoxItemTextStyle}"/>
             </ListBoxItem>
@@ -79,5 +84,15 @@
                 <TextBlock Text="2. Work on Calendo" Style="{StaticResource ListBoxItemTextStyle}"/>
             </ListBoxItem>
         </ListBox>
+
+        <Border Grid.Row="2" Style="{StaticResource AutoCompleteBoxStyle}" Margin="12,-4,12,0" Visibility="Collapsed">
+            <ListBox Name="lsbAutoSuggestList" KeyDown="lsbAutoSuggestList_KeyDown" LostFocus="lsbAutoSuggestList_LostFocus">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Style="{StaticResource NormalTextStyle}" Margin="8,4" FontSize="14" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
     </Grid>
 </Window>
