@@ -75,7 +75,7 @@
             <TextBlock Name="txbEnterCommand" Grid.Row="1" Margin="22,7" Style="{StaticResource NormalTextStyle}">
                 enter /command, or search
             </TextBlock>
-            <TextBox Name="tbxCommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="18" Foreground="DarkSlateGray" Style="{StaticResource TransparentWithBorder}" LostFocus="tbxCommandBar_LostFocus" GotFocus="tbxCommandBar_GotFocus" KeyUp="tbxCommandBar_KeyUp"/>
+            <TextBox Name="tbxCommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="18" Foreground="DarkSlateGray" Style="{StaticResource TransparentWithBorder}" LostFocus="TbxCommandBarLostFocus" GotFocus="TbxCommandBarGotFocus" KeyUp="TbxCommandBarKeyUp" TextChanged="TbxCommandBarTextChanged"/>
         </Grid>
 
         <ListBox Name="lsbItemsList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,6" Style="{StaticResource TransparentWithBorder}">
@@ -87,11 +87,13 @@
             </ListBoxItem>
         </ListBox>
 
-        <Border Grid.Row="2" Style="{StaticResource AutoCompleteBoxStyle}" Margin="12,-4,12,0" Visibility="Collapsed">
-            <ListBox Name="lsbAutoSuggestList" KeyDown="lsbAutoSuggestList_KeyDown" LostFocus="lsbAutoSuggestList_LostFocus">
+        <Border Name="bdrAutoSuggestBorder" Grid.Row="2" Style="{StaticResource AutoCompleteBoxStyle}" Margin="12,-4,12,0" Visibility="Collapsed">
+            <ListBox Name="lsbAutoSuggestList" KeyDown="LsbAutoSuggestListKeyDown" LostFocus="LsbAutoSuggestListLostFocus" ItemsSource="{Binding SuggestionList}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Style="{StaticResource NormalTextStyle}" Margin="8,4" FontSize="14" />
+                        <ListBoxItem>
+                            <TextBlock Style="{StaticResource NormalTextStyle}" Margin="0,4" FontSize="14" Text="{Binding}" />
+                        </ListBoxItem>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>

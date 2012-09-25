@@ -20,20 +20,29 @@ namespace Calendo
     /// </summary>
     public partial class MainWindow : Window
     {
+        private AutoSuggest AutoSuggestViewModel;
+
         public MainWindow()
         {
             InitializeComponent();
+            AutoSuggestViewModel = new AutoSuggest();
+            this.DataContext = AutoSuggestViewModel;
         }
 
-        private void tbxCommandBar_LostFocus(object sender, RoutedEventArgs e)
+        private void TbxCommandBarLostFocus(object sender, RoutedEventArgs e)
         {
             if (tbxCommandBar.Text.Length == 0)
             {
                 txbEnterCommand.Visibility = Visibility.Visible;
             }
+
+            if (!lsbAutoSuggestList.IsFocused)
+            {
+                bdrAutoSuggestBorder.Visibility = Visibility.Collapsed;
+            }
         }
 
-        private void tbxCommandBar_GotFocus(object sender, RoutedEventArgs e)
+        private void TbxCommandBarGotFocus(object sender, RoutedEventArgs e)
         {
             txbEnterCommand.Visibility = Visibility.Collapsed;
         }
@@ -93,18 +102,18 @@ namespace Calendo
             }
         }
 
-        private void tbxCommandBar_KeyUp(object sender, KeyEventArgs e)
+        private void TbxCommandBarKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Down)
             {
                 // Select the first item in the auto-suggest list, and give it focus.
                 lsbAutoSuggestList.SelectedIndex = 0;
-                ListBoxItem selectedItem = (ListBoxItem)lsbAutoSuggestList.SelectedItem;
+                var selectedItem = (ListBoxItem)lsbAutoSuggestList.SelectedItem;
                 selectedItem.Focus();
             }
         }
 
-        private void lsbAutoSuggestList_KeyDown(object sender, KeyEventArgs e)
+        private void LsbAutoSuggestListKeyDown(object sender, KeyEventArgs e)
         {
             // This is on KeyDown, as KeyUp triggers after the SelectedIndex has already changed.
             // (Results in the first item being impossible to select via keyboard.)
@@ -114,10 +123,17 @@ namespace Calendo
             }
         }
 
-        private void lsbAutoSuggestList_LostFocus(object sender, RoutedEventArgs e)
+        private void LsbAutoSuggestListLostFocus(object sender, RoutedEventArgs e)
         {
             // Deselect the item in the auto-suggest list.
             lsbAutoSuggestList.SelectedIndex = -1;
+        }
+
+        private void TbxCommandBarTextChanged(object sender, TextChangedEventArgs e)
+        {
+            AutoSuggestViewModel.SetSuggestions(tbxCommandBar.Text);
+
+            bdrAutoSuggestBorder.Visibility = Visibility.Visible;
         }
     }
 }
