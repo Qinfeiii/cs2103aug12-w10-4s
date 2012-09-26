@@ -88,12 +88,10 @@
         </ListBox>
 
         <Border Name="bdrAutoSuggestBorder" Grid.Row="2" Style="{StaticResource AutoCompleteBoxStyle}" Margin="12,-4,12,0" Visibility="Collapsed">
-            <ListBox Name="lsbAutoSuggestList" KeyDown="LsbAutoSuggestListKeyDown" LostFocus="LsbAutoSuggestListLostFocus" ItemsSource="{Binding SuggestionList}">
+            <ListBox Name="lsbAutoSuggestList" KeyDown="LsbAutoSuggestListKeyDown" ItemsSource="{Binding SuggestionList}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <ListBoxItem>
-                            <TextBlock Style="{StaticResource NormalTextStyle}" Margin="0,4" FontSize="14" Text="{Binding}" />
-                        </ListBoxItem>
+                        <TextBlock Style="{StaticResource NormalTextStyle}" Margin="0,4" FontSize="14" Text="{Binding}" TextWrapping="Wrap" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
