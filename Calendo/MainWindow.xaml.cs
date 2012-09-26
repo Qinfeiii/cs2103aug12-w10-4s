@@ -35,11 +35,6 @@ namespace Calendo
             {
                 txbEnterCommand.Visibility = Visibility.Visible;
             }
-
-            if (!lsbAutoSuggestList.IsFocused)
-            {
-                bdrAutoSuggestBorder.Visibility = Visibility.Collapsed;
-            }
         }
 
         private void TbxCommandBarGotFocus(object sender, RoutedEventArgs e)
@@ -108,8 +103,7 @@ namespace Calendo
             {
                 // Select the first item in the auto-suggest list, and give it focus.
                 lsbAutoSuggestList.SelectedIndex = 0;
-                var selectedItem = (ListBoxItem)lsbAutoSuggestList.SelectedItem;
-                selectedItem.Focus();
+                lsbAutoSuggestList.Focus();
             }
         }
 
@@ -120,13 +114,20 @@ namespace Calendo
             if (e.Key == Key.Up && lsbAutoSuggestList.SelectedIndex == 0)
             {
                 tbxCommandBar.Focus();
+                lsbAutoSuggestList.SelectedIndex = -1;
             }
-        }
+            else if (e.Key == Key.Return)
+            {
+                string suggestion = (string) lsbAutoSuggestList.SelectedItem;
+                if(suggestion != null && suggestion.First() == AutoSuggest.COMMAND_INDICATOR)
+                {
+                    string command = suggestion.Split()[0];
+                    tbxCommandBar.Text = command;
+                    tbxCommandBar.Focus();
 
-        private void LsbAutoSuggestListLostFocus(object sender, RoutedEventArgs e)
-        {
-            // Deselect the item in the auto-suggest list.
-            lsbAutoSuggestList.SelectedIndex = -1;
+                    bdrAutoSuggestBorder.Visibility = Visibility.Collapsed;
+                }
+            }
         }
 
         private void TbxCommandBarTextChanged(object sender, TextChangedEventArgs e)

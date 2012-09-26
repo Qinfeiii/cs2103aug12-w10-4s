@@ -9,7 +9,7 @@ namespace Calendo
 {
     class AutoSuggest : INotifyPropertyChanged
     {
-        private const string COMMAND_INDICATOR = "/";
+        public const char COMMAND_INDICATOR = '/';
 
         public ObservableCollection<string> SuggestionList { get; set; }
 
@@ -21,15 +21,22 @@ namespace Calendo
         public void SetSuggestions(string input)
         {
             SuggestionList.Clear();
-            if (input == COMMAND_INDICATOR)
+            bool isInputValid = input.Length > 0;
+            if(isInputValid)
             {
-                SuggestionList = new ObservableCollection<string>();
-                SuggestionList.Add("/add - add a new item");
-                SuggestionList.Add("/change - edit an item");
-                SuggestionList.Add("/remove - remove an item");
-                SuggestionList.Add("/undo - undo the last action");
-                SuggestionList.Add("/import - import from Google Calendar");
-                SuggestionList.Add("/sync - export to Google Calendar");
+                if (input.First() == COMMAND_INDICATOR)
+                {
+                    SuggestionList.Add("/add - add a new item");
+                    SuggestionList.Add("/change - edit an item");
+                    SuggestionList.Add("/remove - remove an item");
+                    SuggestionList.Add("/undo - undo the last action");
+                    SuggestionList.Add("/import - import from Google Calendar");
+                    SuggestionList.Add("/sync - export to Google Calendar");
+                }
+                else
+                {
+                    SuggestionList.Add("search for " + input);
+                }   
             }
 
             OnPropertyChanged("SuggestionList");
