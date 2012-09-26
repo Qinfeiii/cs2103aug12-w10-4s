@@ -16,6 +16,7 @@
             <Style x:Key="TransparentWithBorder" TargetType="Control">
                 <Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="3" />
+                <Setter Property="BorderBrush" Value="DarkGray" />
             </Style>
             <Style x:Key="WindowControlButtonStyle" TargetType="Button">
                 <Setter Property="Background" Value="Transparent" />
