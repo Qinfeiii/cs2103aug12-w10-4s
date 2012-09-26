@@ -138,5 +138,22 @@ namespace Calendo
             get { return _EntryType; }
             set { _EntryType = value;  }
         }
+
+        /// <summary>
+        /// Make a copy of the Entry object
+        /// </summary>
+        /// <returns>Returns a copy of the object</returns>
+        public Entry clone()
+        {
+            Entry EntryClone = new Entry();
+            EntryClone.ID = _ID;
+            EntryClone.Description = _Description;
+            EntryClone.StartTime = _StartTime;
+            EntryClone.StartTimeFormat = _StartTimeFormat;
+            EntryClone.EndTime = _EndTime;
+            EntryClone._EndTimeFormat = _EndTimeFormat;
+            EntryClone.Type = _EntryType;
+            return EntryClone;
+        }
     }
 }

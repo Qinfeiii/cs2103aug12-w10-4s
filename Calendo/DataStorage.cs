@@ -35,6 +35,21 @@ namespace Calendo
             get { return _entries; }
             set { _entries = value; }
         }
+
+        /// <summary>
+        /// Makes a copy of the DataWrapper object
+        /// </summary>
+        /// <returns>Returns a copy of the object</returns>
+        public DataWrapper clone()
+        {
+            DataWrapper DataClone = new DataWrapper();
+            DataClone.Entries = new List<Entry>();
+            for (int i = 0; i < _entries.Count; i++)
+            {
+                DataClone.Entries.Add(_entries[i].clone());
+            }
+            return DataClone;
+        }
     }
 
     /// <summary>
@@ -66,12 +81,15 @@ namespace Calendo
             init();
         }
 
+        /// <summary>
+        /// Initializes variables shared by constructors
+        /// </summary>
         private void init()
         {
             //_Entries = new List<Entry>();
             data = new DataWrapper();
             data.Entries = new List<Entry>();
-                            _Serializer = new XmlSerializer(data.GetType());
+            _Serializer = new XmlSerializer(data.GetType());
         }
 
         /// <summary>
