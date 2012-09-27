@@ -136,5 +136,11 @@ namespace Calendo
 
             bdrAutoSuggestBorder.Visibility = Visibility.Visible;
         }
+
+        private void btnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            DebugMode dm = new DebugMode();
+            dm.Show();
+        }
     }
 }
