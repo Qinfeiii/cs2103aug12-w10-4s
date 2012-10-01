@@ -110,6 +110,11 @@ namespace Calendo
             storage.Undo();
         }
 
+        public void Redo()
+        {
+            storage.Redo();
+        }
+
         public void PerformCommand(string command)
         {
             ProcessCommands(ReadCommand(command));
@@ -188,6 +193,9 @@ namespace Calendo
                     break;
                 case "import":
                     this.Import();
+                    break;
+                case "redo":
+                    this.Redo();
                     break;
             }
         }

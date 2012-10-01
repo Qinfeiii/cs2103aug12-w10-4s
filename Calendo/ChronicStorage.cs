@@ -8,9 +8,10 @@ namespace Calendo
 {
     class ChronicStorage : IStorage
     {
-        private const string DEFAULT_FILE_PATH = "undo.txt";
+        private const string DEFAULT_FILE_PATH = "archive.txt";
         private string _DataFilePath;
         private List<DataWrapper> states;
+        private Stack<DataWrapper> redoStates;
         private DataWrapper data;
         private XmlSerializer _Serializer;
 
@@ -20,7 +21,7 @@ namespace Calendo
         public ChronicStorage()
         {
             _DataFilePath = DEFAULT_FILE_PATH;
-            init();
+            Init();
         }
 
         /// <summary>
@@ -30,16 +31,17 @@ namespace Calendo
         public ChronicStorage(string FilePath)
         {
             _DataFilePath = FilePath;
-            init();
+            Init();
         }
 
         /// <summary>
         /// Initializes variables shared by constructors
         /// </summary>
-        private void init()
+        private void Init()
         {
             //_Entries = new List<Entry>();
             states = new List<DataWrapper>();
+            redoStates = new Stack<DataWrapper>();
             data = null;
             _Serializer = new XmlSerializer(states.GetType());
         }
@@ -87,10 +89,62 @@ namespace Calendo
         {
             if (states.Count > 0)
             {
+                redoStates.Push(states[states.Count - 1]);
                 states.RemoveAt(states.Count - 1);
                 return SaveWithoutAdd();
             }
             return false;
+        }
+
+        /// <summary>
+        /// Gets the current undo state
+        /// </summary>
+        public bool HasUndo
+        {
+            get
+            {
+                // Exclude initial state
+                if (states.Count > 1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Undo changes done by undo command
+        /// </summary>
+        /// <returns>Returns true if a state is reverted, false if no action taken</returns>
+        public bool Redo()
+        {
+            if (redoStates.Count > 0)
+            {
+                states.Add(redoStates.Pop());
+                return SaveWithoutAdd();
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the current undo state
+        /// </summary>
+        public bool HasRedo
+        {
+            get
+            {
+                if (redoStates.Count > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
 
         /// <summary>
@@ -112,7 +166,7 @@ namespace Calendo
         {
             try
             {
-                data = states[states.Count - 1].clone();
+                data = states[states.Count - 1].Clone();
                 // Override old file completely
                 Stream s = new FileStream(_DataFilePath, FileMode.Create);
                 _Serializer.Serialize(s, states);
@@ -133,8 +187,14 @@ namespace Calendo
         {
             try
             {
+                if (states.Count == 0)
+                {
+                    // Add the initial state
+                    states.Add(new DataWrapper());
+                }
+                // Add the current state
                 states.Add(data);
-                data = states[states.Count - 1].clone();
+                data = states[states.Count - 1].Clone();
                 // Override old file completely
                 Stream s = new FileStream(_DataFilePath, FileMode.Create);
                 _Serializer.Serialize(s, states);
@@ -164,7 +224,7 @@ namespace Calendo
                 s.Close();
                 if (states.Count > 0)
                 {
-                    data = states[states.Count - 1].clone();
+                    data = states[states.Count - 1].Clone();
                 }
                 else
                 {
