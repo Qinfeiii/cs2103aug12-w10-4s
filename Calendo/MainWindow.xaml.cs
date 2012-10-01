@@ -118,15 +118,21 @@ namespace Calendo
             }
             else if (e.Key == Key.Return)
             {
-                string suggestion = (string) lsbAutoSuggestList.SelectedItem;
-                if(suggestion != null && suggestion.First() == AutoSuggest.COMMAND_INDICATOR)
-                {
-                    string command = suggestion.Split()[0];
-                    tbxCommandBar.Text = command;
-                    tbxCommandBar.Focus();
+                SetCommandFromSuggestion();
+            }
+        }
 
-                    bdrAutoSuggestBorder.Visibility = Visibility.Collapsed;
-                }
+        private void SetCommandFromSuggestion()
+        {
+            string suggestion = (string) lsbAutoSuggestList.SelectedItem;
+            if (suggestion != null && suggestion.First() == AutoSuggest.COMMAND_INDICATOR)
+            {
+                string command = suggestion.Split()[0];
+                tbxCommandBar.Text = command;
+                tbxCommandBar.Focus();
+                tbxCommandBar.SelectionStart = command.Length;
+
+                bdrAutoSuggestBorder.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -141,6 +147,11 @@ namespace Calendo
         {
             DebugMode dm = new DebugMode();
             dm.Show();
+        }
+
+        private void lsbAutoSuggestList_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            SetCommandFromSuggestion();
         }
     }
 }
