@@ -53,6 +53,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="DebugMode.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -62,9 +66,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AutoSuggest.cs" />
+    <Compile Include="ChronicStorage.cs" />
+    <Compile Include="Command.cs" />
     <Compile Include="DataDriver.cs" />
     <Compile Include="DataStorage.cs" />
+    <Compile Include="DebugMode.xaml.cs">
+      <DependentUpon>DebugMode.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Entry.cs" />
+    <Compile Include="TaskManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
