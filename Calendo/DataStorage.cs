@@ -40,7 +40,7 @@ namespace Calendo
         /// Makes a copy of the DataWrapper object
         /// </summary>
         /// <returns>Returns a copy of the object</returns>
-        public DataWrapper clone()
+        public DataWrapper Clone()
         {
             DataWrapper DataClone = new DataWrapper();
             DataClone.Entries = new List<Entry>();
@@ -68,7 +68,7 @@ namespace Calendo
         public DataStorage()
         {
             _DataFilePath = DEFAULT_FILE_PATH;
-            init();
+            Init();
         }
 
         /// <summary>
@@ -78,13 +78,13 @@ namespace Calendo
         public DataStorage(string FilePath)
         {
             _DataFilePath = FilePath;
-            init();
+            Init();
         }
 
         /// <summary>
         /// Initializes variables shared by constructors
         /// </summary>
-        private void init()
+        private void Init()
         {
             //_Entries = new List<Entry>();
             data = new DataWrapper();
