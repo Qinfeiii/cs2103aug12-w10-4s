@@ -38,6 +38,7 @@ namespace Calendo.CommandProcessing
 
         public void Send()
         {
+            TaskManager.ExecuteCommand(commandType, commandDate, commandTime, commandText);
         }
 
         // Execution pattern: construct, then call Send
@@ -53,26 +54,26 @@ namespace Calendo.CommandProcessing
             commandList.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
             commandList.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
 
-            getCommandParts();
+            GetCommandParts();
         }
 
-        private void getCommandParts()
+        private void GetCommandParts()
         {
-            createInputStringArray();
-            extractAndRemoveCommandType();
-            extractAndRemoveCommandDate();
-            extractAndRemoveCommandTime();
-            extractCommandText();
+            CreateInputStringArray();
+            ExtractAndRemoveCommandType();
+            ExtractAndRemoveCommandDate();
+            ExtractAndRemoveCommandTime();
+            ExtractCommandText();
         }
 
-        private void createInputStringArray()
+        private void CreateInputStringArray()
         {
             inputStringWords = inputString.Trim().Split().ToList();
         }
 
-        private void extractAndRemoveCommandType()
+        private void ExtractAndRemoveCommandType()
         {
-            if (isNoCommand())
+            if (IsNoCommand())
             {
                 commandType = COMMAND_TYPE_SEARCH;
                 return;
@@ -89,7 +90,7 @@ namespace Calendo.CommandProcessing
             inputStringWords.RemoveAt(0);
         }
 
-        private void extractAndRemoveCommandDate()
+        private void ExtractAndRemoveCommandDate()
         {
             int dateIndex = inputStringWords.FindIndex(x => INPUT_HANDLES_DATE.Contains(x));
 
@@ -114,7 +115,7 @@ namespace Calendo.CommandProcessing
         }
 
         // Expecting time as: HH:MM ["AM"/"PM"]
-        private void extractAndRemoveCommandTime()
+        private void ExtractAndRemoveCommandTime()
         {
             int timeIndex = inputStringWords.FindIndex(x => INPUT_HANDLES_TIME.Contains(x));
 
@@ -140,19 +141,15 @@ namespace Calendo.CommandProcessing
             }
         }
 
-        private void extractCommandText()
+        private void ExtractCommandText()
         {
             string separator = " ";
             commandText = inputStringWords.Aggregate((first, rest) => first + separator + rest);
         }
 
-        private Boolean isNoCommand()
+        private Boolean IsNoCommand()
         {
             return !inputStringWords.First().StartsWith("/");
-        }
-
-        private void callCommand()
-        {
         }
     }
 }
