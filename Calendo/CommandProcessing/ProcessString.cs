@@ -17,15 +17,15 @@ namespace Calendo.CommandProcessing
 
         //TODO: Ideally, NOCOMMAND should be search in autosuggest mode,
         //      and when the user presses enter, treat it as ADD
-        private const string[] INPUT_COMMANDS_SEARCH = { "search", "find" };
-        private const string[] INPUT_COMMANDS_ADD = { "add", "a" };
-        private const string[] INPUT_COMMANDS_REMOVE = { "remove", "delete", "rm", "del" };
-        private const string[] INPUT_COMMANDS_CHANGE = { "change", "update", "modify" };
-        private const string[] INPUT_COMMANDS_LIST = { "list", "ls", "show" };
-        private const string[] INPUT_COMMANDS_UNDO = { "undo" };
+        private string[] INPUT_COMMANDS_SEARCH = { "search", "find" };
+        private string[] INPUT_COMMANDS_ADD = { "add", "a" };
+        private string[] INPUT_COMMANDS_REMOVE = { "remove", "delete", "rm", "del" };
+        private string[] INPUT_COMMANDS_CHANGE = { "change", "update", "modify" };
+        private string[] INPUT_COMMANDS_LIST = { "list", "ls", "show" };
+        private string[] INPUT_COMMANDS_UNDO = { "undo" };
 
-        private const string[] INPUT_HANDLES_DATE = { "/date" };
-        private const string[] INPUT_HANDLES_TIME = { "/time" };
+        private string[] INPUT_HANDLES_DATE = { "/date" };
+        private string[] INPUT_HANDLES_TIME = { "/time" };
 
         private Dictionary<string, string[]> commandList;
 
