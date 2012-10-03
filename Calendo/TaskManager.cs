@@ -115,9 +115,15 @@ namespace Calendo
             storage.Redo();
         }
 
+        //Changed this execution pattern
         public void PerformCommand(string command)
         {
             ProcessCommands(ReadCommand(command));
+        }
+
+        public static void ExecuteCommand(string commandType, string commandDate, string commandTime, string commandText)
+        {
+            //Do something with this stuff
         }
 
         // For testing purposes
