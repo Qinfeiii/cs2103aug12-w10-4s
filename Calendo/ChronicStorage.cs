@@ -190,7 +190,9 @@ namespace Calendo
                 if (states.Count == 0)
                 {
                     // Add the initial state
-                    states.Add(new DataWrapper());
+                    DataWrapper dw = new DataWrapper();
+                    dw.Entries = new List<Entry>();
+                    states.Add(dw);
                 }
                 // Add the current state
                 states.Add(data);
