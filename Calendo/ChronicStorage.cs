@@ -4,6 +4,7 @@ using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 
+
 namespace Calendo
 {
     class ChronicStorage : IStorage
@@ -168,6 +169,7 @@ namespace Calendo
             {
                 data = states[states.Count - 1].Clone();
                 // Override old file completely
+
                 Stream s = new FileStream(_DataFilePath, FileMode.Create);
                 _Serializer.Serialize(s, states);
                 s.Close();
@@ -196,12 +198,7 @@ namespace Calendo
                 }
                 // Add the current state
                 states.Add(data);
-                data = states[states.Count - 1].Clone();
-                // Override old file completely
-                Stream s = new FileStream(_DataFilePath, FileMode.Create);
-                _Serializer.Serialize(s, states);
-                s.Close();
-                return true;
+                return SaveWithoutAdd();
             }
             catch
             {
