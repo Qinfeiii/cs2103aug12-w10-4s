@@ -56,6 +56,7 @@ namespace Calendo
     /// <summary>
     /// An entry represents a task in Calendo
     /// </summary>
+    [Serializable]
     public class Entry : IEntry
     {
         private static int IDCounter = 0;

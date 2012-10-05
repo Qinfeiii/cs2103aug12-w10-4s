@@ -7,10 +7,12 @@ namespace Calendo
 {
     class TaskManager
     {
-        private ChronicStorage storage;
+        //private ChronicStorage storage;
+        private StateStorage<List<Entry>> storage;
         public TaskManager()
         {
-            storage = new ChronicStorage();
+            //storage = new ChronicStorage();
+            storage = new StateStorage<List<Entry>>("archive.txt");
             storage.Load();
         }
 
