@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 
 namespace Calendo
 {
@@ -11,18 +9,18 @@ namespace Calendo
     {
         public const char COMMAND_INDICATOR = '/';
 
-        public ObservableCollection<string> SuggestionList { get; set; }
+        public List<string> SuggestionList { get; set; }
 
         public AutoSuggest()
         {
-            SuggestionList = new ObservableCollection<string>();
+            SuggestionList = new List<string>();
         }
 
         public void SetSuggestions(string input)
         {
             SuggestionList.Clear();
             bool isInputValid = input.Length > 0;
-            if(isInputValid)
+            if (isInputValid)
             {
                 if (input.First() == COMMAND_INDICATOR)
                 {
@@ -36,7 +34,7 @@ namespace Calendo
                 else
                 {
                     SuggestionList.Add("search for " + input);
-                }   
+                }
             }
 
             OnPropertyChanged("SuggestionList");
