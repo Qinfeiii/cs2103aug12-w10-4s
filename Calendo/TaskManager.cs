@@ -38,12 +38,12 @@ namespace Calendo
             TimeFormat startTimeFormat = this.GetFormat(date, time);
             this.Add(description, startTime, startTimeFormat);
         }
-        public void Add(string description, DateTime startTime, TimeFormat StartTimeFormat)
+        public void Add(string description, DateTime startTime, TimeFormat startTimeFormat)
         {
             Entry entry = new Entry();
             entry.Description = description;
             entry.StartTime = startTime;
-            entry.StartTimeFormat = StartTimeFormat;
+            entry.StartTimeFormat = startTimeFormat;
             entry.Type = EntryType.DEADLINE;
             Add(entry);
         }
@@ -55,14 +55,14 @@ namespace Calendo
             TimeFormat endTimeFormat = this.GetFormat(endDate, endTime);
             this.Add(description, startDateTime, startTimeFormat, endDateTime, endTimeFormat);
         }
-        public void Add(string description, DateTime startTime, TimeFormat StartTimeFormat, DateTime EndTime, TimeFormat EndTimeFormat)
+        public void Add(string description, DateTime startTime, TimeFormat startTimeFormat, DateTime endTime, TimeFormat endTimeFormat)
         {
             Entry entry = new Entry();
             entry.Description = description;
             entry.StartTime = startTime;
-            entry.StartTimeFormat = StartTimeFormat;
-            entry.EndTime = EndTime;
-            entry.EndTimeFormat = EndTimeFormat;
+            entry.StartTimeFormat = startTimeFormat;
+            entry.EndTime = endTime;
+            entry.EndTimeFormat = endTimeFormat;
             entry.Type = EntryType.TIMED;
             Add(entry);
         }
@@ -81,6 +81,20 @@ namespace Calendo
                 storage.Save();
             }
         }
+
+        /// <summary>
+        /// Takes in the index of an item to remove from the Entries list, removes that item.
+        /// </summary>
+        /// <param name="index">The 0-indexed index of the item to be removed.</param>
+        public void RemoveByIndex(int index)
+        {
+            if (index >= 0 && index < Entries.Count)
+            {
+                storage.Entries.RemoveAt(index);
+                storage.Save();
+            }
+        }
+
 
         public void Remove(int id)
         {
@@ -188,7 +202,8 @@ namespace Calendo
                     // STUB
                     break;
                 case "remove":
-                    this.Remove(this.ConvertInt(command.Parameter));
+                    int index = this.ConvertInt(command.Parameter) - 1;
+                    this.RemoveByIndex(index);
                     break;
                 case "undo":
                     this.Undo();
@@ -245,7 +260,7 @@ namespace Calendo
             int hour = 0;
             int minute = 0;
             int second = 0;
-            
+
             if (dateFrag.Length > 0)
             {
                 day = this.ConvertInt(dateFrag[0]);
