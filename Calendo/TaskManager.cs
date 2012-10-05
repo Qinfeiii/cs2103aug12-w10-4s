@@ -6,11 +6,9 @@ namespace Calendo
 {
     class TaskManager
     {
-        //private ChronicStorage storage;
         private StateStorage<List<Entry>> storage;
         public TaskManager()
         {
-            //storage = new ChronicStorage();
             storage = new StateStorage<List<Entry>>("archive.txt");
             storage.Load();
         }
@@ -24,7 +22,7 @@ namespace Calendo
         }
 
         /// <summary>
-        /// Add a Task
+        /// Add a floating task
         /// </summary>
         /// <param name="description">Task Description</param>
         public void Add(string description)
@@ -34,12 +32,26 @@ namespace Calendo
             entry.Description = description;
             Add(entry);
         }
+
+        /// <summary>
+        /// Add a deadline task
+        /// </summary>
+        /// <param name="description">Task Description</param>
+        /// <param name="date">Start Date</param>
+        /// <param name="time">Start Time</param>
         public void Add(string description, string date, string time)
         {
             DateTime startTime = this.ConvertTime(date, time);
             TimeFormat startTimeFormat = this.GetFormat(date, time);
             this.Add(description, startTime, startTimeFormat);
         }
+
+        /// <summary>
+        /// Add a deadline task
+        /// </summary>
+        /// <param name="description">Task Description</param>
+        /// <param name="startTime">Start Date</param>
+        /// <param name="startTimeFormat">Start Time</param>
         public void Add(string description, DateTime startTime, TimeFormat startTimeFormat)
         {
             Entry entry = new Entry();
@@ -49,6 +61,15 @@ namespace Calendo
             entry.Type = EntryType.DEADLINE;
             Add(entry);
         }
+
+        /// <summary>
+        /// Add a timed task
+        /// </summary>
+        /// <param name="description">Task Description</param>
+        /// <param name="startDate">Start Date</param>
+        /// <param name="startTime">Start Time</param>
+        /// <param name="endDate">End Date</param>
+        /// <param name="endTime">End Time</param>
         public void Add(string description, string startDate, string startTime, string endDate, string endTime)
         {
             DateTime startDateTime = this.ConvertTime(startDate, startTime);
@@ -57,6 +78,15 @@ namespace Calendo
             TimeFormat endTimeFormat = this.GetFormat(endDate, endTime);
             this.Add(description, startDateTime, startTimeFormat, endDateTime, endTimeFormat);
         }
+
+        /// <summary>
+        /// Add a timed task
+        /// </summary>
+        /// <param name="description">Task Description</param>
+        /// <param name="startDate">Start Date</param>
+        /// <param name="startTime">Start Time</param>
+        /// <param name="endDate">End Date</param>
+        /// <param name="endTime">End Time</param>
         public void Add(string description, DateTime startTime, TimeFormat startTimeFormat, DateTime endTime, TimeFormat endTimeFormat)
         {
             Entry entry = new Entry();
@@ -68,12 +98,22 @@ namespace Calendo
             entry.Type = EntryType.TIMED;
             Add(entry);
         }
+
+        /// <summary>
+        /// Add a task
+        /// </summary>
+        /// <param name="entry"></param>
         private void Add(Entry entry)
         {
             storage.Entries.Add(entry);
             storage.Save();
         }
 
+        /// <summary>
+        /// Modify a task
+        /// </summary>
+        /// <param name="id">Task ID</param>
+        /// <param name="description">Description</param>
         public void Change(int id, string description)
         {
             Entry entry = this.Get(id);
@@ -97,7 +137,10 @@ namespace Calendo
             }
         }
 
-
+        /// <summary>
+        /// Remove a task by ID
+        /// </summary>
+        /// <param name="id">Task ID</param>
         public void Remove(int id)
         {
             Entry entry = this.Get(id);
@@ -108,6 +151,11 @@ namespace Calendo
             }
         }
 
+        /// <summary>
+        /// Get a task by ID
+        /// </summary>
+        /// <param name="id">Task ID</param>
+        /// <returns>Returns Entry object matching the ID, null if not found</returns>
         public Entry Get(int id)
         {
             for (int i = 0; i < storage.Entries.Count; i++)
@@ -120,11 +168,17 @@ namespace Calendo
             return null;
         }
 
+        /// <summary>
+        /// Undo an operation
+        /// </summary>
         public void Undo()
         {
             storage.Undo();
         }
 
+        /// <summary>
+        /// Redo an operation
+        /// </summary>
         public void Redo()
         {
             storage.Redo();
@@ -141,7 +195,7 @@ namespace Calendo
             //Do something with this stuff
         }
 
-        // For testing purposes
+        // Working stub for CP
         public List<Command> ReadCommand(string command)
         {
             string[] commandfrag = command.Split(new char[] { ' ' });
@@ -173,6 +227,7 @@ namespace Calendo
             return commands;
         }
 
+        // Working stub for CP
         public void ProcessCommands(List<Command> commands)
         {
             string date = "";
@@ -193,6 +248,7 @@ namespace Calendo
             }
         }
 
+        // Working stub for CP
         private void ProcessCommand(Command command, string date, string time)
         {
             switch (command.Type)
@@ -232,6 +288,12 @@ namespace Calendo
             // STUB
         }
 
+        /// <summary>
+        /// Gets the TimeFormat associated with the date and time
+        /// </summary>
+        /// <param name="date">Date</param>
+        /// <param name="time">Time</param>
+        /// <returns>Returns TimeFormat value</returns>
         public TimeFormat GetFormat(string date, string time)
         {
             TimeFormat newTimeFormat = TimeFormat.NONE;
@@ -250,6 +312,12 @@ namespace Calendo
             return newTimeFormat;
         }
 
+        /// <summary>
+        /// Converts a string date and time to DateTime object
+        /// </summary>
+        /// <param name="date">Date in Day/Month/Year</param>
+        /// <param name="time">Time in Hour/Minutes</param>
+        /// <returns>Returns DateTime object</returns>
         public DateTime ConvertTime(string date, string time)
         {
             // Date: Day/Month[/Year]
@@ -294,6 +362,11 @@ namespace Calendo
             return dt;
         }
 
+        /// <summary>
+        /// Converts a string to an integer
+        /// </summary>
+        /// <param name="str">Integer in string format</param>
+        /// <returns>Return the converted numeric value. or -1 if conversion failed</returns>
         private int ConvertInt(string str)
         {
             try
