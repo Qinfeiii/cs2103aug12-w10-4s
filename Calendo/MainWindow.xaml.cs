@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Diagnostics;
 
 namespace Calendo
 {
@@ -20,7 +22,7 @@ namespace Calendo
             AutoSuggestViewModel = new AutoSuggest();
             DataContext = AutoSuggestViewModel;
             TaskManagerObject = new TaskManager();
-            lsbItemsList.ItemsSource = TaskManagerObject.Entries;
+            UpdateItemsList();
         }
 
         private void TbxCommandBarLostFocus(object sender, RoutedEventArgs e)
@@ -105,9 +107,25 @@ namespace Calendo
             else if (e.Key == Key.Return && tbxCommandBar.Text.Length > 0)
             {
                 TaskManagerObject.PerformCommand(tbxCommandBar.Text);
-                lsbItemsList.ItemsSource = TaskManagerObject.Entries;
+                
+                UpdateItemsList();
+
                 tbxCommandBar.Clear();
             }
+        }
+
+        private void UpdateItemsList()
+        {
+            Dictionary<int, Entry> itemDictionary = new Dictionary<int, Entry>();
+
+            int count = 1;
+            foreach (Entry currentEntry in TaskManagerObject.Entries)
+            {
+                itemDictionary.Add(count, currentEntry);
+                count++;
+            }
+
+            lsbItemsList.ItemsSource = itemDictionary;
         }
 
         private void LsbAutoSuggestListKeyDown(object sender, KeyEventArgs e)
@@ -163,10 +181,13 @@ namespace Calendo
             var selectedItem = lsbItemsList.SelectedItem;
             if (selectedItem != null)
             {
-                Entry selectedEntry = (Entry)selectedItem;
+                KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>)selectedItem;
+                Entry selectedEntry = selectedPair.Value;
+
                 if (tbxCommandBar.Text.Length == 0)
                 {
-                    tbxCommandBar.Text = "/change " + selectedEntry.ID;
+                    int selectedIndex = selectedPair.Key;
+                    tbxCommandBar.Text = "/change " + selectedIndex;
                     tbxCommandBar.Focus();
                     tbxCommandBar.SelectionStart = tbxCommandBar.Text.Length;
                 }

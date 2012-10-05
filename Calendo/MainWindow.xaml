@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Calendo" Height="350" Width="300" MinHeight="170" MinWidth="300"
         WindowStyle="None" StateChanged="WindowStateChanged">
+    
     <Grid Background="#FEFEFE">
         <Grid.Resources>
             <Style x:Key="NormalTextStyle" TargetType="TextBlock">
@@ -98,8 +99,8 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Grid.Column="0" Text="{Binding ID}" Style="{StaticResource ListBoxItemTextStyle}" Margin="0,0,6,0" />
-                        <TextBlock Grid.Column="1" Text="{Binding Description}" Style="{StaticResource ListBoxItemTextStyle}" />
+                        <TextBlock Grid.Column="0" Text="{Binding Key}" Style="{StaticResource ListBoxItemTextStyle}" Margin="0,0,6,0" />
+                        <TextBlock Grid.Column="1" Text="{Binding Value.Description}" Style="{StaticResource ListBoxItemTextStyle}" />
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
