@@ -94,10 +94,13 @@
             <TextBox Name="tbxCommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="18" Foreground="DarkSlateGray" Style="{StaticResource TransparentWithBorder}" LostFocus="TbxCommandBarLostFocus" GotFocus="TbxCommandBarGotFocus" KeyUp="TbxCommandBarKeyUp" TextChanged="TbxCommandBarTextChanged"/>
         </Grid>
 
-        <ListBox Name="lsbItemsList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,6" Style="{StaticResource TransparentWithBorder}">
+        <ListBox Name="lsbItemsList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,6" Style="{StaticResource TransparentWithBorder}" SelectionChanged="LsbItemsListSelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding}" Style="{StaticResource ListBoxItemTextStyle}" />
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Grid.Column="0" Text="{Binding ID}" Style="{StaticResource ListBoxItemTextStyle}" Margin="0,0,6,0" />
+                        <TextBlock Grid.Column="1" Text="{Binding Description}" Style="{StaticResource ListBoxItemTextStyle}" />
+                    </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
