@@ -21,7 +21,6 @@ namespace Calendo
             baseValue = new Data<T>();
             stateList = new List<Data<T>>();
             redoStack = new Stack<Data<T>>();
-            AddState();
         }
 
         /// <summary>
@@ -48,6 +47,10 @@ namespace Calendo
         /// </summary>
         public void AddState()
         {
+            if (stateList.Count == 0)
+            {
+                stateList.Add(new Data<T>());
+            }
             stateList.Add((Data<T>)baseValue.Clone());
             redoStack.Clear();
         }
@@ -128,8 +131,8 @@ namespace Calendo
         /// </summary>
         public T Entries
         {
-            get { return dataStorage.Data.Value; }
-            set { dataStorage.Data.Value = value; }
+            get { return dataStorage.Entries.Value; }
+            set { dataStorage.Entries.Value = value; }
         }
 
         /// <summary>
@@ -138,7 +141,7 @@ namespace Calendo
         /// <returns>Returns true if file has been changed</returns>
         public bool Save()
         {
-            dataStorage.Data.AddState();
+            dataStorage.Entries.AddState();
             return dataStorage.Save();
         }
 
@@ -149,7 +152,7 @@ namespace Calendo
         public bool Load()
         {
             bool loadResult = dataStorage.Load();
-            currentState = dataStorage.Data;
+            currentState = dataStorage.Entries;
             return loadResult;
         }
 
@@ -173,6 +176,16 @@ namespace Calendo
             bool redoResult = currentState.Redo();
             dataStorage.Save();
             return redoResult;
+        }
+
+        /// <summary>
+        /// Remove all state information
+        /// </summary>
+        public void Clear()
+        {
+            dataStorage.Entries.States.Clear();
+            dataStorage.Save();
+            dataStorage.Load();
         }
     }
 }

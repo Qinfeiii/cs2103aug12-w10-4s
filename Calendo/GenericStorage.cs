@@ -81,7 +81,7 @@ namespace Calendo
         /// <summary>
         /// Data stored in storage
         /// </summary>
-        public T Data
+        public T Entries
         {
             get { return dataWrapper.Value; }
             set { dataWrapper.Value = value; }
