@@ -26,7 +26,7 @@ namespace Calendo
 
         private void textBox1_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            
         }
 
         private void UpdateList()
@@ -73,6 +73,17 @@ namespace Calendo
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             UpdateList();
+        }
+
+        private void button4_Click(object sender, RoutedEventArgs e)
+        {
+            DataDriver dd = new DataDriver();
+            dd.Test();
+        }
+
+        private void button5_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.Assert(false);
         }
     }
 }

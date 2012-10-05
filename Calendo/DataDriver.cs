@@ -7,24 +7,28 @@ namespace Calendo
 {
     class DataDriver
     {
-        private DataStorage storage;
+        //private DataStorage storage;
+        private Storage<List<Entry>> storage;
+        private Storage<State<Entry>> test;
         private List<Entry> entryList;
         public DataDriver()
         {
             entryList = new List<Entry>();
-            storage = new DataStorage();
+            storage = new Storage<List<Entry>>();
+            test = new Storage<State<Entry>>();
+
         }
         public void Clear()
         {
             storage.Load();
-            storage.Entries.Clear();
+            storage.Data.Clear();
             storage.Save();
         }
         public void Test()
         {
             // Load
             storage.Load();
-            entryList = storage.Entries;
+            entryList = storage.Data;
 
             // Add
             entryList.Add(new Entry());
@@ -33,12 +37,12 @@ namespace Calendo
             entryList[0].Description = "Test";
 
             // Save
-            storage.Entries = entryList; //optional
+            storage.Data = entryList; //optional
             storage.Save();
 
             // Reload
             storage.Load();
-            entryList = storage.Entries;
+            entryList = storage.Data;
             
             // Remove
             entryList.RemoveAt(0);

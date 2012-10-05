@@ -71,11 +71,14 @@
     <Compile Include="Command.cs" />
     <Compile Include="DataDriver.cs" />
     <Compile Include="DataStorage.cs" />
+    <Compile Include="Debug.cs" />
     <Compile Include="DebugMode.xaml.cs">
       <DependentUpon>DebugMode.xaml</DependentUpon>
     </Compile>
     <Compile Include="Entry.cs" />
+    <Compile Include="GenericStorage.cs" />
     <Compile Include="JSON.cs" />
+    <Compile Include="StateStorage.cs" />
     <Compile Include="TaskManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
