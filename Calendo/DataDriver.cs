@@ -7,28 +7,24 @@ namespace Calendo
 {
     class DataDriver
     {
-        //private DataStorage storage;
         private Storage<List<Entry>> storage;
-        private Storage<State<Entry>> test;
         private List<Entry> entryList;
         public DataDriver()
         {
             entryList = new List<Entry>();
             storage = new Storage<List<Entry>>();
-            test = new Storage<State<Entry>>();
-
         }
         public void Clear()
         {
             storage.Load();
-            storage.Data.Clear();
+            storage.Entries.Clear();
             storage.Save();
         }
         public void Test()
         {
             // Load
             storage.Load();
-            entryList = storage.Data;
+            entryList = storage.Entries;
 
             // Add
             entryList.Add(new Entry());
@@ -37,12 +33,12 @@ namespace Calendo
             entryList[0].Description = "Test";
 
             // Save
-            storage.Data = entryList; //optional
+            storage.Entries = entryList; //optional
             storage.Save();
 
             // Reload
             storage.Load();
-            entryList = storage.Data;
+            entryList = storage.Entries;
             
             // Remove
             entryList.RemoveAt(0);
@@ -55,7 +51,7 @@ namespace Calendo
         public void TestUndo()
         {
             // Load
-            ChronicStorage cs = new ChronicStorage();
+            StateStorage<List<Entry>> cs = new StateStorage<List<Entry>>();
             // Return to clean state
             cs.Load();
             cs.Clear(); // Clearing undo states cannot be undone!

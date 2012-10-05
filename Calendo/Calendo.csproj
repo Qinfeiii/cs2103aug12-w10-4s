@@ -110,11 +110,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AutoSuggest.cs" />
-    <Compile Include="ChronicStorage.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="CommandProcessing\ProcessString.cs" />
     <Compile Include="DataDriver.cs" />
-    <Compile Include="DataStorage.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="DebugMode.xaml.cs">
       <DependentUpon>DebugMode.xaml</DependentUpon>
