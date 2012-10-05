@@ -95,12 +95,11 @@
         </Grid>
 
         <ListBox Name="lsbItemsList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,6" Style="{StaticResource TransparentWithBorder}">
-            <ListBoxItem>
-                <TextBlock Text="1. Meeting at 9AM" Style="{StaticResource ListBoxItemTextStyle}"/>
-            </ListBoxItem>
-            <ListBoxItem>
-                <TextBlock Text="2. Work on Calendo" Style="{StaticResource ListBoxItemTextStyle}"/>
-            </ListBoxItem>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" Style="{StaticResource ListBoxItemTextStyle}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
 
         <Border Name="bdrAutoSuggestBorder" Grid.Row="2" Style="{StaticResource AutoCompleteBoxStyle}" Margin="12,-4,12,0" Visibility="Collapsed">
