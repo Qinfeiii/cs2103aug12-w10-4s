@@ -130,9 +130,9 @@ namespace Calendo
 
         private void TbxCommandBarTextChanged(object sender, TextChangedEventArgs e)
         {
-            AutoSuggestViewModel.SetSuggestions(tbxCommandBar.Text);
+            //AutoSuggestViewModel.SetSuggestions(tbxCommandBar.Text);
 
-            bdrAutoSuggestBorder.Visibility = Visibility.Visible;
+            //bdrAutoSuggestBorder.Visibility = Visibility.Visible;
         }
 
         private void BtnSettingsClick(object sender, RoutedEventArgs e)
