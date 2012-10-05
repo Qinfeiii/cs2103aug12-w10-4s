@@ -116,7 +116,8 @@ namespace Calendo
         private void SetCommandFromSuggestion()
         {
             string suggestion = (string) lsbAutoSuggestList.SelectedItem;
-            if (suggestion != null && suggestion.First() == AutoSuggest.COMMAND_INDICATOR)
+            bool isInputCommand = suggestion != null && suggestion.First() == AutoSuggest.COMMAND_INDICATOR;
+            if (isInputCommand)
             {
                 string command = suggestion.Split()[0];
                 tbxCommandBar.Text = command;
@@ -134,13 +135,13 @@ namespace Calendo
             bdrAutoSuggestBorder.Visibility = Visibility.Visible;
         }
 
-        private void btnSettings_Click(object sender, RoutedEventArgs e)
+        private void BtnSettingsClick(object sender, RoutedEventArgs e)
         {
             DebugMode dm = new DebugMode();
             dm.Show();
         }
 
-        private void lsbAutoSuggestList_MouseUp(object sender, MouseButtonEventArgs e)
+        private void LsbAutoSuggestListMouseUp(object sender, MouseButtonEventArgs e)
         {
             SetCommandFromSuggestion();
         }
