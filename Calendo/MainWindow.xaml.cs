@@ -12,12 +12,15 @@ namespace Calendo
     public partial class MainWindow : Window
     {
         private AutoSuggest AutoSuggestViewModel;
+        private TaskManager TaskManagerObject;
 
         public MainWindow()
         {
             InitializeComponent();
             AutoSuggestViewModel = new AutoSuggest();
             DataContext = AutoSuggestViewModel;
+            TaskManagerObject = new TaskManager();
+            lsbItemsList.ItemsSource = TaskManagerObject.Entries;
         }
 
         private void TbxCommandBarLostFocus(object sender, RoutedEventArgs e)
@@ -96,6 +99,15 @@ namespace Calendo
                 lsbAutoSuggestList.SelectedIndex = 0;
                 lsbAutoSuggestList.Focus();
             }
+                // This portion of code is temporary for v0.1 only.
+                // UI is essentially linking directly to TaskManager, which
+                // SHOULD NOT BE THE CASE IN THE FINAL.
+            else if (e.Key == Key.Return && tbxCommandBar.Text.Length > 0)
+            {
+                TaskManagerObject.PerformCommand(tbxCommandBar.Text);
+                lsbItemsList.ItemsSource = TaskManagerObject.Entries;
+                tbxCommandBar.Clear();
+            }
         }
 
         private void LsbAutoSuggestListKeyDown(object sender, KeyEventArgs e)
@@ -144,6 +156,21 @@ namespace Calendo
         private void LsbAutoSuggestListMouseUp(object sender, MouseButtonEventArgs e)
         {
             SetCommandFromSuggestion();
+        }
+
+        private void LsbItemsListSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedItem = lsbItemsList.SelectedItem;
+            if (selectedItem != null)
+            {
+                Entry selectedEntry = (Entry)selectedItem;
+                if (tbxCommandBar.Text.Length == 0)
+                {
+                    tbxCommandBar.Text = "/change " + selectedEntry.ID;
+                    tbxCommandBar.Focus();
+                    tbxCommandBar.SelectionStart = tbxCommandBar.Text.Length;
+                }
+            }
         }
     }
 }
