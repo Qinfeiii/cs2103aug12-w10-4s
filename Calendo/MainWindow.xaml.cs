@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Diagnostics;
 
 namespace Calendo
 {
@@ -21,12 +14,15 @@ namespace Calendo
     public partial class MainWindow : Window
     {
         private AutoSuggest AutoSuggestViewModel;
+        private TaskManager TaskManagerObject;
 
         public MainWindow()
         {
             InitializeComponent();
             AutoSuggestViewModel = new AutoSuggest();
-            this.DataContext = AutoSuggestViewModel;
+            DataContext = AutoSuggestViewModel;
+            TaskManagerObject = new TaskManager();
+            UpdateItemsList();
         }
 
         private void TbxCommandBarLostFocus(object sender, RoutedEventArgs e)
@@ -105,6 +101,31 @@ namespace Calendo
                 lsbAutoSuggestList.SelectedIndex = 0;
                 lsbAutoSuggestList.Focus();
             }
+                // This portion of code is temporary for v0.1 only.
+                // UI is essentially linking directly to TaskManager, which
+                // SHOULD NOT BE THE CASE IN THE FINAL.
+            else if (e.Key == Key.Return && tbxCommandBar.Text.Length > 0)
+            {
+                TaskManagerObject.PerformCommand(tbxCommandBar.Text);
+                
+                UpdateItemsList();
+
+                tbxCommandBar.Clear();
+            }
+        }
+
+        private void UpdateItemsList()
+        {
+            Dictionary<int, Entry> itemDictionary = new Dictionary<int, Entry>();
+
+            int count = 1;
+            foreach (Entry currentEntry in TaskManagerObject.Entries)
+            {
+                itemDictionary.Add(count, currentEntry);
+                count++;
+            }
+
+            lsbItemsList.ItemsSource = itemDictionary;
         }
 
         private void LsbAutoSuggestListKeyDown(object sender, KeyEventArgs e)
@@ -118,29 +139,59 @@ namespace Calendo
             }
             else if (e.Key == Key.Return)
             {
-                string suggestion = (string) lsbAutoSuggestList.SelectedItem;
-                if(suggestion != null && suggestion.First() == AutoSuggest.COMMAND_INDICATOR)
-                {
-                    string command = suggestion.Split()[0];
-                    tbxCommandBar.Text = command;
-                    tbxCommandBar.Focus();
+                SetCommandFromSuggestion();
+            }
+        }
 
-                    bdrAutoSuggestBorder.Visibility = Visibility.Collapsed;
-                }
+        private void SetCommandFromSuggestion()
+        {
+            string suggestion = (string) lsbAutoSuggestList.SelectedItem;
+            bool isInputCommand = suggestion != null && suggestion.First() == AutoSuggest.COMMAND_INDICATOR;
+            if (isInputCommand)
+            {
+                string command = suggestion.Split()[0];
+                tbxCommandBar.Text = command;
+                tbxCommandBar.Focus();
+                tbxCommandBar.SelectionStart = command.Length;
+
+                bdrAutoSuggestBorder.Visibility = Visibility.Collapsed;
             }
         }
 
         private void TbxCommandBarTextChanged(object sender, TextChangedEventArgs e)
         {
-            AutoSuggestViewModel.SetSuggestions(tbxCommandBar.Text);
+            //AutoSuggestViewModel.SetSuggestions(tbxCommandBar.Text);
 
-            bdrAutoSuggestBorder.Visibility = Visibility.Visible;
+            //bdrAutoSuggestBorder.Visibility = Visibility.Visible;
         }
 
-        private void btnSettings_Click(object sender, RoutedEventArgs e)
+        private void BtnSettingsClick(object sender, RoutedEventArgs e)
         {
             DebugMode dm = new DebugMode();
             dm.Show();
+        }
+
+        private void LsbAutoSuggestListMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            SetCommandFromSuggestion();
+        }
+
+        private void LsbItemsListSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedItem = lsbItemsList.SelectedItem;
+            if (selectedItem != null)
+            {
+                KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>)selectedItem;
+                Entry selectedEntry = selectedPair.Value;
+
+                if (tbxCommandBar.Text.Length == 0)
+                {
+                    int selectedIndex = selectedPair.Key;
+                    tbxCommandBar.Text = "/change " + selectedIndex;
+                    tbxCommandBar.Focus();
+                    tbxCommandBar.SelectionStart = tbxCommandBar.Text.Length;
+                }
+            }
         }
     }
 }

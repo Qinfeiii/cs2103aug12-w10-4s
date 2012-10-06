@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Calendo
@@ -25,45 +24,45 @@ namespace Calendo
         /// <summary>
         /// Add a Task
         /// </summary>
-        /// <param name="Description">Task Description</param>
-        public void Add(string Description)
+        /// <param name="description">Task Description</param>
+        public void Add(string description)
         {
             Entry entry = new Entry();
             entry.Type = EntryType.FLOATING;
-            entry.Description = Description;
+            entry.Description = description;
             Add(entry);
         }
-        public void Add(string Description, string Date, string Time)
+        public void Add(string description, string date, string time)
         {
-            DateTime StartTime = this.ConvertTime(Date, Time);
-            TimeFormat StartTimeFormat = this.GetFormat(Date, Time);
-            this.Add(Description, StartTime, StartTimeFormat);
+            DateTime startTime = this.ConvertTime(date, time);
+            TimeFormat startTimeFormat = this.GetFormat(date, time);
+            this.Add(description, startTime, startTimeFormat);
         }
-        public void Add(string Description, DateTime StartTime, TimeFormat StartTimeFormat)
+        public void Add(string description, DateTime startTime, TimeFormat startTimeFormat)
         {
             Entry entry = new Entry();
-            entry.Description = Description;
-            entry.StartTime = StartTime;
-            entry.StartTimeFormat = StartTimeFormat;
+            entry.Description = description;
+            entry.StartTime = startTime;
+            entry.StartTimeFormat = startTimeFormat;
             entry.Type = EntryType.DEADLINE;
             Add(entry);
         }
-        public void Add(string Description, string StartDate, string StartTime, string EndDate, string EndTime)
+        public void Add(string description, string startDate, string startTime, string endDate, string endTime)
         {
-            DateTime StartDateTime = this.ConvertTime(StartDate, StartTime);
-            TimeFormat StartTimeFormat = this.GetFormat(StartDate, StartTime);
-            DateTime EndDateTime = this.ConvertTime(EndDate, EndTime);
-            TimeFormat EndTimeFormat = this.GetFormat(EndDate, EndTime);
-            this.Add(Description, StartDateTime, StartTimeFormat, EndDateTime, EndTimeFormat);
+            DateTime startDateTime = this.ConvertTime(startDate, startTime);
+            TimeFormat startTimeFormat = this.GetFormat(startDate, startTime);
+            DateTime endDateTime = this.ConvertTime(endDate, endTime);
+            TimeFormat endTimeFormat = this.GetFormat(endDate, endTime);
+            this.Add(description, startDateTime, startTimeFormat, endDateTime, endTimeFormat);
         }
-        public void Add(string Description, DateTime StartTime, TimeFormat StartTimeFormat, DateTime EndTime, TimeFormat EndTimeFormat)
+        public void Add(string description, DateTime startTime, TimeFormat startTimeFormat, DateTime endTime, TimeFormat endTimeFormat)
         {
             Entry entry = new Entry();
-            entry.Description = Description;
-            entry.StartTime = StartTime;
-            entry.StartTimeFormat = StartTimeFormat;
-            entry.EndTime = EndTime;
-            entry.EndTimeFormat = EndTimeFormat;
+            entry.Description = description;
+            entry.StartTime = startTime;
+            entry.StartTimeFormat = startTimeFormat;
+            entry.EndTime = endTime;
+            entry.EndTimeFormat = endTimeFormat;
             entry.Type = EntryType.TIMED;
             Add(entry);
         }
@@ -73,19 +72,33 @@ namespace Calendo
             storage.Save();
         }
 
-        public void Change(int id, string Description)
+        public void Change(int id, string description)
         {
             Entry entry = this.Get(id);
             if (entry != null)
             {
-                entry.Description = Description;
+                entry.Description = description;
                 storage.Save();
             }
         }
 
-        public void Remove(int Id)
+        /// <summary>
+        /// Takes in the index of an item to remove from the Entries list, removes that item.
+        /// </summary>
+        /// <param name="index">The 0-indexed index of the item to be removed.</param>
+        public void RemoveByIndex(int index)
         {
-            Entry entry = this.Get(Id);
+            if (index >= 0 && index < Entries.Count)
+            {
+                storage.Entries.RemoveAt(index);
+                storage.Save();
+            }
+        }
+
+
+        public void Remove(int id)
+        {
+            Entry entry = this.Get(id);
             if (entry != null)
             {
                 storage.Entries.Remove(entry);
@@ -93,11 +106,11 @@ namespace Calendo
             }
         }
 
-        public Entry Get(int Id)
+        public Entry Get(int id)
         {
             for (int i = 0; i < storage.Entries.Count; i++)
             {
-                if (storage.Entries[i].ID == Id)
+                if (storage.Entries[i].ID == id)
                 {
                     return storage.Entries[i];
                 }
@@ -130,31 +143,31 @@ namespace Calendo
         public List<Command> ReadCommand(string command)
         {
             string[] commandfrag = command.Split(new char[] { ' ' });
-            StringBuilder CommandParameter = new StringBuilder();
+            StringBuilder commandParameter = new StringBuilder();
             List<Command> commands = new List<Command>();
-            bool FirstCommand = true;
-            string CommandType = "";
+            bool firstCommand = true;
+            string commandType = "";
             for (int i = 0; i < commandfrag.Length; i++)
             {
                 if (commandfrag[i].Length > 0 && commandfrag[i][0] == '/')
                 {
-                    if (!FirstCommand)
+                    if (!firstCommand)
                     {
-                        commands.Add(new Command(CommandType, CommandParameter.ToString()));
-                        CommandParameter.Clear();
+                        commands.Add(new Command(commandType, commandParameter.ToString()));
+                        commandParameter.Clear();
                     }
-                    CommandType = commandfrag[i].Substring(1);
-                    FirstCommand = false;
+                    commandType = commandfrag[i].Substring(1);
+                    firstCommand = false;
                 }
                 else
                 {
-                    CommandParameter.Append(commandfrag[i] + " ");
+                    commandParameter.Append(commandfrag[i] + " ");
                 }
 
             }
             // Add last command
-            commands.Add(new Command(CommandType, CommandParameter.ToString()));
-            CommandParameter.Clear();
+            commands.Add(new Command(commandType, commandParameter.ToString()));
+            commandParameter.Clear();
             return commands;
         }
 
@@ -178,7 +191,7 @@ namespace Calendo
             }
         }
 
-        private void ProcessCommand(Command command, string Date, string Time)
+        private void ProcessCommand(Command command, string date, string time)
         {
             switch (command.Type)
             {
@@ -189,7 +202,8 @@ namespace Calendo
                     // STUB
                     break;
                 case "remove":
-                    this.Remove(this.ConvertInt(command.Parameter));
+                    int index = this.ConvertInt(command.Parameter) - 1;
+                    this.RemoveByIndex(index);
                     break;
                 case "undo":
                     this.Undo();
@@ -216,44 +230,44 @@ namespace Calendo
             // STUB
         }
 
-        public TimeFormat GetFormat(string Date, string Time)
+        public TimeFormat GetFormat(string date, string time)
         {
-            TimeFormat NewTimeFormat = TimeFormat.NONE;
-            if (Date != "")
+            TimeFormat newTimeFormat = TimeFormat.NONE;
+            if (date != "")
             {
-                NewTimeFormat = TimeFormat.DATE;
+                newTimeFormat = TimeFormat.DATE;
             }
-            if (Time != "")
+            if (time != "")
             {
-                NewTimeFormat = TimeFormat.TIME;
+                newTimeFormat = TimeFormat.TIME;
             }
-            if (Date != "" && Time != "")
+            if (date != "" && time != "")
             {
-                NewTimeFormat = TimeFormat.DATETIME;
+                newTimeFormat = TimeFormat.DATETIME;
             }
-            return NewTimeFormat;
+            return newTimeFormat;
         }
 
         public DateTime ConvertTime(string date, string time)
         {
             // Date: Day/Month[/Year]
             // Time (24HR): Hour:Minute
-            string[] datefrag = date.Split(new char[] { '/' }, 2);
-            string[] timefrag = date.Split(new char[] { ':' }, 2);
+            string[] dateFrag = date.Split(new char[] { '/' }, 2);
+            string[] timeFrag = date.Split(new char[] { ':' }, 2);
             int year = DateTime.Today.Year;
             int day = 0;
             int month = 0;
             int hour = 0;
             int minute = 0;
             int second = 0;
-            
-            if (datefrag.Length > 0)
+
+            if (dateFrag.Length > 0)
             {
-                day = this.ConvertInt(datefrag[0]);
+                day = this.ConvertInt(dateFrag[0]);
             }
-            if (datefrag.Length > 1)
+            if (dateFrag.Length > 1)
             {
-                month = this.ConvertInt(datefrag[1]);
+                month = this.ConvertInt(dateFrag[1]);
                 int thismonth = DateTime.Today.Month;
                 if (month < thismonth)
                 {
@@ -261,17 +275,17 @@ namespace Calendo
                     year++;
                 }
             }
-            if (datefrag.Length > 2)
+            if (dateFrag.Length > 2)
             {
-                year = this.ConvertInt(datefrag[1]);
+                year = this.ConvertInt(dateFrag[1]);
             }
-            if (timefrag.Length > 0)
+            if (timeFrag.Length > 0)
             {
-                hour = this.ConvertInt(timefrag[0]);
+                hour = this.ConvertInt(timeFrag[0]);
             }
-            if (timefrag.Length > 1)
+            if (timeFrag.Length > 1)
             {
-                minute = this.ConvertInt(timefrag[0]);
+                minute = this.ConvertInt(timeFrag[0]);
             }
 
             DateTime dt = new DateTime(year, day, month, hour, minute, second);
