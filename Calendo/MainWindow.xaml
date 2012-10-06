@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Calendo" Height="350" Width="300" MinHeight="170" MinWidth="300"
         WindowStyle="None" StateChanged="WindowStateChanged">
+    
     <Grid Background="#FEFEFE">
         <Grid.Resources>
             <Style x:Key="NormalTextStyle" TargetType="TextBlock">
@@ -58,7 +59,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Button Name="btnSettings" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource WindowControlButtonStyle}" Click="btnSettings_Click">
+            <Button Name="btnSettings" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource WindowControlButtonStyle}" Click="BtnSettingsClick">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="CALENDO" FontWeight="Bold" FontSize="14" Margin="12,0,0,0" VerticalAlignment="Center" Foreground="#FF5B5B5B"/>
                     <Image Source=".\Images\settings.png" />
@@ -94,17 +95,19 @@
             <TextBox Name="tbxCommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="18" Foreground="DarkSlateGray" Style="{StaticResource TransparentWithBorder}" LostFocus="TbxCommandBarLostFocus" GotFocus="TbxCommandBarGotFocus" KeyUp="TbxCommandBarKeyUp" TextChanged="TbxCommandBarTextChanged"/>
         </Grid>
 
-        <ListBox Name="lsbItemsList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,6" Style="{StaticResource TransparentWithBorder}">
-            <ListBoxItem>
-                <TextBlock Text="1. Meeting at 9AM" Style="{StaticResource ListBoxItemTextStyle}"/>
-            </ListBoxItem>
-            <ListBoxItem>
-                <TextBlock Text="2. Work on Calendo" Style="{StaticResource ListBoxItemTextStyle}"/>
-            </ListBoxItem>
+        <ListBox Name="lsbItemsList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,6" Style="{StaticResource TransparentWithBorder}" SelectionChanged="LsbItemsListSelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Grid.Column="0" Text="{Binding Key}" Style="{StaticResource ListBoxItemTextStyle}" Margin="0,0,6,0" />
+                        <TextBlock Grid.Column="1" Text="{Binding Value.Description}" Style="{StaticResource ListBoxItemTextStyle}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
 
         <Border Name="bdrAutoSuggestBorder" Grid.Row="2" Style="{StaticResource AutoCompleteBoxStyle}" Margin="12,-4,12,0" Visibility="Collapsed">
-            <ListBox Name="lsbAutoSuggestList" KeyDown="LsbAutoSuggestListKeyDown" ItemsSource="{Binding SuggestionList}">
+            <ListBox Name="lsbAutoSuggestList" KeyDown="LsbAutoSuggestListKeyDown" ItemsSource="{Binding SuggestionList}" MouseUp="LsbAutoSuggestListMouseUp">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Style="{StaticResource NormalTextStyle}" Margin="0,4" FontSize="14" Text="{Binding}" TextWrapping="Wrap" />
