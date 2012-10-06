@@ -6,6 +6,7 @@ using System.Text;
 namespace Calendo.CommandProcessing
 {
     //TODO: Refactor by abstraction
+    //TODO: LOTS of re-factoring required
     class ProcessString
     {
         private const string COMMAND_TYPE_SEARCH = "search";
@@ -27,7 +28,7 @@ namespace Calendo.CommandProcessing
         private string[] INPUT_HANDLES_DATE = { "/date" };
         private string[] INPUT_HANDLES_TIME = { "/time" };
 
-        private Dictionary<string, string[]> commandList;
+        private Dictionary<string, string[]> DICTIONARY_COMMAND_TYPE;
 
         string inputString;
         List<string> inputStringWords;
@@ -36,9 +37,69 @@ namespace Calendo.CommandProcessing
         string commandTime;
         string commandText;
 
-        public void Send()
+        TaskManager taskManager;
+
+        private void HandleCommand()
         {
-            TaskManager.ExecuteCommand(commandType, commandDate, commandTime, commandText);
+            // TaskManager.ExecuteCommand(commandType, commandDate, commandTime, commandText);
+            switch (commandType)
+            {
+                case COMMAND_TYPE_SEARCH:
+                    ExecuteSearch();
+                    break;
+                case COMMAND_TYPE_ADD:
+                    ExecuteAdd();
+                    break;
+                case COMMAND_TYPE_REMOVE:
+                    ExecuteRemove();
+                    break;
+                case COMMAND_TYPE_CHANGE:
+                    ExecuteChange();
+                    break;
+                case COMMAND_TYPE_LIST:
+                    ExecuteList();
+                    break;
+                case COMMAND_TYPE_UNDO:
+                    ExecuteUndo();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void ExecuteSearch()
+        {
+        }
+
+        private void ExecuteRemove()
+        {
+            taskManager.Remove(Convert.ToInt32(commandText));
+        }
+
+        private void ExecuteChange()
+        {
+            string[] commandTextPieces = commandText.Split();
+            int taskNumberToChange = Convert.ToInt32(commandTextPieces.First());
+            List<string> listOfCommandTextPieces = commandTextPieces.ToList();
+            listOfCommandTextPieces.RemoveAt(0);
+            string newTaskName = listOfCommandTextPieces.Aggregate((x, y) => x + y);
+            taskManager.Change(taskNumberToChange, newTaskName);
+        }
+
+        private void ExecuteList()
+        {
+        }
+
+        private void ExecuteUndo()
+        {
+            taskManager.Undo();
+        }
+
+        private void ExecuteAdd()
+        {
+            if (commandDate == null)
+                taskManager.Add(commandText);
+            taskManager.Add(commandText, commandDate, commandTime);
         }
 
         // Execution pattern: construct, then call Send
@@ -46,15 +107,26 @@ namespace Calendo.CommandProcessing
         {
             this.inputString = inputString;
 
-            commandList = new Dictionary<string, string[]>();
-            commandList.Add(COMMAND_TYPE_SEARCH, INPUT_COMMANDS_SEARCH);
-            commandList.Add(COMMAND_TYPE_ADD, INPUT_COMMANDS_ADD);
-            commandList.Add(COMMAND_TYPE_REMOVE, INPUT_COMMANDS_REMOVE);
-            commandList.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
-            commandList.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
-            commandList.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
+            DICTIONARY_COMMAND_TYPE = new Dictionary<string, string[]>();
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_SEARCH, INPUT_COMMANDS_SEARCH);
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_ADD, INPUT_COMMANDS_ADD);
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REMOVE, INPUT_COMMANDS_REMOVE);
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
 
+            InitialiseCommandParts();
             GetCommandParts();
+
+            taskManager = new TaskManager();
+        }
+
+        private void InitialiseCommandParts()
+        {
+            commandDate = null;
+            commandType = null;
+            commandTime = null;
+            commandText = null;
         }
 
         private void GetCommandParts()
@@ -84,7 +156,7 @@ namespace Calendo.CommandProcessing
             string commandTypeInput = inputStringWords.First().Substring(1);
 
             //TODO: Abstract
-            KeyValuePair<string, string[]> commandTypePair = commandList.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
+            KeyValuePair<string, string[]> commandTypePair = DICTIONARY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
             commandType = commandTypePair.Key;
 
             inputStringWords.RemoveAt(0);
