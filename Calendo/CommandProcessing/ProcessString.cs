@@ -39,6 +39,10 @@ namespace Calendo.CommandProcessing
 
         TaskManager taskManager;
 
+        #region Temp for v0.1
+        public TaskManager TaskManager { get { return taskManager; } }
+        #endregion
+
         private void HandleCommand()
         {
             // TaskManager.ExecuteCommand(commandType, commandDate, commandTime, commandText);
@@ -73,7 +77,8 @@ namespace Calendo.CommandProcessing
 
         private void ExecuteRemove()
         {
-            taskManager.Remove(Convert.ToInt32(commandText));
+            int index = Convert.ToInt32(commandText) - 1;
+            taskManager.RemoveByIndex(index);
         }
 
         private void ExecuteChange()
@@ -98,8 +103,13 @@ namespace Calendo.CommandProcessing
         private void ExecuteAdd()
         {
             if (commandDate == null)
+            {
                 taskManager.Add(commandText);
-            taskManager.Add(commandText, commandDate, commandTime);
+            }
+            else
+            {
+                taskManager.Add(commandText, commandDate, commandTime);
+            }
         }
 
         // Execution pattern: construct, then call Send
@@ -120,6 +130,29 @@ namespace Calendo.CommandProcessing
 
             taskManager = new TaskManager();
         }
+
+        #region Temp for v0.1
+        public ProcessString()
+        {
+            DICTIONARY_COMMAND_TYPE = new Dictionary<string, string[]>();
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_SEARCH, INPUT_COMMANDS_SEARCH);
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_ADD, INPUT_COMMANDS_ADD);
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REMOVE, INPUT_COMMANDS_REMOVE);
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
+
+            taskManager = new TaskManager();
+        }
+
+        public void ExecuteCommand(string userInput)
+        {
+            inputString = userInput;
+            InitialiseCommandParts();
+            GetCommandParts();
+            HandleCommand();
+        }
+        #endregion
 
         private void InitialiseCommandParts()
         {
