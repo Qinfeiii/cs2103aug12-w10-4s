@@ -126,6 +126,29 @@ namespace Calendo
         }
 
         /// <summary>
+        /// Modify a task
+        /// </summary>
+        /// <param name="description">Task Description</param>
+        /// <param name="startDate">Start Date</param>
+        /// <param name="startTime">Start Time</param>
+        /// <param name="endDate">End Date</param>
+        /// <param name="endTime">End Time</param>
+        public void Change(int id, string description, DateTime startTime, TimeFormat startTimeFormat, DateTime endTime, TimeFormat endTimeFormat)
+        {
+            Entry entry = this.Get(id);
+            if (entry != null)
+            {
+                entry.Description = description;
+                entry.StartTime = startTime;
+                entry.StartTimeFormat = startTimeFormat;
+                entry.EndTime = endTime;
+                entry.EndTimeFormat = endTimeFormat;
+                entry.Type = EntryType.TIMED;
+                Add(entry);
+            }
+        }
+
+        /// <summary>
         /// Takes in the index of an item to remove from the Entries list, removes that item.
         /// </summary>
         /// <param name="index">The 0-indexed index of the item to be removed.</param>
