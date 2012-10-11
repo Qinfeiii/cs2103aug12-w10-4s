@@ -121,7 +121,7 @@ namespace Calendo
             Dictionary<int, Entry> itemDictionary = new Dictionary<int, Entry>();
 
             int count = 1;
-            foreach (Entry currentEntry in CommandProcessor.TaskManager.Entries)
+            foreach (Entry currentEntry in CommandProcessor.TaskList)
             {
                 itemDictionary.Add(count, currentEntry);
                 count++;
