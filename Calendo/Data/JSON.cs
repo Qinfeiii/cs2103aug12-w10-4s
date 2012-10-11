@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Web.Script.Serialization;
 
-namespace Calendo
+namespace Calendo.Data
 {
     /// <summary>
-    /// Javascript Object Notation Parser
+    /// JavaScript Object Notation (JSON) Parser
     /// </summary>
     /// <typeparam name="T">Type to convert to and from JSON</typeparam>
     public class JSON<T>

@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Diagnostics;
+using Calendo.CommandProcessing;
+using Calendo.Data;
 
 namespace Calendo
 {
@@ -14,14 +16,14 @@ namespace Calendo
     public partial class MainWindow : Window
     {
         private AutoSuggest AutoSuggestViewModel;
-        private TaskManager TaskManagerObject;
+        private CommandProcessor CommandProcessor;
 
         public MainWindow()
         {
             InitializeComponent();
             AutoSuggestViewModel = new AutoSuggest();
             DataContext = AutoSuggestViewModel;
-            TaskManagerObject = new TaskManager();
+            CommandProcessor = new CommandProcessor();
             UpdateItemsList();
         }
 
@@ -101,16 +103,16 @@ namespace Calendo
                 lsbAutoSuggestList.SelectedIndex = 0;
                 lsbAutoSuggestList.Focus();
             }
-                // This portion of code is temporary for v0.1 only.
-                // UI is essentially linking directly to TaskManager, which
-                // SHOULD NOT BE THE CASE IN THE FINAL.
-            else if (e.Key == Key.Return && tbxCommandBar.Text.Length > 0)
+            else
             {
-                TaskManagerObject.PerformCommand(tbxCommandBar.Text);
-                
-                UpdateItemsList();
+                string inputString = tbxCommandBar.Text;
+                if (e.Key == Key.Return && inputString.Length > 0)
+                {
+                    CommandProcessor.ExecuteCommand(inputString);
+                    UpdateItemsList();
 
-                tbxCommandBar.Clear();
+                    tbxCommandBar.Clear();
+                }
             }
         }
 
@@ -119,7 +121,7 @@ namespace Calendo
             Dictionary<int, Entry> itemDictionary = new Dictionary<int, Entry>();
 
             int count = 1;
-            foreach (Entry currentEntry in TaskManagerObject.Entries)
+            foreach (Entry currentEntry in CommandProcessor.TaskList)
             {
                 itemDictionary.Add(count, currentEntry);
                 count++;
@@ -192,6 +194,11 @@ namespace Calendo
                     tbxCommandBar.SelectionStart = tbxCommandBar.Text.Length;
                 }
             }
+        }
+
+        private void LsbItemsListSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            
         }
     }
 }

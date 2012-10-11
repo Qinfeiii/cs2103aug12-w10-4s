@@ -4,7 +4,7 @@ using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 
-namespace Calendo
+namespace Calendo.Data
 {
     [XmlRoot("Data")]
     public class State<T> where T : new()
