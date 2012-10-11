@@ -324,7 +324,7 @@ namespace Calendo
             // Date: Day/Month[/Year]
             // Time (24HR): Hour:Minute
             string[] dateFrag = date.Split(new char[] { '/' }, 2);
-            string[] timeFrag = date.Split(new char[] { ':' }, 2);
+            string[] timeFrag = time.Split(new char[] { ':' }, 2);
             int year = DateTime.Today.Year;
             int day = 0;
             int month = 0;

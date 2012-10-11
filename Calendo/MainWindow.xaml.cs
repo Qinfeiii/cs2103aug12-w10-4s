@@ -195,5 +195,10 @@ namespace Calendo
                 }
             }
         }
+
+        private void LsbItemsListSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            
+        }
     }
 }

@@ -112,6 +112,7 @@
     <Compile Include="AutoSuggest.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="CommandProcessing\ProcessString.cs" />
+    <Compile Include="Converters\DateTimeToStringConverter.cs" />
     <Compile Include="Data\DataDriver.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="DebugMode.xaml.cs">
