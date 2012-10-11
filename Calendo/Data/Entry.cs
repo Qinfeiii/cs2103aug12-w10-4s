@@ -4,11 +4,18 @@ using System.Text;
 
 namespace Calendo.Data
 {
+    /// <summary>
+    /// Entry Type
+    /// </summary>
     public enum EntryType {
         FLOATING,
         DEADLINE,
         TIMED
     }
+
+    /// <summary>
+    /// Time Format
+    /// </summary>
     public enum TimeFormat
     {
         DATETIME,
@@ -16,48 +23,12 @@ namespace Calendo.Data
         TIME,
         NONE
     }
-    public interface IEntry
-    {
-        int ID
-        {
-            get;
-        }
-        string Description
-        {
-            get;
-            set;
-        }
-        DateTime StartTime
-        {
-            get;
-            set;
-        }
-        TimeFormat StartTimeFormat
-        {
-            get;
-            set;
-        }
-        DateTime EndTime
-        {
-            get;
-            set;
-        }
-        EntryType Type
-        {
-            get;
-        }
-        TimeFormat EndTimeFormat
-        {
-            get;
-            set;
-        }
-    }
 
     /// <summary>
     /// An entry represents a task in Calendo
     /// </summary>
     [Serializable]
-    public class Entry : IEntry
+    public class Entry
     {
         private static int IDCounter = 0;
         private int _ID;

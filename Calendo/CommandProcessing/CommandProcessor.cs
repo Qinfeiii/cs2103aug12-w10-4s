@@ -7,8 +7,9 @@ namespace Calendo.CommandProcessing
 {
     //TODO: Refactor by abstraction
     //TODO: LOTS of re-factoring required
-    class ProcessString
+    class CommandProcessor
     {
+        #region constants
         private const string COMMAND_TYPE_SEARCH = "search";
         private const string COMMAND_TYPE_ADD = "add";
         private const string COMMAND_TYPE_REMOVE = "remove";
@@ -27,6 +28,7 @@ namespace Calendo.CommandProcessing
 
         private string[] INPUT_HANDLES_DATE = { "/date" };
         private string[] INPUT_HANDLES_TIME = { "/time" };
+        #endregion
 
         private Dictionary<string, string[]> DICTIONARY_COMMAND_TYPE;
 
@@ -40,9 +42,10 @@ namespace Calendo.CommandProcessing
         TaskManager taskManager;
 
         #region Temp for v0.1
-        public TaskManager TaskManager { get { return taskManager; } }
+        public List<Calendo.Data.Entry> TaskList { get { return taskManager.Entries; } }
         #endregion
 
+        #region execution
         private void HandleCommand()
         {
             // TaskManager.ExecuteCommand(commandType, commandDate, commandTime, commandText);
@@ -111,9 +114,10 @@ namespace Calendo.CommandProcessing
                 taskManager.Add(commandText, commandDate, commandTime);
             }
         }
+        #endregion execution
 
         // Execution pattern: construct, then call Send
-        public ProcessString(string inputString)
+        public CommandProcessor(string inputString)
         {
             this.inputString = inputString;
 
@@ -132,7 +136,7 @@ namespace Calendo.CommandProcessing
         }
 
         #region Temp for v0.1
-        public ProcessString()
+        public CommandProcessor()
         {
             DICTIONARY_COMMAND_TYPE = new Dictionary<string, string[]>();
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_SEARCH, INPUT_COMMANDS_SEARCH);
@@ -184,9 +188,18 @@ namespace Calendo.CommandProcessing
                 return;
             }
 
+            if (inputStringWords.Count == 0)
+                return;
+
             //TODO: Abstract
             //This is the command type ENTERED by the user
             string commandTypeInput = inputStringWords.First().Substring(1);
+
+            if (commandTypeInput == "")
+            {
+                // Null command supplied
+                return;
+            }
 
             //TODO: Abstract
             KeyValuePair<string, string[]> commandTypePair = DICTIONARY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
@@ -249,7 +262,8 @@ namespace Calendo.CommandProcessing
         private void ExtractCommandText()
         {
             string separator = " ";
-            commandText = inputStringWords.Aggregate((first, rest) => first + separator + rest);
+            if (inputStringWords.Count > 0)
+                commandText = inputStringWords.Aggregate((first, rest) => first + separator + rest);
         }
 
         private Boolean IsNoCommand()
