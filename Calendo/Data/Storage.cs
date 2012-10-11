@@ -6,7 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 using System.IO;
 
-namespace Calendo
+namespace Calendo.Data
 {
     [Serializable]
     [XmlRoot("Data")]

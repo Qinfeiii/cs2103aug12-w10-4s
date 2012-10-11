@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Calendo.Data;
 
 namespace Calendo
 {
@@ -121,6 +122,29 @@ namespace Calendo
             {
                 entry.Description = description;
                 storage.Save();
+            }
+        }
+
+        /// <summary>
+        /// Modify a task
+        /// </summary>
+        /// <param name="description">Task Description</param>
+        /// <param name="startDate">Start Date</param>
+        /// <param name="startTime">Start Time</param>
+        /// <param name="endDate">End Date</param>
+        /// <param name="endTime">End Time</param>
+        public void Change(int id, string description, DateTime startTime, TimeFormat startTimeFormat, DateTime endTime, TimeFormat endTimeFormat)
+        {
+            Entry entry = this.Get(id);
+            if (entry != null)
+            {
+                entry.Description = description;
+                entry.StartTime = startTime;
+                entry.StartTimeFormat = startTimeFormat;
+                entry.EndTime = endTime;
+                entry.EndTimeFormat = endTimeFormat;
+                entry.Type = EntryType.TIMED;
+                Add(entry);
             }
         }
 
@@ -323,7 +347,7 @@ namespace Calendo
             // Date: Day/Month[/Year]
             // Time (24HR): Hour:Minute
             string[] dateFrag = date.Split(new char[] { '/' }, 2);
-            string[] timeFrag = date.Split(new char[] { ':' }, 2);
+            string[] timeFrag = time.Split(new char[] { ':' }, 2);
             int year = DateTime.Today.Year;
             int day = 0;
             int month = 0;
