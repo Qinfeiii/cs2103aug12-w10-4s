@@ -42,7 +42,7 @@ namespace Calendo.CommandProcessing
         TaskManager taskManager;
 
         #region Temp for v0.1
-        public TaskManager TaskManager { get { return taskManager; } }
+        public List<Calendo.Data.Entry> TaskList { get { return taskManager.Entries; } }
         #endregion
 
         #region execution
