@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Calendo
+namespace Calendo.Data
 {
     public enum EntryType {
         FLOATING,

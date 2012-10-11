@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Diagnostics;
 using Calendo.CommandProcessing;
+using Calendo.Data;
 
 namespace Calendo
 {
