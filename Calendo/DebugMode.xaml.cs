@@ -19,6 +19,7 @@ namespace Calendo
     /// </summary>
     public partial class DebugMode : Window
     {
+        // NOTE: This is a testing class with a GUI interface
         TaskManager tm = new TaskManager();
         public DebugMode()
         {
@@ -78,13 +79,17 @@ namespace Calendo
 
         private void button4_Click(object sender, RoutedEventArgs e)
         {
-            DataDriver dd = new DataDriver();
-            dd.Test();
+            //DataDriver dd = new DataDriver();
+            //dd.Test();
         }
 
         private void button5_Click(object sender, RoutedEventArgs e)
         {
-            Debug.Assert(false);
+            //Debug.Assert(false);
+            SettingsManager sm = new SettingsManager();
+            sm.GetSetting("null");
+            sm.SetSetting("test", "a");
+            MessageBox.Show(sm.GetSetting("test"));
         }
     }
 }

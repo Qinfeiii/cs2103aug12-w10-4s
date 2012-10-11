@@ -13,15 +13,14 @@ namespace Calendo.Data
     public class Data<T> : ICloneable where T : new()
     {
         public Data() {
-            dataValue = new T();
+            Value = new T();
         }
 
-        private T dataValue;
         [XmlElement("Entry")]
         public T Value
         {
-            get { return dataValue; }
-            set { dataValue = value; }
+            get;
+            set;
         }
 
         /// <summary>
@@ -46,6 +45,9 @@ namespace Calendo.Data
     public class Storage<T> where T : new()
     {
         private const string DEFAULT_FILE_PATH = "data.txt";
+        private const string ERROR_UNWRITABLE = "Unable to write file";
+        private const string ERROR_INCOMPATIBLE = "Data file might be corrupted or incompatible";
+
         private string dataFilePath;
         private Data<T> dataWrapper;
         private XmlSerializer serializer;
@@ -104,7 +106,7 @@ namespace Calendo.Data
             }
             catch
             {
-                Debug.Alert("Unable to write file");
+                Debug.Alert(ERROR_UNWRITABLE);
                 return false;
             }
         }
@@ -128,7 +130,7 @@ namespace Calendo.Data
             catch
             {
                 // Invalid file, recreate empty state
-                Debug.Alert("Data file might be corrupted or incompatible");
+                Debug.Alert(ERROR_INCOMPATIBLE);
                 dataWrapper = new Data<T>();
                 return false;
             }
