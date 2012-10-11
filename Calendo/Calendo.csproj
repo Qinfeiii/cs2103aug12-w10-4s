@@ -119,9 +119,8 @@
       <DependentUpon>DebugMode.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\Entry.cs" />
-    <Compile Include="Data\GenericStorage.cs" />
+    <Compile Include="Data\Storage.cs" />
     <Compile Include="GoogleCalendar\GoogleCalendar.cs" />
-    <Compile Include="Data\JSON.cs" />
     <Compile Include="Data\StateStorage.cs" />
     <Compile Include="TaskManager.cs" />
     <Compile Include="MainWindow.xaml.cs">

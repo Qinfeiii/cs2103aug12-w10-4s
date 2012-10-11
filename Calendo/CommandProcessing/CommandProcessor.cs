@@ -195,6 +195,12 @@ namespace Calendo.CommandProcessing
             //This is the command type ENTERED by the user
             string commandTypeInput = inputStringWords.First().Substring(1);
 
+            if (commandTypeInput == "")
+            {
+                // Null command supplied
+                return;
+            }
+
             //TODO: Abstract
             KeyValuePair<string, string[]> commandTypePair = DICTIONARY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
             commandType = commandTypePair.Key;
