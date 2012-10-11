@@ -112,16 +112,16 @@
     <Compile Include="AutoSuggest.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="CommandProcessing\ProcessString.cs" />
-    <Compile Include="DataDriver.cs" />
+    <Compile Include="Storage\DataDriver.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="DebugMode.xaml.cs">
       <DependentUpon>DebugMode.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Entry.cs" />
-    <Compile Include="GenericStorage.cs" />
+    <Compile Include="Storage\Entry.cs" />
+    <Compile Include="Storage\GenericStorage.cs" />
     <Compile Include="GoogleCalendar\GoogleCalendar.cs" />
-    <Compile Include="JSON.cs" />
-    <Compile Include="StateStorage.cs" />
+    <Compile Include="Storage\JSON.cs" />
+    <Compile Include="Storage\StateStorage.cs" />
     <Compile Include="TaskManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
