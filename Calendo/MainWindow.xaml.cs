@@ -16,14 +16,14 @@ namespace Calendo
     public partial class MainWindow : Window
     {
         private AutoSuggest AutoSuggestViewModel;
-        private ProcessString CommandProcessor;
+        private CommandProcessor CommandProcessor;
 
         public MainWindow()
         {
             InitializeComponent();
             AutoSuggestViewModel = new AutoSuggest();
             DataContext = AutoSuggestViewModel;
-            CommandProcessor = new ProcessString();
+            CommandProcessor = new CommandProcessor();
             UpdateItemsList();
         }
 
