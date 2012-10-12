@@ -226,18 +226,20 @@ namespace Calendo.CommandProcessing
 
             if (timeIndex >= 0)
             {
-                if (inputStringWords.Count > timeIndex + 2)//If next two words exist
+                if (inputStringWords.Count > timeIndex + 1)//If next word exists
+                    //Change to +2 if AM/PM is to be expected
                 {
                     string timeValue = inputStringWords[timeIndex + 1];
-                    string timeAMPM = inputStringWords[timeIndex + 2];
+                    //string timeAMPM = inputStringWords[timeIndex + 2];
 
                     //TODO: Process time (alternatie style: keep taking words until next handle)
 
-                    commandTime = timeValue + " " + timeAMPM;
+                    //commandTime = timeValue + " " + timeAMPM;
+                    commandTime = timeValue;
 
                     // Remove time word(s)
                     // ORDER MATTERS HERE!!!
-                    inputStringWords.RemoveAt(timeIndex + 2);
+                    //inputStringWords.RemoveAt(timeIndex + 2);
                     inputStringWords.RemoveAt(timeIndex + 1);
                 }
 
