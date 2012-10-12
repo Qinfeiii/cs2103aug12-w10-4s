@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Calendo.Data;
+using Calendo.DebugTool;
 
 namespace Calendo
 {
@@ -9,8 +10,15 @@ namespace Calendo
     {
         public TaskTime()
         {
-            Format = TimeFormat.NONE;
-            Time = DateTime.Today;
+            this.Format = TimeFormat.NONE;
+            this.Time = DateTime.Today;
+            this.IsDefault = true;
+        }
+        public TaskTime(DateTime Time, TimeFormat Format)
+        {
+            this.Time = Time;
+            this.Format = Format;
+            this.IsDefault = false;
         }
         public TimeFormat Format
         {
@@ -22,13 +30,25 @@ namespace Calendo
             get;
             set;
         }
+        public bool IsDefault
+        {
+            get;
+            set;
+        }
     }
     class TaskManager
     {
         private StateStorage<List<Entry>> storage;
+        private const int FLAG_DESCRIPTION = 1;
+        private const int FLAG_STARTTIME = 2;
+        private const int FLAG_ENDTIME = 4;
+        private const string ERROR_ENTRYNOTFOUND = "Entry not found";
+        private const string ERROR_INVALIDDATETIME = "Specified Date or Time is invalid";
+        private const string STORAGE_PATH = "archive.txt";
+
         public TaskManager()
         {
-            storage = new StateStorage<List<Entry>>("archive.txt");
+            storage = new StateStorage<List<Entry>>(STORAGE_PATH);
             storage.Load();
         }
 
@@ -57,8 +77,22 @@ namespace Calendo
         /// <param name="time">Start Time</param>
         public void Add(string description, string date, string time)
         {
+
+            TaskTime endTime = new TaskTime();
+            date = DefaultString(date);
+            if (date.Contains("-"))
+            {
+                // Date is of format [Start Date]-[End Date]
+                string[] dateFrag = date.Split(new char[] { '-' }, 2);
+                if (dateFrag.Length > 1)
+                {
+                    date = dateFrag[0];
+                    string endDate = dateFrag[1];
+                    endTime = this.ConvertTime(endDate, "");
+                }
+            }
             TaskTime startTime = this.ConvertTime(date, time);
-            this.Add(description, startTime, new TaskTime());
+            this.Add(description, startTime, endTime);
         }
 
         /// <summary>
@@ -71,6 +105,17 @@ namespace Calendo
         /// <param name="endTime">End Time</param>
         public void Add(string description, string startDate, string startTime, string endDate, string endTime)
         {
+            startDate = DefaultString(startDate);
+            if (startDate.Contains("-") && endDate == "")
+            {
+                // Date is of format [Start Date]-[End Date]
+                string[] dateFrag = startDate.Split(new char[] { '-' }, 2);
+                if (dateFrag.Length > 1)
+                {
+                    startDate = dateFrag[0];
+                    endDate = dateFrag[1];
+                }
+            }
             TaskTime startDateTime = this.ConvertTime(startDate, startTime);
             TaskTime endDateTime = this.ConvertTime(endDate, endTime);
             this.Add(description, startDateTime, endDateTime);
@@ -84,7 +129,7 @@ namespace Calendo
         /// <param name="startTime">Start Time</param>
         /// <param name="endDate">End Date</param>
         /// <param name="endTime">End Time</param>
-        public void Add(string description, TaskTime startTime, TaskTime endTime)
+        private void Add(string description, TaskTime startTime, TaskTime endTime)
         {
             Entry entry = new Entry();
             entry.Description = description;
@@ -145,18 +190,64 @@ namespace Calendo
         /// <param name="startTime">Start Time</param>
         /// <param name="endDate">End Date</param>
         /// <param name="endTime">End Time</param>
-        public void Change(int id, string description, DateTime startTime, TimeFormat startTimeFormat, DateTime endTime, TimeFormat endTimeFormat)
+        public void Change(int id, string description, string startDate, string startTime, string endDate, string endTime)
+        {
+            TaskTime startDateTime = this.ConvertTime(startDate, startTime);
+            TaskTime endDateTime = this.ConvertTime(endDate, endTime);
+            int flag = 0; // Flag is a bitwise switch determining which field to change
+            if (description != "")
+            {
+                // Description changed
+                flag |= FLAG_DESCRIPTION;
+            }
+            if (!startDateTime.IsDefault && (startDate + startTime) != "")
+            {
+                // Start Date changed
+                flag |= FLAG_STARTTIME;
+            }
+            if (!endDateTime.IsDefault && (endDate + endTime) != "")
+            {
+                // End Date changed
+                flag |= FLAG_ENDTIME;
+            }
+            this.Change(id, flag, description, startDateTime, endDateTime);
+        }
+
+        /// <summary>
+        /// Modify a task
+        /// </summary>
+        /// <param name="id">Task Number</param>
+        /// <param name="flag">Flag</param>
+        /// <param name="description">Task Description</param>
+        /// <param name="startDate">Start Date</param>
+        /// <param name="startTime">Start Time</param>
+        /// <param name="endDate">End Date</param>
+        /// <param name="endTime">End Time</param>
+        private void Change(int id, int flag, string description, TaskTime startTime, TaskTime endTime)
         {
             Entry entry = this.Get(id);
             if (entry != null)
             {
-                entry.Description = description;
-                entry.StartTime = startTime;
-                entry.StartTimeFormat = startTimeFormat;
-                entry.EndTime = endTime;
-                entry.EndTimeFormat = endTimeFormat;
-                entry.Type = EntryType.TIMED;
-                Add(entry);
+                if ((flag & FLAG_DESCRIPTION) == 1)
+                {
+                    entry.Description = description;
+                }
+                if ((flag & FLAG_STARTTIME) == 1)
+                {
+                    entry.StartTime = startTime.Time;
+                    entry.StartTimeFormat = startTime.Format;
+                }
+                if ((flag & FLAG_ENDTIME) == 1)
+                {
+                    entry.EndTime = endTime.Time;
+                    entry.EndTimeFormat = endTime.Format;
+                }
+                entry.Type = GetTaskType(new TaskTime(entry.StartTime, entry.StartTimeFormat), new TaskTime(entry.EndTime, entry.EndTimeFormat));
+                storage.Save();
+            }
+            else
+            {
+                Debug.Alert(ERROR_ENTRYNOTFOUND);
             }
         }
 
@@ -166,11 +257,14 @@ namespace Calendo
         /// <param name="index">The 0-indexed index of the item to be removed.</param>
         public void RemoveByIndex(int index)
         {
+            /*
             if (index >= 0 && index < Entries.Count)
             {
                 storage.Entries.RemoveAt(index);
                 storage.Save();
             }
+             * */
+            Remove(index + 1);
         }
 
         /// <summary>
@@ -184,6 +278,10 @@ namespace Calendo
             {
                 storage.Entries.Remove(entry);
                 storage.Save();
+            }
+            else
+            {
+                Debug.Alert(ERROR_ENTRYNOTFOUND);
             }
         }
 
@@ -207,7 +305,10 @@ namespace Calendo
             {
                 return storage.Entries[id - 1];
             }
-            return null;
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -385,7 +486,7 @@ namespace Calendo
         /// Converts a string to a processable type
         /// </summary>
         /// <param name="str">String to be converted</param>
-        /// <returns></returns>
+        /// <returns>If input string was null, return an empty string. Otherwise return the original string.</returns>
         private string DefaultString(string str)
         {
             if (str == null)
@@ -394,15 +495,15 @@ namespace Calendo
             }
             else
             {
-                return str;
+                return str.Trim();
             }
         }
 
         /// <summary>
         /// Is it a leap year?
         /// </summary>
-        /// <param name="year"></param>
-        /// <returns></returns>
+        /// <param name="year">Year</param>
+        /// <returns>Returns true if it is a leap year, false otherwise</returns>
         private bool isLeapYear(int year) {
             bool isLeap = false;
             if (year % 4 == 0)
@@ -465,14 +566,14 @@ namespace Calendo
 
             // Defaults
             int year = DateTime.Today.Year;
-            int day = 1;
-            int month = 1;
+            int day = DateTime.Today.Day;
+            int month = DateTime.Today.Month;
             int hour = 0;
             int minute = 0;
             int second = 0;
 
             // Date: Day/Month[/Year]
-            string[] dateFrag = date.Split(new char[] { '/' }, 2);
+            string[] dateFrag = date.Split(new char[] { '/', '.' }, 3);
             if (date == "")
             {
                 // No date supplied (not an error)
@@ -532,8 +633,12 @@ namespace Calendo
             }
 
             // Time (24HR): Hour:Minute
-            string[] timeMeta = time.Split(new char[] { ' ' }, 2);
-            string[] timeFrag = timeMeta[0].Split(new char[] { ':' }, 2);
+            string timeMeta = "";
+            if (time.Length > 2)
+            {
+                timeMeta = time.Substring(time.Length - 2); // Get last 2 letters
+                timeMeta = timeMeta.ToUpper();
+            }
             
             // Only used by 12 hour format
             // If both are false, 24 hour format is used
@@ -541,17 +646,22 @@ namespace Calendo
             bool isPM = false;
 
             // Handle PM
-            if (timeMeta.Length > 1)
+            if (timeMeta == "PM")
             {
-                if (timeMeta[1] == "PM")
-                {
-                    isPM = true;
-                }
-                if (timeMeta[1] == "AM")
-                {
-                    isAM = true;
-                }
+                isPM = true;
             }
+            if (timeMeta == "AM")
+            {
+                isAM = true;
+            }
+            if (isAM || isPM)
+            {
+                // Get the remainder
+                time = time.Substring(0, time.Length - 2);
+                time = time.Trim();
+            }
+
+            string[] timeFrag = time.Split(new char[] { ':', '.' }, 2);
 
             if (time == "")
             {
@@ -585,7 +695,28 @@ namespace Calendo
                     hasError = true;
                     isValidTime = false;
                 }
+
+                if (day == DateTime.Today.Day && month == DateTime.Today.Month && year == DateTime.Today.Year && hour < DateTime.Now.Hour)
+                {
+                    // It is on the next day
+                    day++;
+                    // Last day of the month, roll over to next month
+                    if (day >= MaxDays(month, year))
+                    {
+                        day = 1;
+                        month++;
+                    }
+                    // Last day of the year, roll over to next year
+                    if (month > 12)
+                    {
+                        month = 1;
+                        year++;
+                    }
+                    // Mark as valid date
+                    isValidDate = true;
+                }
             }
+
             // Minute
             if (timeFrag.Length > 1 && timeFrag[1] != "")
             {
@@ -603,13 +734,14 @@ namespace Calendo
 
             if (hasError)
             {
-                Debug.Alert("Specified Date or Time is invalid, and will be ignored");
+                Debug.Alert(ERROR_INVALIDDATETIME);
             }
 
             TaskTime tt = new TaskTime();
-            DateTime dt = new DateTime(year, day, month, hour, minute, second);
+            DateTime dt = new DateTime(year, month, day, hour, minute, second);
             tt.Format = GetFormat(isValidDate, isValidTime);
             tt.Time = dt;
+            tt.IsDefault = hasError;
             return tt;
         }
 

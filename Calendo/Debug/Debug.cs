@@ -5,7 +5,7 @@ using System.Windows;
 using System.IO;
 using System.Diagnostics;
 
-namespace Calendo
+namespace Calendo.DebugTool
 {
     public class Debug
     {

@@ -113,7 +113,7 @@
     <Compile Include="Command.cs" />
     <Compile Include="CommandProcessing\CommandProcessor.cs" />
     <Compile Include="Converters\DateTimeToStringConverter.cs" />
-    <Compile Include="Debug.cs" />
+    <Compile Include="Debug\Debug.cs" />
     <Compile Include="DebugMode.xaml.cs">
       <DependentUpon>DebugMode.xaml</DependentUpon>
     </Compile>
@@ -184,6 +184,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
