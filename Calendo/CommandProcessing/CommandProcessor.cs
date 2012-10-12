@@ -245,29 +245,21 @@ namespace Calendo.CommandProcessing
 
             if (timeIndex >= 0)
             {
-                if (inputStringWords.Count > timeIndex + 1)//If next two words exist
+                if (inputStringWords.Count > timeIndex + 1)
                 {
                     string timeValue = inputStringWords[timeIndex + 1];
                     // Handle optional AM/PM
                     bool hasAMPM = false;
                     if (inputStringWords.Count > timeIndex + 2)
                     {
-                        string timeAMPM = inputStringWords[timeIndex + 2];
+                        string timeAMPM = inputStringWords[timeIndex + 2].ToUpper();
                         // Only add AM/PM if it really is AM/PM
-                        if (timeAMPM == "PM")
+                        if (timeAMPM == "PM" || timeAMPM == "AM")
                         {
-                            timeValue = timeValue + " PM";
-                            hasAMPM = true;
-                        }
-                        if (timeAMPM == "AM")
-                        {
-                            // AM value will be same as 24 hour value
-                            timeValue = timeValue + " AM";
+                            timeValue = timeValue + " " + timeAMPM;
                             hasAMPM = true;
                         }
                     }
-
-                    //TODO: Process time (alternatie style: keep taking words until next handle)
 
                     commandTime = timeValue;
 
