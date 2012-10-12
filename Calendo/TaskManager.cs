@@ -443,7 +443,7 @@ namespace Calendo
         /// Converts a string date and time to DateTime object
         /// </summary>
         /// <param name="date">Date in Day/Month/Year</param>
-        /// <param name="time">Time in Hour/Minutes</param>
+        /// <param name="time">Time in Hour/Minutes (24 hour)</param>
         /// <returns>Returns DateTime object</returns>
         public TaskTime ConvertTime(string date, string time)
         {
@@ -526,7 +526,27 @@ namespace Calendo
             }
 
             // Time (24HR): Hour:Minute
-            string[] timeFrag = time.Split(new char[] { ':' }, 2);
+            string[] timeMeta = time.Split(new char[] { ' ' }, 2);
+            string[] timeFrag = timeMeta[0].Split(new char[] { ':' }, 2);
+            
+            // Only used by 12 hour format
+            // If both are false, 24 hour format is used
+            bool isAM = false;
+            bool isPM = false;
+
+            // Handle PM
+            if (timeMeta.Length > 1)
+            {
+                if (timeMeta[1] == "PM")
+                {
+                    isPM = true;
+                }
+                if (timeMeta[1] == "AM")
+                {
+                    isAM = true;
+                }
+            }
+
             if (time == "")
             {
                 // No time supplied (not an error)
@@ -534,12 +554,24 @@ namespace Calendo
             }
 
             // Process the time field
+            // Hour
             if (timeFrag.Length > 0 && timeFrag[0] != "")
             {
                 int convertedHour = this.ConvertInt(timeFrag[0]);
                 if (convertedHour >= 0 && convertedHour <= 24)
                 {
                     hour = convertedHour;
+                    if (hour == 12 && isAM)
+                    {
+                        hour = 0;
+                    }
+                    if (isPM)
+                    {
+                        if (hour != 12)
+                        {
+                            hour += 12;
+                        }
+                    }
                 }
                 else
                 {
@@ -547,6 +579,7 @@ namespace Calendo
                     isValidTime = false;
                 }
             }
+            // Minute
             if (timeFrag.Length > 1 && timeFrag[1] != "")
             {
                 int convertedMinute = this.ConvertInt(timeFrag[1]);
