@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Windows.Data;
 using Calendo.Data;
 
 namespace Calendo.Converters
 {
-    class DateTimeToStringConverter : IValueConverter
+    class EntryToDateTimeStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Entry)
+            var current = value as Entry;
+            if (current != null)
             {
-                Entry current = (Entry)value;
-
                 DateTime returnDate = (string)parameter == "StartDate" ? current.StartTime : current.EndTime;
 
                 switch (current.StartTimeFormat)
@@ -26,9 +22,11 @@ namespace Calendo.Converters
                         return returnDate.ToString("t");
                     case TimeFormat.DATETIME:
                         return returnDate.ToString("g");
+                    case TimeFormat.DATE:
+                        return returnDate.ToString("d");
                 }
             }
-                return "";
+            return "";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
