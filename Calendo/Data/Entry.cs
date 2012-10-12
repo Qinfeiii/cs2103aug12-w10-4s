@@ -4,11 +4,18 @@ using System.Text;
 
 namespace Calendo.Data
 {
+    /// <summary>
+    /// Entry Type
+    /// </summary>
     public enum EntryType {
         FLOATING,
         DEADLINE,
         TIMED
     }
+
+    /// <summary>
+    /// Time Format
+    /// </summary>
     public enum TimeFormat
     {
         DATETIME,
@@ -16,65 +23,24 @@ namespace Calendo.Data
         TIME,
         NONE
     }
-    public interface IEntry
-    {
-        int ID
-        {
-            get;
-        }
-        string Description
-        {
-            get;
-            set;
-        }
-        DateTime StartTime
-        {
-            get;
-            set;
-        }
-        TimeFormat StartTimeFormat
-        {
-            get;
-            set;
-        }
-        DateTime EndTime
-        {
-            get;
-            set;
-        }
-        EntryType Type
-        {
-            get;
-        }
-        TimeFormat EndTimeFormat
-        {
-            get;
-            set;
-        }
-    }
 
     /// <summary>
     /// An entry represents a task in Calendo
     /// </summary>
     [Serializable]
-    public class Entry : IEntry
+    public class Entry
     {
         private static int IDCounter = 0;
-        private int _ID;
-        private string _Description;
-        private DateTime _StartTime;
-        private TimeFormat _StartTimeFormat;
-        private DateTime _EndTime;
-        private TimeFormat _EndTimeFormat;
-        private EntryType _EntryType;
+
         public Entry() {
-            _ID = IDCounter++;
-            _Description = "";
-            _StartTime = DateTime.Today;
-            _StartTimeFormat = TimeFormat.NONE;
-            _EndTime = DateTime.Today;
-            _EndTimeFormat = TimeFormat.NONE;
-            _EntryType = EntryType.FLOATING;
+            ID = IDCounter++;
+            Created = DateTime.Now;
+            Description = "";
+            StartTime = DateTime.Today;
+            StartTimeFormat = TimeFormat.NONE;
+            EndTime = DateTime.Today;
+            EndTimeFormat = TimeFormat.NONE;
+            Type = EntryType.FLOATING;
         }
 
         /// <summary>
@@ -82,8 +48,17 @@ namespace Calendo.Data
         /// </summary>
         public int ID
         {
-            get { return _ID; }
-            set { _ID = value; }
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Creation time
+        /// </summary>
+        public DateTime Created
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -91,8 +66,8 @@ namespace Calendo.Data
         /// </summary>
         public string Description
         {
-            get { return _Description; }
-            set { _Description = value; }
+            get;
+            set;
         }
 
         /// <summary>
@@ -100,8 +75,8 @@ namespace Calendo.Data
         /// </summary>
         public DateTime StartTime
         {
-            get { return _StartTime; }
-            set { _StartTime = value; }
+            get;
+            set;
         }
 
         /// <summary>
@@ -109,8 +84,8 @@ namespace Calendo.Data
         /// </summary>
         public TimeFormat StartTimeFormat
         {
-            get { return _StartTimeFormat; }
-            set { _StartTimeFormat = value; }
+            get;
+            set;
         }
 
         /// <summary>
@@ -118,8 +93,8 @@ namespace Calendo.Data
         /// </summary>
         public DateTime EndTime
         {
-            get { return _EndTime; }
-            set { _EndTime = value; }
+            get;
+            set;
         }
 
         /// <summary>
@@ -127,8 +102,8 @@ namespace Calendo.Data
         /// </summary>
         public TimeFormat EndTimeFormat
         {
-            get { return _EndTimeFormat; }
-            set { _EndTimeFormat = value; }
+            get;
+            set;
         }
 
         /// <summary>
@@ -136,8 +111,8 @@ namespace Calendo.Data
         /// </summary>
         public EntryType Type
         {
-            get { return _EntryType; }
-            set { _EntryType = value;  }
+            get;
+            set;
         }
 
         /// <summary>
@@ -147,13 +122,13 @@ namespace Calendo.Data
         public Entry clone()
         {
             Entry EntryClone = new Entry();
-            EntryClone.ID = _ID;
-            EntryClone.Description = _Description;
-            EntryClone.StartTime = _StartTime;
-            EntryClone.StartTimeFormat = _StartTimeFormat;
-            EntryClone.EndTime = _EndTime;
-            EntryClone._EndTimeFormat = _EndTimeFormat;
-            EntryClone.Type = _EntryType;
+            EntryClone.ID = ID;
+            EntryClone.Description = Description;
+            EntryClone.StartTime = StartTime;
+            EntryClone.StartTimeFormat = StartTimeFormat;
+            EntryClone.EndTime = EndTime;
+            EntryClone.EndTimeFormat = EndTimeFormat;
+            EntryClone.Type = Type;
             return EntryClone;
         }
     }

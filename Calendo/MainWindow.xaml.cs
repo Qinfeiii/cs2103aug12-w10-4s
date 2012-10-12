@@ -16,14 +16,14 @@ namespace Calendo
     public partial class MainWindow : Window
     {
         private AutoSuggest AutoSuggestViewModel;
-        private ProcessString CommandProcessor;
+        private CommandProcessor CommandProcessor;
 
         public MainWindow()
         {
             InitializeComponent();
             AutoSuggestViewModel = new AutoSuggest();
             DataContext = AutoSuggestViewModel;
-            CommandProcessor = new ProcessString();
+            CommandProcessor = new CommandProcessor();
             UpdateItemsList();
         }
 
@@ -121,7 +121,7 @@ namespace Calendo
             Dictionary<int, Entry> itemDictionary = new Dictionary<int, Entry>();
 
             int count = 1;
-            foreach (Entry currentEntry in CommandProcessor.TaskManager.Entries)
+            foreach (Entry currentEntry in CommandProcessor.TaskList)
             {
                 itemDictionary.Add(count, currentEntry);
                 count++;
@@ -194,6 +194,11 @@ namespace Calendo
                     tbxCommandBar.SelectionStart = tbxCommandBar.Text.Length;
                 }
             }
+        }
+
+        private void LsbItemsListSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            
         }
     }
 }
