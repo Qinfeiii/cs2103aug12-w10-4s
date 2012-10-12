@@ -431,7 +431,7 @@ namespace Calendo
                     // February has an extra day
                     maxDays[1] = 29;
                 }
-                return maxDays[month];
+                return maxDays[month - 1];
             }
             else
             {
