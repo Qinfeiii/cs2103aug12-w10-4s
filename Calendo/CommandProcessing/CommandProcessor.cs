@@ -205,7 +205,7 @@ namespace Calendo.CommandProcessing
             }
 
             //TODO: Abstract
-            if (DICTIONARY_COMMAND_TYPE.Keys.Any(x => commandTypeInput.ToLower().Contains(x)))
+            if (DICTIONARY_COMMAND_TYPE.Keys.Any(x => commandTypeInput.ToLower() == x))
             {
                 KeyValuePair<string, string[]> commandTypePair = DICTIONARY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
                 commandType = commandTypePair.Key;
