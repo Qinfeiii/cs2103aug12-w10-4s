@@ -564,20 +564,21 @@ namespace Calendo
             if (timeFrag.Length > 0 && timeFrag[0] != "")
             {
                 int convertedHour = this.ConvertInt(timeFrag[0]);
-                if (convertedHour >= 0 && convertedHour <= 24)
+                if (convertedHour == 12 && isAM)
+                {
+                    convertedHour = 0;
+                }
+                if (isPM)
+                {
+                    if (convertedHour != 12)
+                    {
+                        convertedHour += 12;
+                    }
+                }
+                if (convertedHour >= 0 && convertedHour < 24)
                 {
                     hour = convertedHour;
-                    if (hour == 12 && isAM)
-                    {
-                        hour = 0;
-                    }
-                    if (isPM)
-                    {
-                        if (hour != 12)
-                        {
-                            hour += 12;
-                        }
-                    }
+
                 }
                 else
                 {
