@@ -1,0 +1,6 @@
+bin/*
+obj/*
+Thumbs.db
+.suo
+_ReSharper.Calendo/
+.DotSettings.user
