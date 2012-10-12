@@ -105,6 +105,7 @@ namespace Calendo.CommandProcessing
 
         private void ExecuteAdd()
         {
+            /*
             if (commandDate == null)
             {
                 taskManager.Add(commandText);
@@ -113,6 +114,8 @@ namespace Calendo.CommandProcessing
             {
                 taskManager.Add(commandText, commandDate, commandTime);
             }
+             * */
+            taskManager.Add(commandText, commandDate, commandTime);
         }
         #endregion execution
 
@@ -202,8 +205,11 @@ namespace Calendo.CommandProcessing
             }
 
             //TODO: Abstract
-            KeyValuePair<string, string[]> commandTypePair = DICTIONARY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
-            commandType = commandTypePair.Key;
+            if (DICTIONARY_COMMAND_TYPE.Keys.Any(x => commandTypeInput.ToLower().Contains(x)))
+            {
+                KeyValuePair<string, string[]> commandTypePair = DICTIONARY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
+                commandType = commandTypePair.Key;
+            }
 
             inputStringWords.RemoveAt(0);
         }
@@ -239,19 +245,40 @@ namespace Calendo.CommandProcessing
 
             if (timeIndex >= 0)
             {
-                if (inputStringWords.Count > timeIndex + 2)//If next two words exist
+                if (inputStringWords.Count > timeIndex + 1)//If next two words exist
                 {
                     string timeValue = inputStringWords[timeIndex + 1];
-                    string timeAMPM = inputStringWords[timeIndex + 2];
+                    // Handle optional AM/PM
+                    bool hasAMPM = false;
+                    if (inputStringWords.Count > timeIndex + 2)
+                    {
+                        string timeAMPM = inputStringWords[timeIndex + 2];
+                        // Only add AM/PM if it really is AM/PM
+                        if (timeAMPM == "PM")
+                        {
+                            timeValue = timeValue + " PM";
+                            hasAMPM = true;
+                        }
+                        if (timeAMPM == "AM")
+                        {
+                            // AM value will be same as 24 hour value
+                            timeValue = timeValue + " AM";
+                            hasAMPM = true;
+                        }
+                    }
 
                     //TODO: Process time (alternatie style: keep taking words until next handle)
 
-                    commandTime = timeValue + " " + timeAMPM;
+                    commandTime = timeValue;
 
-                    // Remove time word(s)
-                    // ORDER MATTERS HERE!!!
-                    inputStringWords.RemoveAt(timeIndex + 2);
+                    // Remove time value
                     inputStringWords.RemoveAt(timeIndex + 1);
+                    if (hasAMPM)
+                    {
+                        // Remove AM/PM
+                        inputStringWords.RemoveAt(timeIndex + 1);
+                    }
+
                 }
 
                 //Remove handle
