@@ -194,12 +194,18 @@ namespace Calendo
         /// <returns>Returns Entry object matching the ID, null if not found</returns>
         public Entry Get(int id)
         {
+            /*
             for (int i = 0; i < storage.Entries.Count; i++)
             {
                 if (storage.Entries[i].ID == id)
                 {
                     return storage.Entries[i];
                 }
+            }
+            */
+            if (id >= 1 && id <= storage.Entries.Count)
+            {
+                return storage.Entries[id - 1];
             }
             return null;
         }
