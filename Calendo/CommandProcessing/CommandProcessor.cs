@@ -16,6 +16,7 @@ namespace Calendo.CommandProcessing
         private const string COMMAND_TYPE_CHANGE = "change";
         private const string COMMAND_TYPE_LIST = "list";
         private const string COMMAND_TYPE_UNDO = "undo";
+        private const string COMMAND_TYPE_REDO = "redo";
 
         //TODO: Ideally, NOCOMMAND should be search in autosuggest mode,
         //      and when the user presses enter, treat it as ADD
@@ -25,6 +26,7 @@ namespace Calendo.CommandProcessing
         private string[] INPUT_COMMANDS_CHANGE = { "change", "update", "modify" };
         private string[] INPUT_COMMANDS_LIST = { "list", "ls", "show" };
         private string[] INPUT_COMMANDS_UNDO = { "undo" };
+        private string[] INPUT_COMMANDS_REDO = { "redo" };
 
         private string[] INPUT_HANDLES_DATE = { "/date" };
         private string[] INPUT_HANDLES_TIME = { "/time" };
@@ -69,6 +71,9 @@ namespace Calendo.CommandProcessing
                 case COMMAND_TYPE_UNDO:
                     ExecuteUndo();
                     break;
+                case COMMAND_TYPE_REDO:
+                    ExecuteRedo();
+                    break;
                 default:
                     break;
             }
@@ -103,6 +108,11 @@ namespace Calendo.CommandProcessing
             taskManager.Undo();
         }
 
+        private void ExecuteRedo()
+        {
+            taskManager.Redo();
+        }
+
         private void ExecuteAdd()
         {
             /*
@@ -131,6 +141,7 @@ namespace Calendo.CommandProcessing
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
 
             InitialiseCommandParts();
             GetCommandParts();
@@ -148,6 +159,7 @@ namespace Calendo.CommandProcessing
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
 
             taskManager = new TaskManager();
         }
