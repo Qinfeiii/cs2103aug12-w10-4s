@@ -19,9 +19,9 @@ namespace Calendo.Converters
                     case TimeFormat.NONE:
                         break;
                     case TimeFormat.TIME:
-                        return returnDate.ToString("HH:MM");
+                        return returnDate.ToString("HH:mm");
                     case TimeFormat.DATETIME:
-                        return returnDate.ToString("dd/MM/yyyy HH:MM");
+                        return returnDate.ToString("dd/MM/yyyy HH:mm");
                     case TimeFormat.DATE:
                         return returnDate.ToString("dd/MM/yyyy");
                 }

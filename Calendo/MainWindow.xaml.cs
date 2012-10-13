@@ -116,9 +116,8 @@ namespace Calendo
                 if (inputString.Length > 0)
                 {
                     CommandProcessor.ExecuteCommand(inputString);
-                    UpdateItemsList();
-
                     tbxCommandBar.Clear();
+                    UpdateItemsList();
                 }
             }
             else if (e.Key == Key.Escape)
