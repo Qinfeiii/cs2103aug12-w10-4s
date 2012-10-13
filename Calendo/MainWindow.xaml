@@ -9,6 +9,7 @@
     <Window.Resources>
         <Converters:EntryToDateTimeStringConverter x:Key="DateTimeConverter" />
         <Converters:EntryToDateTimeVisibilityConverter x:Key="DateTimeVisibilityConverter" />
+        <Converters:EntryToBrushConverter x:Key="EntryToBrushConverter" />
     </Window.Resources>
 
     <Window.CommandBindings>
@@ -29,6 +30,9 @@
             <Style x:Key="ListBoxItemSubtleTextStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource ListBoxItemTextStyle}">
                 <Setter Property="FontSize" Value="14" />
                 <Setter Property="Foreground" Value="Gray" />
+            </Style>
+            <Style x:Key="TaskTextStyle" TargetType="TextBlock" BasedOn="{StaticResource ListBoxItemTextStyle}">
+                <Setter Property="Foreground" Value="{Binding Value, Converter={StaticResource EntryToBrushConverter}}" />
             </Style>
             <Style x:Key="TransparentWithBorder" TargetType="Control">
                 <Setter Property="Background" Value="Transparent" />
@@ -131,7 +135,7 @@
                         <TextBlock Grid.Column="0" Text="{Binding Key}" Style="{StaticResource ListBoxItemTextStyle}" Margin="0,0,6,0" />
                         <StackPanel Grid.Column="1">
                             <TextBlock Text="{Binding Value.Description}" 
-                                       Style="{StaticResource ListBoxItemTextStyle}" 
+                                       Style="{StaticResource TaskTextStyle}" 
                                        TextWrapping="WrapWithOverflow"/>
                             <StackPanel Grid.Row="1" Orientation="Horizontal" 
                                         Visibility="{Binding Value, Converter={StaticResource DateTimeVisibilityConverter}, ConverterParameter='StackPanel'}">
