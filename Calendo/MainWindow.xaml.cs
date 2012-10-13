@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Diagnostics;
+using Calendo.CommandProcessing;
+using Calendo.Data;
 
 namespace Calendo
 {
@@ -14,14 +16,21 @@ namespace Calendo
     public partial class MainWindow : Window
     {
         private AutoSuggest AutoSuggestViewModel;
-        private TaskManager TaskManagerObject;
+        private CommandProcessor CommandProcessor;
+
+        public static RoutedCommand UndoCommand = new RoutedCommand();
+        public static RoutedCommand RedoCommand = new RoutedCommand();
 
         public MainWindow()
         {
             InitializeComponent();
+
+            UndoCommand.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
+            RedoCommand.InputGestures.Add(new KeyGesture(Key.Y, ModifierKeys.Control));
+
             AutoSuggestViewModel = new AutoSuggest();
             DataContext = AutoSuggestViewModel;
-            TaskManagerObject = new TaskManager();
+            CommandProcessor = new CommandProcessor();
             UpdateItemsList();
         }
 
@@ -101,17 +110,55 @@ namespace Calendo
                 lsbAutoSuggestList.SelectedIndex = 0;
                 lsbAutoSuggestList.Focus();
             }
-                // This portion of code is temporary for v0.1 only.
-                // UI is essentially linking directly to TaskManager, which
-                // SHOULD NOT BE THE CASE IN THE FINAL.
-            else if (e.Key == Key.Return && tbxCommandBar.Text.Length > 0)
+            else if (e.Key == Key.Return)
             {
-                TaskManagerObject.PerformCommand(tbxCommandBar.Text);
-                
-                UpdateItemsList();
+                string inputString = tbxCommandBar.Text;
+                if (inputString.Length > 0)
+                {
+                    CommandProcessor.ExecuteCommand(inputString);
+                    UpdateItemsList();
 
-                tbxCommandBar.Clear();
+                    tbxCommandBar.Clear();
+                }
             }
+            else if (e.Key == Key.Escape)
+            {
+                DefocusCommandBar();
+            }
+            else if (!tbxCommandBar.Text.StartsWith("/"))
+            {
+                FilterListContents();
+            }
+        }
+
+        private void FilterListContents()
+        {
+            string searchString = tbxCommandBar.Text.ToLowerInvariant().Trim();
+            if (tbxCommandBar.Text != "")
+            {
+                lsbItemsList.Items.Filter = delegate(object o)
+                                                {
+                                                    KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
+                                                    Entry currentEntry = currentPair.Value;
+                                                    if (currentEntry != null)
+                                                    {
+                                                        string lowercaseDescription =
+                                                            currentEntry.Description.ToLowerInvariant();
+                                                        return lowercaseDescription.Contains(searchString);
+                                                    }
+
+                                                    return false;
+                                                };
+            }
+            else
+            {
+                lsbItemsList.Items.Filter = null;
+            }
+        }
+
+        private void DefocusCommandBar()
+        {
+            lsbItemsList.Focus();
         }
 
         private void UpdateItemsList()
@@ -119,7 +166,7 @@ namespace Calendo
             Dictionary<int, Entry> itemDictionary = new Dictionary<int, Entry>();
 
             int count = 1;
-            foreach (Entry currentEntry in TaskManagerObject.Entries)
+            foreach (Entry currentEntry in CommandProcessor.TaskList)
             {
                 itemDictionary.Add(count, currentEntry);
                 count++;
@@ -145,7 +192,7 @@ namespace Calendo
 
         private void SetCommandFromSuggestion()
         {
-            string suggestion = (string) lsbAutoSuggestList.SelectedItem;
+            string suggestion = (string)lsbAutoSuggestList.SelectedItem;
             bool isInputCommand = suggestion != null && suggestion.First() == AutoSuggest.COMMAND_INDICATOR;
             if (isInputCommand)
             {
@@ -176,7 +223,7 @@ namespace Calendo
             SetCommandFromSuggestion();
         }
 
-        private void LsbItemsListSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ItemsListDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
             var selectedItem = lsbItemsList.SelectedItem;
             if (selectedItem != null)
@@ -192,6 +239,28 @@ namespace Calendo
                     tbxCommandBar.SelectionStart = tbxCommandBar.Text.Length;
                 }
             }
+        }
+
+        private void LsbItemsListSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
+        }
+
+        private void UndoHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            CommandProcessor.ExecuteCommand("/undo");
+            UpdateItemsList();
+        }
+
+        private void RedoHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            CommandProcessor.ExecuteCommand("/redo");
+            UpdateItemsList();
+        }
+
+        private void GridMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            DefocusCommandBar();
         }
     }
 }
