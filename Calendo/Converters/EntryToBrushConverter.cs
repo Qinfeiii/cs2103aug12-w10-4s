@@ -27,7 +27,7 @@ namespace Calendo.Converters
             return converter.ConvertFrom("#FF464646") as Brush;
         }
 
-        private bool IsTaskOverdue(Entry currentEntry)
+        public bool IsTaskOverdue(Entry currentEntry)
         {
             bool isOverdue = false;
 
@@ -40,10 +40,11 @@ namespace Calendo.Converters
                 isOverdue = currentEntry.StartTime.CompareTo(DateTime.Now) < 0;
             }
 
+            // Floating tasks can't be overdue.
             return isOverdue;
         }
 
-        private bool IsTaskOngoing(Entry currentEntry)
+        public bool IsTaskOngoing(Entry currentEntry)
         {
             bool isOngoing = false;
 
