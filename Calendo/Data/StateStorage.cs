@@ -4,13 +4,12 @@ using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 
-namespace Calendo
+namespace Calendo.Data
 {
     [XmlRoot("Data")]
     public class State<T> where T : new()
     {
         private Data<T> baseValue;
-        private List<Data<T>> stateList;
         private Stack<Data<T>> redoStack;
 
         /// <summary>
@@ -19,8 +18,8 @@ namespace Calendo
         public State()
         {
             baseValue = new Data<T>();
-            stateList = new List<Data<T>>();
             redoStack = new Stack<Data<T>>();
+            States = new List<Data<T>>();
         }
 
         /// <summary>
@@ -38,8 +37,8 @@ namespace Calendo
         [XmlArrayItem("State")]
         public List<Data<T>> States
         {
-            get { return stateList; }
-            set { stateList = value; }
+            get;
+            set;
         }
 
         /// <summary>
@@ -47,11 +46,11 @@ namespace Calendo
         /// </summary>
         public void AddState()
         {
-            if (stateList.Count == 0)
+            if (States.Count == 0)
             {
-                stateList.Add(new Data<T>());
+                States.Add(new Data<T>());
             }
-            stateList.Add((Data<T>)baseValue.Clone());
+            States.Add((Data<T>)baseValue.Clone());
             redoStack.Clear();
         }
 
@@ -61,11 +60,11 @@ namespace Calendo
         /// <returns>Return true if state is changed</returns>
         public bool Undo()
         {
-            if (stateList.Count > 1)
+            if (States.Count > 1)
             {
-                redoStack.Push(stateList[stateList.Count - 1]);
-                stateList.RemoveAt(stateList.Count - 1);
-                baseValue = (Data<T>)stateList[stateList.Count - 1].Clone();
+                redoStack.Push(States[States.Count - 1]);
+                States.RemoveAt(States.Count - 1);
+                baseValue = (Data<T>)States[States.Count - 1].Clone();
                 return true;
             }
             else
@@ -83,7 +82,7 @@ namespace Calendo
             if (redoStack.Count > 0)
             {
                 baseValue = (Data<T>)redoStack.Pop().Clone();
-                stateList.Add(baseValue);
+                States.Add(baseValue);
                 return true;
             }
             else
