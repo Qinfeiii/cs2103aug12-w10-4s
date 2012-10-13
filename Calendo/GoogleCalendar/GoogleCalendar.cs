@@ -1,6 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Net;
+using System.Collections.Generic;
+using System.Text;
+using System.IO;
 using System.Diagnostics;
 using DotNetOpenAuth.OAuth2;
 using Google.Apis.Authentication;
@@ -15,19 +17,16 @@ namespace Calendo.GoogleCalendar
 {
     class GoogleCalendar
     {
-
-        public void authorize()
-        {
-			var provider = new NativeApplicationClient(GoogleAuthenticationServer.Description);
-            provider.ClientIdentifier = "770362652845-cb7ki86iesscd3f54vs8nd063epao8v3.apps.googleusercontent.com";
-            //provider.ClientSecret = "Uq2FptnfOI2BVXCsvt8Q7D4K";   
-
-            // Create the service and register the previously created OAuth2 Authenticator.
-            String auth = GetAuthentication(provider);
-
-            
+	
+	public static bool Sync(List<Entry> entries){
+	   String auth = Authorize();
+        //postTasks(tasks, auth);
+       return false;
+	}
+	public static String Import(){
+			String auth = Authorize();
             string sURL;
-            sURL = "https://www.googleapis.com/oauth2/v1/userinfo?access_token="+auth;
+            sURL = " https://www.googleapis.com/tasks/v1/lists/MTU4OTEwNzMxMTYxNzgzMjEwNDc6MDow/tasks?access_token=" + auth;
 
             WebRequest wrGETURL;
             wrGETURL = WebRequest.Create(sURL);
@@ -40,13 +39,22 @@ namespace Calendo.GoogleCalendar
             string sLine = "";
             int i = 0;
 
+            String tasks="";
             while (sLine != null)
             {
                 i++;
                 sLine = objReader.ReadLine();
                 if (sLine != null)
-                    Console.WriteLine("{0}:{1}", i, sLine);
+                    tasks+=i + ": " + sLine;
             }
+        return tasks;
+	}
+	private static string Authorize()
+        { 
+            var provider = new NativeApplicationClient(GoogleAuthenticationServer.Description);
+            provider.ClientIdentifier = "770362652845-cb7ki86iesscd3f54vs8nd063epao8v3.apps.googleusercontent.com";
+            String auth = GetAuthentication(provider);
+            return auth;
         }
 
         private static String GetAuthentication(NativeApplicationClient provider)
@@ -67,6 +75,28 @@ namespace Calendo.GoogleCalendar
 
             // Retrieve the access token by using the authorization code:
             return authCode;
+        }
+		
+        private static void postTasks(Entry tasks, String auth)
+        {
+            HttpWebRequest httpWReq =
+            (HttpWebRequest)WebRequest.Create("https://www.googleapis.com/tasks/v1/lists/MTU4OTEwNzMxMTYxNzgzMjEwNDc6MDow/tasks?access_token="+auth);
+
+            ASCIIEncoding encoding = new ASCIIEncoding();
+            //string postData = "{ kind: tasks#task,";
+            string postData = "\"title\": lol_its_task"; 
+            //postData += "status: completed}";
+
+            byte[] data = encoding.GetBytes(postData);
+
+            httpWReq.Method = "POST";
+            //httpWReq.ContentType = "application/x-www-form-urlencoded";
+            httpWReq.ContentLength = data.Length;
+
+            using (Stream newStream = httpWReq.GetRequestStream())
+            {
+                newStream.Write(data,0,data.Length);
+            }
         }
 
     }
