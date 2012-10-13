@@ -85,18 +85,50 @@ namespace Calendo.CommandProcessing
 
         private void ExecuteRemove()
         {
-            int index = Convert.ToInt32(commandText) - 1;
+            if (commandText == null)
+            {
+                // Command without parameter
+                return;
+            }
+            int index = 0;
+            try
+            {
+                index = Convert.ToInt32(commandText) - 1;
+            }
+            catch
+            {
+                // Invalid ID
+                return;
+            }
             taskManager.RemoveByIndex(index);
         }
 
         private void ExecuteChange()
         {
+            if (commandText == null)
+            {
+                // Command without parameter
+                return;
+            }
             string[] commandTextPieces = commandText.Split();
-            int taskNumberToChange = Convert.ToInt32(commandTextPieces.First());
+            int taskNumberToChange = 0;
+            try
+            {
+                taskNumberToChange = Convert.ToInt32(commandTextPieces.First());
+            }
+            catch
+            {
+                // Invalid id
+                return;
+            }
             List<string> listOfCommandTextPieces = commandTextPieces.ToList();
             listOfCommandTextPieces.RemoveAt(0);
-            string newTaskName = listOfCommandTextPieces.Aggregate((x, y) => x + y);
-            taskManager.Change(taskNumberToChange, newTaskName);
+            string newTaskName = "";
+            if (listOfCommandTextPieces.Count > 0)
+            {
+                newTaskName = listOfCommandTextPieces.Aggregate((x, y) => x + " " + y);
+            }
+            taskManager.Change(taskNumberToChange, newTaskName, commandDate, commandTime, "", "");
         }
 
         private void ExecuteList()

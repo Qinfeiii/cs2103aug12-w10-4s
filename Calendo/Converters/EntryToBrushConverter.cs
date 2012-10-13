@@ -15,11 +15,11 @@ namespace Calendo.Converters
             {
                 if (IsTaskOngoing(currentEntry))
                 {
-                    return Brushes.DarkOrange;
+                    return Brushes.Orange;
                 }
                 else if (IsTaskOverdue(currentEntry))
                 {
-                    return Brushes.DarkRed;
+                    return Brushes.Red;
                 }
             }
 
