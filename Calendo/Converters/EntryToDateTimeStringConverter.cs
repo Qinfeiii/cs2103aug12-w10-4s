@@ -19,11 +19,11 @@ namespace Calendo.Converters
                     case TimeFormat.NONE:
                         break;
                     case TimeFormat.TIME:
-                        return returnDate.ToString("t");
+                        return returnDate.ToString("HH:MM");
                     case TimeFormat.DATETIME:
-                        return returnDate.ToString("g");
+                        return returnDate.ToString("dd/MM/yyyy HH:MM");
                     case TimeFormat.DATE:
-                        return returnDate.ToString("d");
+                        return returnDate.ToString("dd/MM/yyyy");
                 }
             }
             return "";
