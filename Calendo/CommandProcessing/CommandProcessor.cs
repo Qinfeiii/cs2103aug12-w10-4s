@@ -95,8 +95,12 @@ namespace Calendo.CommandProcessing
             int taskNumberToChange = Convert.ToInt32(commandTextPieces.First());
             List<string> listOfCommandTextPieces = commandTextPieces.ToList();
             listOfCommandTextPieces.RemoveAt(0);
-            string newTaskName = listOfCommandTextPieces.Aggregate((x, y) => x + " " + y);
-            taskManager.Change(taskNumberToChange, newTaskName);
+            string newTaskName = "";
+            if (listOfCommandTextPieces.Count > 0)
+            {
+                newTaskName = listOfCommandTextPieces.Aggregate((x, y) => x + " " + y);
+            }
+            taskManager.Change(taskNumberToChange, newTaskName, commandDate, commandTime, "", "");
         }
 
         private void ExecuteList()
