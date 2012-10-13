@@ -90,7 +90,7 @@ namespace Calendo.CommandProcessing
             int taskNumberToChange = Convert.ToInt32(commandTextPieces.First());
             List<string> listOfCommandTextPieces = commandTextPieces.ToList();
             listOfCommandTextPieces.RemoveAt(0);
-            string newTaskName = listOfCommandTextPieces.Aggregate((x, y) => x + y);
+            string newTaskName = listOfCommandTextPieces.Aggregate((x, y) => x + " " + y);
             taskManager.Change(taskNumberToChange, newTaskName);
         }
 
