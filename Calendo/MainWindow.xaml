@@ -1,14 +1,18 @@
 ﻿<Window x:Class="Calendo.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:Converters="clr-namespace:Calendo.Converters"
-        Title="Calendo" Height="350" Width="300" MinHeight="170" MinWidth="300"
+        xmlns:Converters="clr-namespace:Calendo.Converters" xmlns:Calendo="clr-namespace:Calendo" Title="Calendo" Height="350" Width="300" MinHeight="170" MinWidth="300"
         WindowStyle="None" StateChanged="WindowStateChanged">
     
     <Window.Resources>
         <Converters:EntryToDateTimeStringConverter x:Key="DateTimeConverter" />
         <Converters:EntryToDateTimeVisibilityConverter x:Key="DateTimeVisibilityConverter" />
     </Window.Resources>
+    
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static Calendo:MainWindow.UndoCommand}" Executed="UndoHandler" />
+        <CommandBinding Command="{x:Static Calendo:MainWindow.RedoCommand}" Executed="RedoHandler" />
+    </Window.CommandBindings>
 
     <Grid Background="#FEFEFE">
         <Grid.Resources>
@@ -108,7 +112,7 @@
                 <DataTemplate>
                     <Grid HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Key}" Style="{StaticResource ListBoxItemTextStyle}" Margin="0,0,6,0" />

@@ -18,9 +18,16 @@ namespace Calendo
         private AutoSuggest AutoSuggestViewModel;
         private CommandProcessor CommandProcessor;
 
+        public static RoutedCommand UndoCommand = new RoutedCommand();
+        public static RoutedCommand RedoCommand = new RoutedCommand();
+
         public MainWindow()
         {
             InitializeComponent();
+
+            UndoCommand.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
+            RedoCommand.InputGestures.Add(new KeyGesture(Key.Y, ModifierKeys.Control));
+
             AutoSuggestViewModel = new AutoSuggest();
             DataContext = AutoSuggestViewModel;
             CommandProcessor = new CommandProcessor();
@@ -199,6 +206,18 @@ namespace Calendo
         private void LsbItemsListSizeChanged(object sender, SizeChangedEventArgs e)
         {
             
+        }
+
+        private void UndoHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            CommandProcessor.ExecuteCommand("/undo");
+            UpdateItemsList();
+        }
+
+        private void RedoHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            CommandProcessor.ExecuteCommand("/redo");
+            UpdateItemsList();
         }
     }
 }
