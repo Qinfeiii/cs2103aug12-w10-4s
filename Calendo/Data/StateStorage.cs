@@ -92,7 +92,7 @@ namespace Calendo.Data
         }
     }
 
-    class StateStorage<T> where T : new()
+    public class StateStorage<T> where T : new()
     {
         private Storage<State<T>> dataStorage;
         private State<T> currentState;
