@@ -110,10 +110,10 @@ namespace Calendo
                 lsbAutoSuggestList.SelectedIndex = 0;
                 lsbAutoSuggestList.Focus();
             }
-            else
+            else if(e.Key == Key.Return)
             {
                 string inputString = tbxCommandBar.Text;
-                if (e.Key == Key.Return && inputString.Length > 0)
+                if (inputString.Length > 0)
                 {
                     CommandProcessor.ExecuteCommand(inputString);
                     UpdateItemsList();
@@ -121,6 +121,15 @@ namespace Calendo
                     tbxCommandBar.Clear();
                 }
             }
+            else if (e.Key == Key.Escape)
+            {
+                DefocusCommandBar();
+            }
+        }
+
+        private void DefocusCommandBar()
+        {
+            lsbItemsList.Focus();
         }
 
         private void UpdateItemsList()
@@ -185,7 +194,7 @@ namespace Calendo
             SetCommandFromSuggestion();
         }
 
-        private void LsbItemsListSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ItemsListDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
             var selectedItem = lsbItemsList.SelectedItem;
             if (selectedItem != null)
@@ -218,6 +227,11 @@ namespace Calendo
         {
             CommandProcessor.ExecuteCommand("/redo");
             UpdateItemsList();
+        }
+
+        private void GridMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            DefocusCommandBar();
         }
     }
 }
