@@ -228,16 +228,16 @@ namespace Calendo
             Entry entry = this.Get(id);
             if (entry != null)
             {
-                if ((flag & FLAG_DESCRIPTION) == 1)
+                if ((flag & FLAG_DESCRIPTION) == FLAG_DESCRIPTION)
                 {
                     entry.Description = description;
                 }
-                if ((flag & FLAG_STARTTIME) == 1)
+                if ((flag & FLAG_STARTTIME) == FLAG_STARTTIME)
                 {
                     entry.StartTime = startTime.Time;
                     entry.StartTimeFormat = startTime.Format;
                 }
-                if ((flag & FLAG_ENDTIME) == 1)
+                if ((flag & FLAG_ENDTIME) == FLAG_ENDTIME)
                 {
                     entry.EndTime = endTime.Time;
                     entry.EndTimeFormat = endTime.Format;
