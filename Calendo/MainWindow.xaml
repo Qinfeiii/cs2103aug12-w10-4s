@@ -108,7 +108,7 @@
             <TextBlock Name="txbEnterCommand" Grid.Row="1" Margin="22,9" Style="{StaticResource NormalTextStyle}">
                 enter /command, or search
             </TextBlock>
-            <TextBox Name="tbxCommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="18" Foreground="DarkSlateGray" 
+            <TextBox Name="tbxCommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="16" Foreground="#FF464646" 
                      Style="{StaticResource TransparentWithBorder}" 
                      LostFocus="TbxCommandBarLostFocus" 
                      GotFocus="TbxCommandBarGotFocus" 
