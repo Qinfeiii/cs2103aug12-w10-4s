@@ -110,7 +110,7 @@ namespace Calendo
                 lsbAutoSuggestList.SelectedIndex = 0;
                 lsbAutoSuggestList.Focus();
             }
-            else if(e.Key == Key.Return)
+            else if (e.Key == Key.Return)
             {
                 string inputString = tbxCommandBar.Text;
                 if (inputString.Length > 0)
@@ -124,6 +124,35 @@ namespace Calendo
             else if (e.Key == Key.Escape)
             {
                 DefocusCommandBar();
+            }
+            else if (!tbxCommandBar.Text.StartsWith("/"))
+            {
+                FilterListContents();
+            }
+        }
+
+        private void FilterListContents()
+        {
+            string searchString = tbxCommandBar.Text.ToLowerInvariant().Trim();
+            if (tbxCommandBar.Text != "")
+            {
+                lsbItemsList.Items.Filter = delegate(object o)
+                                                {
+                                                    KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
+                                                    Entry currentEntry = currentPair.Value;
+                                                    if (currentEntry != null)
+                                                    {
+                                                        string lowercaseDescription =
+                                                            currentEntry.Description.ToLowerInvariant();
+                                                        return lowercaseDescription.Contains(searchString);
+                                                    }
+
+                                                    return false;
+                                                };
+            }
+            else
+            {
+                lsbItemsList.Items.Filter = null;
             }
         }
 
@@ -163,7 +192,7 @@ namespace Calendo
 
         private void SetCommandFromSuggestion()
         {
-            string suggestion = (string) lsbAutoSuggestList.SelectedItem;
+            string suggestion = (string)lsbAutoSuggestList.SelectedItem;
             bool isInputCommand = suggestion != null && suggestion.First() == AutoSuggest.COMMAND_INDICATOR;
             if (isInputCommand)
             {
@@ -214,7 +243,7 @@ namespace Calendo
 
         private void LsbItemsListSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            
+
         }
 
         private void UndoHandler(object sender, ExecutedRoutedEventArgs e)
