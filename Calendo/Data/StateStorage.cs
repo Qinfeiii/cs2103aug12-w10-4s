@@ -62,6 +62,7 @@ namespace Calendo.Data
         {
             if (States.Count > 1)
             {
+                // First state does not count
                 redoStack.Push(States[States.Count - 1]);
                 States.RemoveAt(States.Count - 1);
                 baseValue = (Data<T>)States[States.Count - 1].Clone();
@@ -70,6 +71,18 @@ namespace Calendo.Data
             else
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets a boolean value determining if there are undo states
+        /// </summary>
+        public bool HasUndo
+        {
+            get
+            {
+                // First state does not count
+                return (States.Count > 1);
             }
         }
 
@@ -90,9 +103,21 @@ namespace Calendo.Data
                 return false;
             }
         }
+
+
+        /// <summary>
+        /// Gets a boolean value determining if there are redo states
+        /// </summary>
+        public bool HasRedo
+        {
+            get
+            {
+                return (redoStack.Count > 0);
+            }
+        }
     }
 
-    class StateStorage<T> where T : new()
+    public class StateStorage<T> where T : new()
     {
         private Storage<State<T>> dataStorage;
         private State<T> currentState;
@@ -141,6 +166,7 @@ namespace Calendo.Data
         public bool Save()
         {
             dataStorage.Entries.AddState();
+            currentState = dataStorage.Entries;
             return dataStorage.Save();
         }
 
@@ -156,6 +182,17 @@ namespace Calendo.Data
         }
 
         /// <summary>
+        /// Gets a boolean value determining if there are undo states
+        /// </summary>
+        public bool HasUndo
+        {
+            get
+            {
+                return (currentState.HasUndo);
+            }
+        }
+
+        /// <summary>
         /// Revert to a previous state
         /// </summary>
         /// <returns>Returns true if a state is reverted, false if no action taken</returns>
@@ -164,6 +201,17 @@ namespace Calendo.Data
             bool undoResult = currentState.Undo();
             dataStorage.Save();
             return undoResult;
+        }
+
+        /// <summary>
+        /// Gets a boolean value determining if there are redo states
+        /// </summary>
+        public bool HasRedo
+        {
+            get
+            {
+                return (currentState.HasRedo);
+            }
         }
 
         /// <summary>
