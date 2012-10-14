@@ -9,8 +9,48 @@ namespace Calendo.DebugTool
 {
     public class Debug
     {
-        public const string logFile = "log.txt";
-        public static bool Enable = true;
+        private const string LOG_FILEPATH = "log.txt";
+        private const string CONFIG_FILEPATH = "debugcfg.txt";
+        private static bool _Enable = true;
+        private static bool loaded = false;
+
+        /// <summary>
+        /// Get or set debug enable switch
+        /// </summary>
+        public static bool Enable {
+            get { return _Enable; }
+            set { _Enable = value; }
+        }
+
+        /// <summary>
+        /// Load debug configuration file
+        /// </summary>
+        public static void LoadConfig()
+        {
+            try
+            {
+                Stream fileStream = new FileStream(CONFIG_FILEPATH, FileMode.OpenOrCreate);
+                StreamReader sr = new StreamReader(fileStream);
+                string config = sr.ReadLine();
+                if (config == "1")
+                {
+                    _Enable = true;
+                }
+                else if (config == "0")
+                {
+                    _Enable = false;
+                }
+                sr.Close();
+                fileStream.Close();
+                loaded = true;
+            }
+            catch (Exception e)
+            {
+                // Invalid file
+                MessageBox.Show("Error: " + e.ToString());
+            }
+             
+        }
 
         /// <summary>
         /// Displays a message box to user
@@ -18,6 +58,10 @@ namespace Calendo.DebugTool
         /// <param name="message">Message to display</param>
         public static void Alert(string message)
         {
+            if (!loaded)
+            {
+                LoadConfig();
+            }
             if (Debug.Enable)
             {
                 MessageBox.Show(message);
@@ -30,9 +74,13 @@ namespace Calendo.DebugTool
         /// <param name="message">Message string</param>
         public static void Log(string message)
         {
+            if (!loaded)
+            {
+                LoadConfig();
+            }
             if (Debug.Enable)
             {
-                StreamWriter file = new StreamWriter(logFile);
+                StreamWriter file = new StreamWriter(LOG_FILEPATH);
                 file.WriteLine(message);
                 file.Close();
             }
@@ -44,6 +92,10 @@ namespace Calendo.DebugTool
         /// <param name="condition"></param>
         public static void Assert(bool condition)
         {
+            if (!loaded)
+            {
+                LoadConfig();
+            }
             if (Debug.Enable && !condition)
             {
                 System.Diagnostics.Debug.Assert(condition);

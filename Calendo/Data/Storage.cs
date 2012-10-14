@@ -47,7 +47,7 @@ namespace Calendo.Data
     {
         private const string DEFAULT_FILE_PATH = "data.txt";
         private const string ERROR_UNWRITABLE = "Unable to write file";
-        private const string ERROR_INCOMPATIBLE = "Data file might be corrupted or incompatible";
+        private const string ERROR_INCOMPATIBLE = "Data file is unreadable";
 
         private string dataFilePath;
         private Data<T> dataWrapper;
@@ -96,9 +96,10 @@ namespace Calendo.Data
         /// <returns>Returns true if file has been changed</returns>
         public bool Save()
         {
+            Stream fileStream = null;
             try
             {
-                Stream fileStream = new FileStream(dataFilePath, FileMode.Create);
+                fileStream = new FileStream(dataFilePath, FileMode.Create);
                 XmlSerializerNamespaces xmlNamespace = new XmlSerializerNamespaces();
                 xmlNamespace.Add("", ""); // omit XML namespaces
                 serializer.Serialize(fileStream, dataWrapper, xmlNamespace);
@@ -110,6 +111,13 @@ namespace Calendo.Data
                 Debug.Alert(ERROR_UNWRITABLE);
                 return false;
             }
+            finally
+            {
+                if (fileStream != null)
+                {
+                    fileStream.Close();
+                }
+            }
         }
 
         /// <summary>
@@ -118,9 +126,10 @@ namespace Calendo.Data
         /// <returns>Returns true if the file has been read</returns>
         public bool Load()
         {
+            Stream fileStream = null;
             try
             {
-                Stream fileStream = new FileStream(dataFilePath, FileMode.OpenOrCreate);
+                fileStream = new FileStream(dataFilePath, FileMode.OpenOrCreate);
                 if (fileStream.Length != 0)
                 {
                     dataWrapper = (Data<T>)serializer.Deserialize(fileStream);
@@ -134,6 +143,13 @@ namespace Calendo.Data
                 Debug.Alert(ERROR_INCOMPATIBLE);
                 dataWrapper = new Data<T>();
                 return false;
+            }
+            finally
+            {
+                if (fileStream != null)
+                {
+                    fileStream.Close();
+                }
             }
         }
     }
