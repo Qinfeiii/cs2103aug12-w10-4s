@@ -10,7 +10,7 @@ namespace CalendoUnitTests
     public class DataTest
     {
         [TestMethod]
-        public void TestLoad()
+        public void DataLoad()
         {
             Storage<State<Entry>> UTStorage = new Storage<State<Entry>>();
             Assert.IsNotNull(UTStorage);
@@ -19,7 +19,7 @@ namespace CalendoUnitTests
             Assert.IsNotNull(UTStorage.Entries);
         }
         [TestMethod]
-        public void TestSave()
+        public void DataSave()
         {
             Storage<List<string>> UTStorage = new Storage<List<string>>("test1.txt");
             Assert.IsNotNull(UTStorage);
@@ -47,7 +47,7 @@ namespace CalendoUnitTests
             Assert.IsTrue(UTStorage.Entries.Count == 0);
         }
         [TestMethod]
-        public void TestIncompatible()
+        public void DataIncompatible()
         {   
             Storage<List<string>> UTStorage = new Storage<List<string>>("test2.txt");
             UTStorage.Load();
@@ -66,7 +66,7 @@ namespace CalendoUnitTests
             Assert.IsTrue(UTStorage.Entries.Count != 2);
         }
         [TestMethod]
-        public void TestUnwritable()
+        public void DataUnwritable()
         {
             Storage<List<string>> UTStoragePre = new Storage<List<string>>("test3.txt");
             UTStoragePre.Load();
@@ -75,6 +75,7 @@ namespace CalendoUnitTests
             UTStoragePre.Entries.Add("Test2");
             UTStoragePre.Save();
 
+            // Lock the file to prevent other processes from modifying it
             Stream fileStream = new FileStream("test3.txt", FileMode.OpenOrCreate);
             fileStream.ReadByte();
             Storage<List<string>> UTStorage = new Storage<List<string>>("test3.txt");
@@ -84,11 +85,12 @@ namespace CalendoUnitTests
             Assert.IsTrue(UTStorage.Entries.Count == 0);
             fileStream.Close();
 
+            // Check if file is altered (it should not)
             UTStorage.Load();
             Assert.IsTrue(UTStorage.Entries.Count == 2);
         }
         [TestMethod]
-        public void TestEntry()
+        public void DataEntry()
         {
             Entry testEntry = new Entry();
             testEntry.Created = DateTime.Today;
@@ -115,7 +117,7 @@ namespace CalendoUnitTests
             Assert.IsFalse(cloneEntry.ID == testEntry.ID);
         }
         [TestMethod]
-        public void TestState()
+        public void DataState()
         {
             StateStorage<List<Entry>> UTState = new StateStorage<List<Entry>>();
             UTState.Entries.Clear();

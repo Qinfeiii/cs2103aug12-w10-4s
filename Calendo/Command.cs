@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Calendo
 {
-    class Command
+    public class Command
     {
         private string _type;
         private string _parameter;

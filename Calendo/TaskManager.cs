@@ -36,7 +36,7 @@ namespace Calendo
             set;
         }
     }
-    class TaskManager
+    public class TaskManager
     {
         private StateStorage<List<Entry>> storage;
         private const int FLAG_DESCRIPTION = 1;
@@ -151,6 +151,12 @@ namespace Calendo
             storage.Save();
         }
 
+        /// <summary>
+        /// Gets the task type
+        /// </summary>
+        /// <param name="startTime">Start Time</param>
+        /// <param name="endTime">End Time</param>
+        /// <returns></returns>
         private EntryType GetTaskType(TaskTime startTime, TaskTime endTime)
         {
             if (startTime == null || startTime.Format == TimeFormat.NONE)
@@ -434,33 +440,6 @@ namespace Calendo
         /// <summary>
         /// Gets the TimeFormat associated with the date and time
         /// </summary>
-        /// <param name="date">Date</param>
-        /// <param name="time">Time</param>
-        /// <returns>Returns TimeFormat value</returns>
-        public TimeFormat GetFormat(string date, string time)
-        {
-            TimeFormat newTimeFormat = TimeFormat.NONE;
-            date = DefaultString(date);
-            time = DefaultString(time);
-
-            if (date != "")
-            {
-                newTimeFormat = TimeFormat.DATE;
-            }
-            if (time != "")
-            {
-                newTimeFormat = TimeFormat.TIME;
-            }
-            if (date != "" && time != "")
-            {
-                newTimeFormat = TimeFormat.DATETIME;
-            }
-            return newTimeFormat;
-        }
-
-        /// <summary>
-        /// Gets the TimeFormat associated with the date and time
-        /// </summary>
         /// <param name="hasDate">Format has a date</param>
         /// <param name="hasTime">Format has a time</param>
         /// <returns>Returns TimeFormat value</returns>
@@ -552,7 +531,7 @@ namespace Calendo
         /// <param name="date">Date in Day/Month/Year</param>
         /// <param name="time">Time in Hour/Minutes (24 hour)</param>
         /// <returns>Returns DateTime object</returns>
-        public TaskTime ConvertTime(string date, string time)
+        private TaskTime ConvertTime(string date, string time)
         {
             date = DefaultString(date);
             time = DefaultString(time);
@@ -621,7 +600,6 @@ namespace Calendo
                 int convertedDay = this.ConvertInt(dateFrag[0]);
                 if (convertedDay >= 1 && convertedDay <= MaxDays(month, year))
                 {
-                    // TODO: Catch most cases, but not all
                     day = convertedDay;
                 }
                 else
@@ -674,6 +652,7 @@ namespace Calendo
             if (timeFrag.Length > 0 && timeFrag[0] != "")
             {
                 int convertedHour = this.ConvertInt(timeFrag[0]);
+                int originalHour = convertedHour;
                 if (convertedHour == 12 && isAM)
                 {
                     convertedHour = 0;
@@ -685,10 +664,30 @@ namespace Calendo
                         convertedHour += 12;
                     }
                 }
-                if (convertedHour >= 0 && convertedHour < 24)
+                // Reject if the original provided hour is invalid, even if resulting hour is correct
+                if (originalHour >= 0 && originalHour < 24 && convertedHour >= 0 && convertedHour < 24)
                 {
                     hour = convertedHour;
 
+                    if (day == DateTime.Today.Day && month == DateTime.Today.Month && year == DateTime.Today.Year && hour < DateTime.Now.Hour)
+                    {
+                        // It is on the next day
+                        day++;
+                        // Last day of the month, roll over to next month
+                        if (day >= MaxDays(month, year))
+                        {
+                            day = 1;
+                            month++;
+                        }
+                        // Last day of the year, roll over to next year
+                        if (month > 12)
+                        {
+                            month = 1;
+                            year++;
+                        }
+                        // Mark as valid date
+                        isValidDate = true;
+                    }
                 }
                 else
                 {
@@ -696,25 +695,6 @@ namespace Calendo
                     isValidTime = false;
                 }
 
-                if (day == DateTime.Today.Day && month == DateTime.Today.Month && year == DateTime.Today.Year && hour < DateTime.Now.Hour)
-                {
-                    // It is on the next day
-                    day++;
-                    // Last day of the month, roll over to next month
-                    if (day >= MaxDays(month, year))
-                    {
-                        day = 1;
-                        month++;
-                    }
-                    // Last day of the year, roll over to next year
-                    if (month > 12)
-                    {
-                        month = 1;
-                        year++;
-                    }
-                    // Mark as valid date
-                    isValidDate = true;
-                }
             }
 
             // Minute
@@ -738,7 +718,11 @@ namespace Calendo
             }
 
             TaskTime tt = new TaskTime();
-            DateTime dt = new DateTime(year, month, day, hour, minute, second);
+            DateTime dt = DateTime.Today;
+            if (isValidDate || isValidTime)
+            {
+                dt = new DateTime(year, month, day, hour, minute, second);
+            }
             tt.Format = GetFormat(isValidDate, isValidTime);
             tt.Time = dt;
             tt.IsDefault = hasError;
