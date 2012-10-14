@@ -123,6 +123,7 @@ namespace Calendo.Data
         {
             Entry EntryClone = new Entry();
             EntryClone.ID = ID;
+            EntryClone.Created = Created;
             EntryClone.Description = Description;
             EntryClone.StartTime = StartTime;
             EntryClone.StartTimeFormat = StartTimeFormat;
