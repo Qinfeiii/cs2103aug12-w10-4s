@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Calendo.Data;
+using System.IO;
 
 namespace CalendoUnitTests
 {
@@ -47,22 +48,44 @@ namespace CalendoUnitTests
         }
         [TestMethod]
         public void TestIncompatible()
-        {
-            Calendo.DebugTool.Debug.Enable = false;
+        {   
             Storage<List<string>> UTStorage = new Storage<List<string>>("test2.txt");
+            UTStorage.Load();
             UTStorage.Entries.Clear();
             UTStorage.Entries.Add("Test");
+            UTStorage.Entries.Add("Test2");
             UTStorage.Save();
+            UTStorage.Load();
+            Assert.IsTrue(UTStorage.Entries.Count == 2);
             
-            /*
             Storage<State<int>> UTStorageINT = new Storage<State<int>>("test2.txt");
             UTStorageINT.Load();
             UTStorageINT.Save();
             UTStorage.Load();
+            // The contents should be overriden with the new one
+            Assert.IsTrue(UTStorage.Entries.Count != 2);
+        }
+        [TestMethod]
+        public void TestUnwritable()
+        {
+            Storage<List<string>> UTStoragePre = new Storage<List<string>>("test3.txt");
+            UTStoragePre.Load();
+            UTStoragePre.Entries.Clear();
+            UTStoragePre.Entries.Add("Test1");
+            UTStoragePre.Entries.Add("Test2");
+            UTStoragePre.Save();
+
+            Stream fileStream = new FileStream("test3.txt", FileMode.OpenOrCreate);
+            fileStream.ReadByte();
+            Storage<List<string>> UTStorage = new Storage<List<string>>("test3.txt");
+            UTStorage.Load();
+            UTStorage.Save();
+            // Should not be able to load anything
             Assert.IsTrue(UTStorage.Entries.Count == 0);
-            */
-            
-            Calendo.DebugTool.Debug.Enable = true;
+            fileStream.Close();
+
+            UTStorage.Load();
+            Assert.IsTrue(UTStorage.Entries.Count == 2);
         }
         [TestMethod]
         public void TestEntry()
@@ -94,7 +117,6 @@ namespace CalendoUnitTests
         [TestMethod]
         public void TestState()
         {
-            Calendo.DebugTool.Debug.Enable = false;
             StateStorage<List<Entry>> UTState = new StateStorage<List<Entry>>();
             UTState.Entries.Clear();
             UTState.Save();
@@ -114,18 +136,24 @@ namespace CalendoUnitTests
             UTState.Save();
             
             StateStorage<List<Entry>> UTState2 = new StateStorage<List<Entry>>("data.txt");
-            UTState2.Clear();
+            UTState2.Clear(); // Remove all states
+
+            // There should be no undo or redo
             Assert.IsFalse(UTState2.Undo());
             Assert.IsFalse(UTState2.Redo());
+
             UTState2.Save();
-            /*
+
+            // Replace current entries
             UTState2.Entries = new List<Entry>();
+            Entry testEntry2 = new Entry();
+            testEntry2.Description = "A";
+            UTState2.Entries.Add(testEntry2);
             UTState2.Save();
-            Assert.IsTrue(UTState2.Undo());
-            Assert.IsTrue(UTState2.Redo());
-            Assert.IsTrue(UTState2.Undo());
-             * */
-            Calendo.DebugTool.Debug.Enable = true;
+            Assert.IsTrue(UTState2.HasUndo);
+            Assert.IsFalse(UTState2.HasRedo);
+            UTState2.Undo();
+            Assert.IsTrue(UTState2.HasRedo);
         }
     }
 }
