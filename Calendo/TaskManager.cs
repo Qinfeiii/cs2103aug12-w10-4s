@@ -36,7 +36,7 @@ namespace Calendo
             set;
         }
     }
-    class TaskManager
+    public class TaskManager
     {
         private StateStorage<List<Entry>> storage;
         private const int FLAG_DESCRIPTION = 1;
@@ -53,7 +53,7 @@ namespace Calendo
         }
 
         /// <summary>
-        /// Get the entries
+        /// Get or set the entries
         /// </summary>
         public List<Entry> Entries
         {
@@ -151,6 +151,12 @@ namespace Calendo
             storage.Save();
         }
 
+        /// <summary>
+        /// Gets the task type
+        /// </summary>
+        /// <param name="startTime">Start Time</param>
+        /// <param name="endTime">End Time</param>
+        /// <returns></returns>
         private EntryType GetTaskType(TaskTime startTime, TaskTime endTime)
         {
             if (startTime == null || startTime.Format == TimeFormat.NONE)
@@ -327,100 +333,6 @@ namespace Calendo
             storage.Redo();
         }
 
-        //Changed this execution pattern
-        public void PerformCommand(string command)
-        {
-            ProcessCommands(ReadCommand(command));
-        }
-
-        public static void ExecuteCommand(string commandType, string commandDate, string commandTime, string commandText)
-        {
-            //Do something with this stuff
-        }
-
-        // Working stub for CP
-        public List<Command> ReadCommand(string command)
-        {
-            string[] commandfrag = command.Split(new char[] { ' ' });
-            StringBuilder commandParameter = new StringBuilder();
-            List<Command> commands = new List<Command>();
-            bool firstCommand = true;
-            string commandType = "";
-            for (int i = 0; i < commandfrag.Length; i++)
-            {
-                if (commandfrag[i].Length > 0 && commandfrag[i][0] == '/')
-                {
-                    if (!firstCommand)
-                    {
-                        commands.Add(new Command(commandType, commandParameter.ToString()));
-                        commandParameter.Clear();
-                    }
-                    commandType = commandfrag[i].Substring(1);
-                    firstCommand = false;
-                }
-                else
-                {
-                    commandParameter.Append(commandfrag[i] + " ");
-                }
-
-            }
-            // Add last command
-            commands.Add(new Command(commandType, commandParameter.ToString()));
-            commandParameter.Clear();
-            return commands;
-        }
-
-        // Working stub for CP
-        public void ProcessCommands(List<Command> commands)
-        {
-            string date = "";
-            string time = "";
-            for (int i = 0; i < commands.Count; i++)
-            {
-                if (commands[i].Type == "date")
-                {
-                    date = commands[i].Parameter;
-                    continue;
-                }
-                if (commands[i].Type == "time")
-                {
-                    time = commands[i].Parameter;
-                    continue;
-                }
-                ProcessCommand(commands[i], date, time);
-            }
-        }
-
-        // Working stub for CP
-        private void ProcessCommand(Command command, string date, string time)
-        {
-            switch (command.Type)
-            {
-                case "add":
-                    this.Add(command.Parameter);
-                    break;
-                case "change":
-                    // STUB
-                    break;
-                case "remove":
-                    int index = this.ConvertInt(command.Parameter) - 1;
-                    this.RemoveByIndex(index);
-                    break;
-                case "undo":
-                    this.Undo();
-                    break;
-                case "sync":
-                    this.Sync();
-                    break;
-                case "import":
-                    this.Import();
-                    break;
-                case "redo":
-                    this.Redo();
-                    break;
-            }
-        }
-
         public void Sync()
         {
             // STUB
@@ -429,33 +341,6 @@ namespace Calendo
         public void Import()
         {
             // STUB
-        }
-
-        /// <summary>
-        /// Gets the TimeFormat associated with the date and time
-        /// </summary>
-        /// <param name="date">Date</param>
-        /// <param name="time">Time</param>
-        /// <returns>Returns TimeFormat value</returns>
-        public TimeFormat GetFormat(string date, string time)
-        {
-            TimeFormat newTimeFormat = TimeFormat.NONE;
-            date = DefaultString(date);
-            time = DefaultString(time);
-
-            if (date != "")
-            {
-                newTimeFormat = TimeFormat.DATE;
-            }
-            if (time != "")
-            {
-                newTimeFormat = TimeFormat.TIME;
-            }
-            if (date != "" && time != "")
-            {
-                newTimeFormat = TimeFormat.DATETIME;
-            }
-            return newTimeFormat;
         }
 
         /// <summary>
@@ -480,6 +365,22 @@ namespace Calendo
                 newTimeFormat = TimeFormat.DATETIME;
             }
             return newTimeFormat;
+        }
+
+        /// <summary>
+        /// Force a save
+        /// </summary>
+        public void Save()
+        {
+            storage.Save();
+        }
+
+        /// <summary>
+        /// Force a load
+        /// </summary>
+        public void Load()
+        {
+            storage.Load();
         }
 
         /// <summary>
@@ -552,7 +453,7 @@ namespace Calendo
         /// <param name="date">Date in Day/Month/Year</param>
         /// <param name="time">Time in Hour/Minutes (24 hour)</param>
         /// <returns>Returns DateTime object</returns>
-        public TaskTime ConvertTime(string date, string time)
+        private TaskTime ConvertTime(string date, string time)
         {
             date = DefaultString(date);
             time = DefaultString(time);
@@ -621,7 +522,6 @@ namespace Calendo
                 int convertedDay = this.ConvertInt(dateFrag[0]);
                 if (convertedDay >= 1 && convertedDay <= MaxDays(month, year))
                 {
-                    // TODO: Catch most cases, but not all
                     day = convertedDay;
                 }
                 else
@@ -674,6 +574,7 @@ namespace Calendo
             if (timeFrag.Length > 0 && timeFrag[0] != "")
             {
                 int convertedHour = this.ConvertInt(timeFrag[0]);
+                int originalHour = convertedHour;
                 if (convertedHour == 12 && isAM)
                 {
                     convertedHour = 0;
@@ -685,10 +586,30 @@ namespace Calendo
                         convertedHour += 12;
                     }
                 }
-                if (convertedHour >= 0 && convertedHour < 24)
+                // Reject if the original provided hour is invalid, even if resulting hour is correct
+                if (originalHour >= 0 && originalHour < 24 && convertedHour >= 0 && convertedHour < 24)
                 {
                     hour = convertedHour;
 
+                    if (day == DateTime.Today.Day && month == DateTime.Today.Month && year == DateTime.Today.Year && hour < DateTime.Now.Hour)
+                    {
+                        // It is on the next day
+                        day++;
+                        // Last day of the month, roll over to next month
+                        if (day >= MaxDays(month, year))
+                        {
+                            day = 1;
+                            month++;
+                        }
+                        // Last day of the year, roll over to next year
+                        if (month > 12)
+                        {
+                            month = 1;
+                            year++;
+                        }
+                        // Mark as valid date
+                        isValidDate = true;
+                    }
                 }
                 else
                 {
@@ -696,25 +617,6 @@ namespace Calendo
                     isValidTime = false;
                 }
 
-                if (day == DateTime.Today.Day && month == DateTime.Today.Month && year == DateTime.Today.Year && hour < DateTime.Now.Hour)
-                {
-                    // It is on the next day
-                    day++;
-                    // Last day of the month, roll over to next month
-                    if (day >= MaxDays(month, year))
-                    {
-                        day = 1;
-                        month++;
-                    }
-                    // Last day of the year, roll over to next year
-                    if (month > 12)
-                    {
-                        month = 1;
-                        year++;
-                    }
-                    // Mark as valid date
-                    isValidDate = true;
-                }
             }
 
             // Minute
@@ -738,7 +640,11 @@ namespace Calendo
             }
 
             TaskTime tt = new TaskTime();
-            DateTime dt = new DateTime(year, month, day, hour, minute, second);
+            DateTime dt = DateTime.Today;
+            if (isValidDate || isValidTime)
+            {
+                dt = new DateTime(year, month, day, hour, minute, second);
+            }
             tt.Format = GetFormat(isValidDate, isValidTime);
             tt.Time = dt;
             tt.IsDefault = hasError;

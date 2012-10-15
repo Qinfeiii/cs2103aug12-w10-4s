@@ -101,5 +101,14 @@ namespace Calendo
             }
             settingsStorage.Save();
         }
+
+        /// <summary>
+        /// Erase all settings
+        /// </summary>
+        public void Clear()
+        {
+            settingsStorage.Entries = new List<KeyPair<string, string>>();
+            settingsStorage.Save();
+        }
     }
 }
