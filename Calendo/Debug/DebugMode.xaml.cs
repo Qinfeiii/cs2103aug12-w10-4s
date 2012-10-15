@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Calendo.Data;
 using Calendo.CommandProcessing;
+using Calendo.GoogleCalendar;
 
 namespace Calendo
 {
@@ -87,7 +88,8 @@ namespace Calendo
 
         private void button4_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("This button is not in use");
+            //MessageBox.Show("This button is not in use");
+            MessageBox.Show(GoogleCalendar.GoogleCalendar.Import());
         }
 
         private void button5_Click(object sender, RoutedEventArgs e)
