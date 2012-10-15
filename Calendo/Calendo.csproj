@@ -102,6 +102,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="GoogleCalendar\AskAuth.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -121,6 +125,9 @@
     </Compile>
     <Compile Include="Data\Entry.cs" />
     <Compile Include="Data\Storage.cs" />
+    <Compile Include="GoogleCalendar\AskAuth.xaml.cs">
+      <DependentUpon>AskAuth.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GoogleCalendar\GoogleCalendar.cs" />
     <Compile Include="Data\StateStorage.cs" />
     <Compile Include="SettingsManager.cs" />

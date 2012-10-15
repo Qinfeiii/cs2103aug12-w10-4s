@@ -64,14 +64,19 @@ namespace Calendo.GoogleCalendar
             url+="&redirect_uri=http://rahij.com/calendo.php";
             url+="&response_type=token";
             url += "&client_id=" + provider.ClientIdentifier;
-            Console.WriteLine(url);
+            //Console.WriteLine(url);
             Uri authUri = new Uri(url);
             
             // Request authorization from the user (by opening a browser window):
             Process.Start(authUri.ToString());
-            Console.Write("  Authorization Code: ");
-            string authCode = Console.ReadLine();
-            Console.WriteLine();
+            //Console.Write("  Authorization Code: ");
+            //string authCode = Console.ReadLine();
+
+            AskAuth a = new AskAuth();
+            a.ShowDialog();
+            string authCode = a.authCode;
+
+            //Console.WriteLine();
 
             // Retrieve the access token by using the authorization code:
             return authCode;
