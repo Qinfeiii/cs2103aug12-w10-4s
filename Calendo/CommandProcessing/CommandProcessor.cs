@@ -163,26 +163,6 @@ namespace Calendo.CommandProcessing
         }
         #endregion execution
 
-        // Execution pattern: construct, then call Send
-        public CommandProcessor(string inputString)
-        {
-            this.inputString = inputString;
-
-            DICTIONARY_COMMAND_TYPE = new Dictionary<string, string[]>();
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_SEARCH, INPUT_COMMANDS_SEARCH);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_ADD, INPUT_COMMANDS_ADD);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REMOVE, INPUT_COMMANDS_REMOVE);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
-
-            InitialiseCommandParts();
-            GetCommandParts();
-
-            taskManager = new TaskManager();
-        }
-
         #region Temp for v0.1
         public CommandProcessor()
         {
