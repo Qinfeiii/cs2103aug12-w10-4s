@@ -53,7 +53,7 @@ namespace Calendo
         }
 
         /// <summary>
-        /// Get the entries
+        /// Get or set the entries
         /// </summary>
         public List<Entry> Entries
         {
@@ -333,100 +333,6 @@ namespace Calendo
             storage.Redo();
         }
 
-        //Changed this execution pattern
-        public void PerformCommand(string command)
-        {
-            ProcessCommands(ReadCommand(command));
-        }
-
-        public static void ExecuteCommand(string commandType, string commandDate, string commandTime, string commandText)
-        {
-            //Do something with this stuff
-        }
-
-        // Working stub for CP
-        public List<Command> ReadCommand(string command)
-        {
-            string[] commandfrag = command.Split(new char[] { ' ' });
-            StringBuilder commandParameter = new StringBuilder();
-            List<Command> commands = new List<Command>();
-            bool firstCommand = true;
-            string commandType = "";
-            for (int i = 0; i < commandfrag.Length; i++)
-            {
-                if (commandfrag[i].Length > 0 && commandfrag[i][0] == '/')
-                {
-                    if (!firstCommand)
-                    {
-                        commands.Add(new Command(commandType, commandParameter.ToString()));
-                        commandParameter.Clear();
-                    }
-                    commandType = commandfrag[i].Substring(1);
-                    firstCommand = false;
-                }
-                else
-                {
-                    commandParameter.Append(commandfrag[i] + " ");
-                }
-
-            }
-            // Add last command
-            commands.Add(new Command(commandType, commandParameter.ToString()));
-            commandParameter.Clear();
-            return commands;
-        }
-
-        // Working stub for CP
-        public void ProcessCommands(List<Command> commands)
-        {
-            string date = "";
-            string time = "";
-            for (int i = 0; i < commands.Count; i++)
-            {
-                if (commands[i].Type == "date")
-                {
-                    date = commands[i].Parameter;
-                    continue;
-                }
-                if (commands[i].Type == "time")
-                {
-                    time = commands[i].Parameter;
-                    continue;
-                }
-                ProcessCommand(commands[i], date, time);
-            }
-        }
-
-        // Working stub for CP
-        private void ProcessCommand(Command command, string date, string time)
-        {
-            switch (command.Type)
-            {
-                case "add":
-                    this.Add(command.Parameter);
-                    break;
-                case "change":
-                    // STUB
-                    break;
-                case "remove":
-                    int index = this.ConvertInt(command.Parameter) - 1;
-                    this.RemoveByIndex(index);
-                    break;
-                case "undo":
-                    this.Undo();
-                    break;
-                case "sync":
-                    this.Sync();
-                    break;
-                case "import":
-                    this.Import();
-                    break;
-                case "redo":
-                    this.Redo();
-                    break;
-            }
-        }
-
         public void Sync()
         {
             // STUB
@@ -459,6 +365,22 @@ namespace Calendo
                 newTimeFormat = TimeFormat.DATETIME;
             }
             return newTimeFormat;
+        }
+
+        /// <summary>
+        /// Force a save
+        /// </summary>
+        public void Save()
+        {
+            storage.Save();
+        }
+
+        /// <summary>
+        /// Force a load
+        /// </summary>
+        public void Load()
+        {
+            storage.Load();
         }
 
         /// <summary>
