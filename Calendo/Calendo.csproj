@@ -98,7 +98,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="DebugMode.xaml">
+    <Page Include="Debug\DebugMode.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -111,13 +111,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AutoSuggest.cs" />
-    <Compile Include="Command.cs" />
     <Compile Include="CommandProcessing\CommandProcessor.cs" />
     <Compile Include="Converters\EntryToBrushConverter.cs" />
     <Compile Include="Converters\EntryToDateTimeStringConverter.cs" />
     <Compile Include="Converters\EntryToDateTimeVisibilityConverter.cs" />
     <Compile Include="Debug\Debug.cs" />
-    <Compile Include="DebugMode.xaml.cs">
+    <Compile Include="Debug\DebugMode.xaml.cs">
       <DependentUpon>DebugMode.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\Entry.cs" />

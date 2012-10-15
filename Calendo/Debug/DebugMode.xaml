@@ -8,7 +8,7 @@
         <Button Content="Add" Height="23" Margin="0,43,7,0" Name="button1" VerticalAlignment="Top" Click="button1_Click" HorizontalAlignment="Right" Width="75" Grid.ColumnSpan="2" />
         <Button Content="Remove" Height="23" Margin="0,72,7,0" Name="button2" VerticalAlignment="Top" Click="button2_Click" HorizontalAlignment="Right" Width="75" Grid.ColumnSpan="2" />
         <Button Content="Undo" Height="23" Margin="0,101,7,0" Name="button3" VerticalAlignment="Top" Click="button3_Click" Grid.ColumnSpan="2" HorizontalAlignment="Right" Width="75" />
-        <Button Content="Test" HorizontalAlignment="Right" Margin="0,0,7,12" Name="button4" Width="75" Click="button4_Click" Height="23" VerticalAlignment="Bottom" />
-        <Button Content="Assert" Height="23" HorizontalAlignment="Right" Margin="0,0,7,41" Name="button5" VerticalAlignment="Bottom" Width="75" Click="button5_Click" />
+        <Button Content="(UNUSED)" HorizontalAlignment="Right" Margin="0,0,7,12" Name="button4" Width="75" Click="button4_Click" Height="23" VerticalAlignment="Bottom" />
+        <Button Content="SM Test" Height="23" HorizontalAlignment="Right" Margin="0,0,7,41" Name="button5" VerticalAlignment="Bottom" Width="75" Click="button5_Click" />
     </Grid>
 </Window>
