@@ -33,7 +33,7 @@ namespace Calendo.CommandProcessing
         private string[] INPUT_HANDLES_TIME = { "/time" };
         #endregion
 
-        private List<string> validInputCommmandList;
+        private List<string> VALID_INPUT_COMMAND_LIST;
         private Dictionary<string, string[]> DICTIONARY_COMMAND_TYPE;
 
         string inputString;
@@ -195,14 +195,14 @@ namespace Calendo.CommandProcessing
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
 
-            validInputCommmandList = new List<string>();
-            validInputCommmandList.AddRange(INPUT_COMMANDS_SEARCH);
-            validInputCommmandList.AddRange(INPUT_COMMANDS_ADD);
-            validInputCommmandList.AddRange(INPUT_COMMANDS_REMOVE);
-            validInputCommmandList.AddRange(INPUT_COMMANDS_CHANGE);
-            validInputCommmandList.AddRange(INPUT_COMMANDS_LIST);
-            validInputCommmandList.AddRange(INPUT_COMMANDS_UNDO);
-            validInputCommmandList.AddRange(INPUT_COMMANDS_REDO);
+            VALID_INPUT_COMMAND_LIST = new List<string>();
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_SEARCH);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_ADD);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_REMOVE);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_CHANGE);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_LIST);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_UNDO);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_REDO);
 
             taskManager = new TaskManager();
         }
@@ -279,7 +279,7 @@ namespace Calendo.CommandProcessing
         private bool IsValidCommand(string commandTypeInput)
         {
             //return DICTIONARY_COMMAND_TYPE.Values.Any(x => commandTypeInput.ToLower() == x);
-            return validInputCommmandList.Contains(commandTypeInput.ToLower());
+            return VALID_INPUT_COMMAND_LIST.Contains(commandTypeInput.ToLower());
         }
 
         private bool IsEmptyCommand(string commandTypeInput)
