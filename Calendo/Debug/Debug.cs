@@ -34,11 +34,11 @@ namespace Calendo.DebugTool
                 string config = sr.ReadLine();
                 if (config == "1")
                 {
-                    _Enable = true;
+                    Enable = true;
                 }
                 else if (config == "0")
                 {
-                    _Enable = false;
+                    Enable = false;
                 }
                 sr.Close();
                 fileStream.Close();
