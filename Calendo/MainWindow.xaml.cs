@@ -231,11 +231,6 @@ namespace Calendo
             ExecuteCommandOnSelectedTask(command);
         }
 
-        private void TaskListSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-
-        }
-
         private void UndoHandler(object sender, ExecutedRoutedEventArgs e)
         {
             CommandProcessor.ExecuteCommand("/undo");
