@@ -154,7 +154,8 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <Border Name="bdrAutoSuggestBorder" Grid.Row="2" Style="{StaticResource AutoCompleteBoxStyle}" Margin="12,-4,12,0" Visibility="Collapsed">
+        <Border Name="bdrAutoSuggestBorder" Grid.Row="2" Style="{StaticResource AutoCompleteBoxStyle}" Margin="12,-4,12,0" Visibility="Collapsed"
+                Panel.ZIndex="1">
             <ListBox Name="lsbAutoSuggestList" ItemsSource="{Binding SuggestionList}" 
                      KeyDown="LsbAutoSuggestListKeyDown" 
                      MouseUp="LsbAutoSuggestListMouseUp">

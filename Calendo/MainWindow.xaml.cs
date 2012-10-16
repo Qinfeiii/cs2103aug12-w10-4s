@@ -230,13 +230,10 @@ namespace Calendo
                 KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>)selectedItem;
                 Entry selectedEntry = selectedPair.Value;
 
-                if (tbxCommandBar.Text.Length == 0)
-                {
-                    int selectedIndex = selectedPair.Key;
-                    tbxCommandBar.Text = "/change " + selectedIndex;
-                    tbxCommandBar.Focus();
-                    tbxCommandBar.SelectionStart = tbxCommandBar.Text.Length;
-                }
+                int selectedIndex = selectedPair.Key;
+                tbxCommandBar.Text = "/change " + selectedIndex;
+                tbxCommandBar.Focus();
+                tbxCommandBar.SelectionStart = tbxCommandBar.Text.Length;
             }
         }
 
