@@ -20,18 +20,20 @@ namespace Calendo.CommandProcessing
 
         //TODO: Ideally, NOCOMMAND should be search in autosuggest mode,
         //      and when the user presses enter, treat it as ADD
-        private string[] INPUT_COMMANDS_SEARCH = { "search", "find" };
-        private string[] INPUT_COMMANDS_ADD = { "add", "a" };
-        private string[] INPUT_COMMANDS_REMOVE = { "remove", "delete", "rm", "del" };
-        private string[] INPUT_COMMANDS_CHANGE = { "change", "update", "modify" };
-        private string[] INPUT_COMMANDS_LIST = { "list", "ls", "show" };
-        private string[] INPUT_COMMANDS_UNDO = { "undo" };
-        private string[] INPUT_COMMANDS_REDO = { "redo" };
+        private string[] INPUT_COMMANDS_SEARCH = { "/search", "/find" };
+        private string[] INPUT_COMMANDS_ADD = { "/add", "/a" };
+        private string[] INPUT_COMMANDS_REMOVE = { "/remove", "/delete", "/rm", "/del" };
+        private string[] INPUT_COMMANDS_CHANGE = { "/change", "/update", "/modify" };
+        private string[] INPUT_COMMANDS_LIST = { "/list", "/ls", "/show" };
+        private string[] INPUT_COMMANDS_UNDO = { "/undo" };
+        private string[] INPUT_COMMANDS_REDO = { "/redo" };
+        private string INPUT_COMMAND_EMPTY = "/";
 
         private string[] INPUT_HANDLES_DATE = { "/date" };
         private string[] INPUT_HANDLES_TIME = { "/time" };
         #endregion
 
+        private List<string> VALID_INPUT_COMMAND_LIST;
         private Dictionary<string, string[]> DICTIONARY_COMMAND_TYPE;
 
         string inputString;
@@ -161,26 +163,6 @@ namespace Calendo.CommandProcessing
         }
         #endregion execution
 
-        // Execution pattern: construct, then call Send
-        public CommandProcessor(string inputString)
-        {
-            this.inputString = inputString;
-
-            DICTIONARY_COMMAND_TYPE = new Dictionary<string, string[]>();
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_SEARCH, INPUT_COMMANDS_SEARCH);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_ADD, INPUT_COMMANDS_ADD);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REMOVE, INPUT_COMMANDS_REMOVE);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
-
-            InitialiseCommandParts();
-            GetCommandParts();
-
-            taskManager = new TaskManager();
-        }
-
         #region Temp for v0.1
         public CommandProcessor()
         {
@@ -192,6 +174,15 @@ namespace Calendo.CommandProcessing
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
+
+            VALID_INPUT_COMMAND_LIST = new List<string>();
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_SEARCH);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_ADD);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_REMOVE);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_CHANGE);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_LIST);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_UNDO);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_REDO);
 
             taskManager = new TaskManager();
         }
@@ -229,33 +220,56 @@ namespace Calendo.CommandProcessing
 
         private void ExtractAndRemoveCommandType()
         {
+            // By default, the program interprets a query as a "search" command
             if (IsNoCommand())
             {
                 commandType = COMMAND_TYPE_SEARCH;
                 return;
             }
 
-            if (inputStringWords.Count == 0)
+            // If nothing has been entered, return
+            if (IsEmptyList(inputStringWords))
                 return;
 
             //TODO: Abstract
             //This is the command type ENTERED by the user
-            string commandTypeInput = inputStringWords.First().Substring(1);
+            string commandTypeInput = inputStringWords.First();
 
-            if (commandTypeInput == "")
-            {
-                // Null command supplied
+            // If command is empty, return
+            if (IsEmptyCommand(commandTypeInput))
                 return;
-            }
 
             //TODO: Abstract
-            if (DICTIONARY_COMMAND_TYPE.Keys.Any(x => commandTypeInput.ToLower() == x))
-            {
-                KeyValuePair<string, string[]> commandTypePair = DICTIONARY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
-                commandType = commandTypePair.Key;
-            }
+            //Extract actual command type from input
+            //For example, if user input was "/remove", "/delete", "/rm" or "/del",
+            //The command type to be processed is "remove"
+            if (IsValidCommand(commandTypeInput))
+                GetCommandType(commandTypeInput);
 
             inputStringWords.RemoveAt(0);
+        }
+
+        private void GetCommandType(string commandTypeInput)
+        {
+
+            KeyValuePair<string, string[]> commandTypePair = DICTIONARY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
+            commandType = commandTypePair.Key;
+        }
+
+        private bool IsValidCommand(string commandTypeInput)
+        {
+            //return DICTIONARY_COMMAND_TYPE.Values.Any(x => commandTypeInput.ToLower() == x);
+            return VALID_INPUT_COMMAND_LIST.Contains(commandTypeInput.ToLower());
+        }
+
+        private bool IsEmptyCommand(string commandTypeInput)
+        {
+            return commandTypeInput == INPUT_COMMAND_EMPTY;
+        }
+
+        private bool IsEmptyList(List<string> inputList)
+        {
+            return inputList.Count == 0;
         }
 
         private void ExtractAndRemoveCommandDate()

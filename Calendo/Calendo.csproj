@@ -98,7 +98,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="DebugMode.xaml">
+    <Page Include="Debug\DebugMode.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GoogleCalendar\AskAuth.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -111,17 +115,19 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="AutoSuggest.cs" />
-    <Compile Include="Command.cs" />
     <Compile Include="CommandProcessing\CommandProcessor.cs" />
     <Compile Include="Converters\EntryToBrushConverter.cs" />
     <Compile Include="Converters\EntryToDateTimeStringConverter.cs" />
     <Compile Include="Converters\EntryToDateTimeVisibilityConverter.cs" />
     <Compile Include="Debug\Debug.cs" />
-    <Compile Include="DebugMode.xaml.cs">
+    <Compile Include="Debug\DebugMode.xaml.cs">
       <DependentUpon>DebugMode.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\Entry.cs" />
     <Compile Include="Data\Storage.cs" />
+    <Compile Include="GoogleCalendar\AskAuth.xaml.cs">
+      <DependentUpon>AskAuth.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GoogleCalendar\GoogleCalendar.cs" />
     <Compile Include="Data\StateStorage.cs" />
     <Compile Include="SettingsManager.cs" />
@@ -187,6 +193,9 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

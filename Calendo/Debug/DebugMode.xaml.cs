@@ -11,6 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Calendo.Data;
+using Calendo.CommandProcessing;
+using Calendo.GoogleCalendar;
 
 namespace Calendo
 {
@@ -20,7 +22,9 @@ namespace Calendo
     public partial class DebugMode : Window
     {
         // NOTE: This is a testing class with a GUI interface
+        // Used for exploratory testing for TaskManager, SettingsManager, CommandProcessor
         TaskManager tm = new TaskManager();
+        CommandProcessor cp = new CommandProcessor();
         public DebugMode()
         {
             InitializeComponent();
@@ -42,9 +46,11 @@ namespace Calendo
 
         private void textBox1_KeyUp(object sender, KeyEventArgs e)
         {
+            // Used for testing CP
             if (e.Key == Key.Enter)
             {
-                tm.PerformCommand(textBox1.Text);
+                cp.ExecuteCommand(textBox1.Text);
+                tm.Load(); // Update TM with changes done by CP
                 UpdateList();
                 textBox1.Text = "";
             }
@@ -52,6 +58,7 @@ namespace Calendo
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
+            // Bypass CP (warning: This is not sync with CP - so CP will use outdated list)
             tm.Add(this.textBox1.Text);
             this.textBox1.Text = "";
             UpdateList();
@@ -59,6 +66,7 @@ namespace Calendo
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
+            // Bypass CP (warning: This is not sync with CP - so CP will use outdated list)
             if (this.listBox1.Items.Count > 0 && this.listBox1.SelectedIndex >= 0)
             {
                 tm.Remove(tm.Entries[this.listBox1.SelectedIndex].ID);
@@ -68,6 +76,7 @@ namespace Calendo
 
         private void button3_Click(object sender, RoutedEventArgs e)
         {
+            // Bypass CP (warning: This is not sync with CP - so CP will use outdated list)
             tm.Undo();
             UpdateList();
         }
@@ -79,13 +88,12 @@ namespace Calendo
 
         private void button4_Click(object sender, RoutedEventArgs e)
         {
-            //DataDriver dd = new DataDriver();
-            //dd.Test();
+            //MessageBox.Show("This button is not in use");
+            MessageBox.Show(GoogleCalendar.GoogleCalendar.Import());
         }
 
         private void button5_Click(object sender, RoutedEventArgs e)
         {
-            //Debug.Assert(false);
             SettingsManager sm = new SettingsManager();
             sm.GetSetting("null");
             sm.SetSetting("test", "a");

@@ -9,36 +9,29 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Calendo
+namespace Calendo.GoogleCalendar
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for AskAuthxaml.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class AskAuth : Window
     {
-        public MainWindow()
+        public AskAuth()
         {
             InitializeComponent();
         }
-
+        public string authCode = "";
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("");
+            authCode = this.textBox1.Text;
+            this.Close();
         }
 
-        private void gcalcopt_Click(object sender, RoutedEventArgs e)
+        private void button2_Click(object sender, RoutedEventArgs e)
         {
-            GCalc gc = new GCalc();
-            gc.ShowDialog();
-        }
-
-        private void mopen_Click(object sender, RoutedEventArgs e)
-        {
-            MockAuto ma = new MockAuto();
-            ma.Show();
+            this.Close();
         }
     }
 }
