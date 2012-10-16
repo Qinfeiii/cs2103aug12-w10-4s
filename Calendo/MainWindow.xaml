@@ -110,11 +110,11 @@
         </Grid>
 
         <Grid Grid.Row="1">
-            <TextBlock Name="EnterCommandWatermark" Grid.Row="1" Margin="22,9" Style="{StaticResource NormalTextStyle}">
+            <TextBlock Name="EnterCommandWatermark" Grid.Row="1" Margin="22,8" Style="{StaticResource NormalTextStyle}">
                 enter /command, or search
             </TextBlock>
             <TextBox Name="CommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="16" Foreground="#FF464646" 
-                     Style="{StaticResource TransparentWithBorder}" 
+                     Style="{StaticResource TransparentWithBorder}"
                      LostFocus="CommandBarLostFocus" 
                      GotFocus="CommandBarGotFocus" 
                      KeyUp="CommandBarKeyUp" 
