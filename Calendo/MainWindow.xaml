@@ -15,6 +15,7 @@
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static Calendo:MainWindow.UndoCommand}" Executed="UndoHandler" />
         <CommandBinding Command="{x:Static Calendo:MainWindow.RedoCommand}" Executed="RedoHandler" />
+        <CommandBinding Command="{x:Static Calendo:MainWindow.DelCommand}" Executed="DeleteHandler" />
     </Window.CommandBindings>
 
     <Grid Background="#FEFEFE" MouseDown="GridMouseDown">
