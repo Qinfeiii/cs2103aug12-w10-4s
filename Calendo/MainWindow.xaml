@@ -81,7 +81,7 @@
             </Grid.ColumnDefinitions>
             <Label x:Name="FocusLabel" />
 
-            <Button Name="btnSettings" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource WindowControlButtonStyle}" Click="BtnSettingsClick">
+            <Button Name="SettingsButton" Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource WindowControlButtonStyle}" Click="SettingsButtonClick">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="CALENDO" FontWeight="Bold" FontSize="14" Margin="12,0,0,0" VerticalAlignment="Center" Foreground="#FF5B5B5B"/>
                     <Image Source=".\Images\settings.png" />
@@ -95,11 +95,11 @@
                     <Image Source=".\Images\minimise.png" />
                 </Button>
 
-                <Button x:Name="btnMaximise" Click="MaximiseWindow" Style="{StaticResource WindowControlButtonStyle}">
+                <Button x:Name="MaximiseButton" Click="MaximiseWindow" Style="{StaticResource WindowControlButtonStyle}">
                     <Image Source=".\Images\maximise.png" />
                 </Button>
 
-                <Button x:Name="btnRestore" Click="MaximiseWindow" Style="{StaticResource WindowControlButtonStyle}" Visibility="Collapsed">
+                <Button x:Name="RestoreButton" Click="MaximiseWindow" Style="{StaticResource WindowControlButtonStyle}" Visibility="Collapsed">
                     <Image Source=".\Images\restore.png" />
                 </Button>
 
@@ -110,21 +110,21 @@
         </Grid>
 
         <Grid Grid.Row="1">
-            <TextBlock Name="txbEnterCommand" Grid.Row="1" Margin="22,9" Style="{StaticResource NormalTextStyle}">
+            <TextBlock Name="EnterCommandWatermark" Grid.Row="1" Margin="22,9" Style="{StaticResource NormalTextStyle}">
                 enter /command, or search
             </TextBlock>
-            <TextBox Name="tbxCommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="16" Foreground="#FF464646" 
+            <TextBox Name="CommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="16" Foreground="#FF464646" 
                      Style="{StaticResource TransparentWithBorder}" 
-                     LostFocus="TbxCommandBarLostFocus" 
-                     GotFocus="TbxCommandBarGotFocus" 
-                     KeyUp="TbxCommandBarKeyUp" 
-                     TextChanged="TbxCommandBarTextChanged"/>
+                     LostFocus="CommandBarLostFocus" 
+                     GotFocus="CommandBarGotFocus" 
+                     KeyUp="CommandBarKeyUp" 
+                     TextChanged="CommandBarTextChanged"/>
         </Grid>
 
-        <ListBox Name="lsbItemsList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,6" HorizontalContentAlignment="Stretch" 
+        <ListBox Name="TaskList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,6" HorizontalContentAlignment="Stretch" 
                  Style="{StaticResource TransparentWithBorder}"
-                 MouseDoubleClick="ItemsListDoubleClick"
-                 SizeChanged="LsbItemsListSizeChanged"
+                 MouseDoubleClick="TaskListDoubleClick"
+                 SizeChanged="TaskListSizeChanged"
                  FocusVisualStyle="{x:Null}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -155,11 +155,11 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <Border Name="bdrAutoSuggestBorder" Grid.Row="2" Style="{StaticResource AutoCompleteBoxStyle}" Margin="12,-4,12,0" Visibility="Collapsed"
+        <Border Name="AutoSuggestBorder" Grid.Row="2" Style="{StaticResource AutoCompleteBoxStyle}" Margin="12,-4,12,0" Visibility="Collapsed"
                 Panel.ZIndex="1">
-            <ListBox Name="lsbAutoSuggestList" ItemsSource="{Binding SuggestionList}" 
-                     KeyDown="LsbAutoSuggestListKeyDown" 
-                     MouseUp="LsbAutoSuggestListMouseUp">
+            <ListBox Name="AutoSuggestList" ItemsSource="{Binding SuggestionList}" 
+                     KeyDown="AutoSuggestListKeyDown" 
+                     MouseUp="AutoSuggestListMouseUp">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Style="{StaticResource NormalTextStyle}" Margin="0,4" FontSize="14" Text="{Binding}" TextWrapping="Wrap" />
