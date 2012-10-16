@@ -20,6 +20,7 @@ namespace Calendo
 
         public static RoutedCommand UndoCommand = new RoutedCommand();
         public static RoutedCommand RedoCommand = new RoutedCommand();
+        public static RoutedCommand DelCommand = new RoutedCommand();
 
         public MainWindow()
         {
@@ -27,6 +28,7 @@ namespace Calendo
 
             UndoCommand.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
             RedoCommand.InputGestures.Add(new KeyGesture(Key.Y, ModifierKeys.Control));
+            DelCommand.InputGestures.Add(new KeyGesture(Key.Delete));
 
             AutoSuggestViewModel = new AutoSuggest();
             DataContext = AutoSuggestViewModel;
@@ -224,17 +226,9 @@ namespace Calendo
 
         private void ItemsListDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            var selectedItem = lsbItemsList.SelectedItem;
-            if (selectedItem != null)
-            {
-                KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>)selectedItem;
-                Entry selectedEntry = selectedPair.Value;
+            string command = "/change";
 
-                int selectedIndex = selectedPair.Key;
-                tbxCommandBar.Text = "/change " + selectedIndex;
-                tbxCommandBar.Focus();
-                tbxCommandBar.SelectionStart = tbxCommandBar.Text.Length;
-            }
+            ExecuteCommandOnSelectedTask(command);
         }
 
         private void LsbItemsListSizeChanged(object sender, SizeChangedEventArgs e)
@@ -257,6 +251,28 @@ namespace Calendo
         private void GridMouseDown(object sender, MouseButtonEventArgs e)
         {
             DefocusCommandBar();
+        }
+
+        private void DeleteHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            string command = "/remove";
+
+            ExecuteCommandOnSelectedTask(command);
+        }
+
+        private void ExecuteCommandOnSelectedTask(string command)
+        {
+            var selectedItem = lsbItemsList.SelectedItem;
+            if (selectedItem != null)
+            {
+                KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>)selectedItem;
+                Entry selectedEntry = selectedPair.Value;
+
+                int selectedIndex = selectedPair.Key;
+                tbxCommandBar.Text = command + " " + selectedIndex;
+                tbxCommandBar.Focus();
+                tbxCommandBar.SelectionStart = tbxCommandBar.Text.Length;
+            }
         }
     }
 }
