@@ -36,17 +36,17 @@ namespace Calendo
             UpdateItemsList();
         }
 
-        private void TbxCommandBarLostFocus(object sender, RoutedEventArgs e)
+        private void CommandBarLostFocus(object sender, RoutedEventArgs e)
         {
-            if (tbxCommandBar.Text.Length == 0)
+            if (CommandBar.Text.Length == 0)
             {
-                txbEnterCommand.Visibility = Visibility.Visible;
+                EnterCommandWatermark.Visibility = Visibility.Visible;
             }
         }
 
-        private void TbxCommandBarGotFocus(object sender, RoutedEventArgs e)
+        private void CommandBarGotFocus(object sender, RoutedEventArgs e)
         {
-            txbEnterCommand.Visibility = Visibility.Collapsed;
+            EnterCommandWatermark.Visibility = Visibility.Collapsed;
         }
 
         private void DragWindow(object sender, MouseButtonEventArgs e)
@@ -94,31 +94,31 @@ namespace Calendo
                 WindowState = WindowState.Maximized;
                 WindowStyle = WindowStyle.None;
 
-                btnRestore.Visibility = Visibility.Visible;
-                btnMaximise.Visibility = Visibility.Collapsed;
+                RestoreButton.Visibility = Visibility.Visible;
+                MaximiseButton.Visibility = Visibility.Collapsed;
             }
             else
             {
-                btnRestore.Visibility = Visibility.Collapsed;
-                btnMaximise.Visibility = Visibility.Visible;
+                RestoreButton.Visibility = Visibility.Collapsed;
+                MaximiseButton.Visibility = Visibility.Visible;
             }
         }
 
-        private void TbxCommandBarKeyUp(object sender, KeyEventArgs e)
+        private void CommandBarKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Down)
             {
                 // Select the first item in the auto-suggest list, and give it focus.
-                lsbAutoSuggestList.SelectedIndex = 0;
-                lsbAutoSuggestList.Focus();
+                AutoSuggestList.SelectedIndex = 0;
+                AutoSuggestList.Focus();
             }
             else if (e.Key == Key.Return)
             {
-                string inputString = tbxCommandBar.Text;
+                string inputString = CommandBar.Text;
                 if (inputString.Length > 0)
                 {
                     CommandProcessor.ExecuteCommand(inputString);
-                    tbxCommandBar.Clear();
+                    CommandBar.Clear();
                     UpdateItemsList();
                 }
             }
@@ -126,7 +126,7 @@ namespace Calendo
             {
                 DefocusCommandBar();
             }
-            else if (!tbxCommandBar.Text.StartsWith("/"))
+            else if (!CommandBar.Text.StartsWith("/"))
             {
                 FilterListContents();
             }
@@ -134,10 +134,10 @@ namespace Calendo
 
         private void FilterListContents()
         {
-            string searchString = tbxCommandBar.Text.ToLowerInvariant().Trim();
-            if (tbxCommandBar.Text != "")
+            string searchString = CommandBar.Text.ToLowerInvariant().Trim();
+            if (CommandBar.Text != "")
             {
-                lsbItemsList.Items.Filter = delegate(object o)
+                TaskList.Items.Filter = delegate(object o)
                                                 {
                                                     KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
                                                     Entry currentEntry = currentPair.Value;
@@ -153,13 +153,13 @@ namespace Calendo
             }
             else
             {
-                lsbItemsList.Items.Filter = null;
+                TaskList.Items.Filter = null;
             }
         }
 
         private void DefocusCommandBar()
         {
-            lsbItemsList.Focus();
+            TaskList.Focus();
         }
 
         private void UpdateItemsList()
@@ -173,17 +173,17 @@ namespace Calendo
                 count++;
             }
 
-            lsbItemsList.ItemsSource = itemDictionary;
+            TaskList.ItemsSource = itemDictionary;
         }
 
-        private void LsbAutoSuggestListKeyDown(object sender, KeyEventArgs e)
+        private void AutoSuggestListKeyDown(object sender, KeyEventArgs e)
         {
             // This is on KeyDown, as KeyUp triggers after the SelectedIndex has already changed.
             // (Results in the first item being impossible to select via keyboard.)
-            if (e.Key == Key.Up && lsbAutoSuggestList.SelectedIndex == 0)
+            if (e.Key == Key.Up && AutoSuggestList.SelectedIndex == 0)
             {
-                tbxCommandBar.Focus();
-                lsbAutoSuggestList.SelectedIndex = -1;
+                CommandBar.Focus();
+                AutoSuggestList.SelectedIndex = -1;
             }
             else if (e.Key == Key.Return)
             {
@@ -193,45 +193,45 @@ namespace Calendo
 
         private void SetCommandFromSuggestion()
         {
-            string suggestion = (string)lsbAutoSuggestList.SelectedItem;
+            string suggestion = (string)AutoSuggestList.SelectedItem;
             bool isInputCommand = suggestion != null && suggestion.First() == AutoSuggest.COMMAND_INDICATOR;
             if (isInputCommand)
             {
                 string command = suggestion.Split()[0];
-                tbxCommandBar.Text = command;
-                tbxCommandBar.Focus();
-                tbxCommandBar.SelectionStart = command.Length;
+                CommandBar.Text = command;
+                CommandBar.Focus();
+                CommandBar.SelectionStart = command.Length;
 
-                bdrAutoSuggestBorder.Visibility = Visibility.Collapsed;
+                AutoSuggestBorder.Visibility = Visibility.Collapsed;
             }
         }
 
-        private void TbxCommandBarTextChanged(object sender, TextChangedEventArgs e)
+        private void CommandBarTextChanged(object sender, TextChangedEventArgs e)
         {
-            //AutoSuggestViewModel.SetSuggestions(tbxCommandBar.Text);
+            //AutoSuggestViewModel.SetSuggestions(CommandBar.Text);
 
-            //bdrAutoSuggestBorder.Visibility = Visibility.Visible;
+            //AutoSuggestBorder.Visibility = Visibility.Visible;
         }
 
-        private void BtnSettingsClick(object sender, RoutedEventArgs e)
+        private void SettingsButtonClick(object sender, RoutedEventArgs e)
         {
             DebugMode dm = new DebugMode();
             dm.Show();
         }
 
-        private void LsbAutoSuggestListMouseUp(object sender, MouseButtonEventArgs e)
+        private void AutoSuggestListMouseUp(object sender, MouseButtonEventArgs e)
         {
             SetCommandFromSuggestion();
         }
 
-        private void ItemsListDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        private void TaskListDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
             string command = "/change";
 
             ExecuteCommandOnSelectedTask(command);
         }
 
-        private void LsbItemsListSizeChanged(object sender, SizeChangedEventArgs e)
+        private void TaskListSizeChanged(object sender, SizeChangedEventArgs e)
         {
 
         }
@@ -262,16 +262,16 @@ namespace Calendo
 
         private void ExecuteCommandOnSelectedTask(string command)
         {
-            var selectedItem = lsbItemsList.SelectedItem;
+            var selectedItem = TaskList.SelectedItem;
             if (selectedItem != null)
             {
                 KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>)selectedItem;
                 Entry selectedEntry = selectedPair.Value;
 
                 int selectedIndex = selectedPair.Key;
-                tbxCommandBar.Text = command + " " + selectedIndex;
-                tbxCommandBar.Focus();
-                tbxCommandBar.SelectionStart = tbxCommandBar.Text.Length;
+                CommandBar.Text = command + " " + selectedIndex;
+                CommandBar.Focus();
+                CommandBar.SelectionStart = CommandBar.Text.Length;
             }
         }
     }
