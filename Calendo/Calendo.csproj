@@ -114,7 +114,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AutoSuggest.cs" />
+    <Compile Include="AutoSuggest\AutoSuggest.cs" />
+    <Compile Include="AutoSuggest\AutoSuggestEntry.cs" />
     <Compile Include="CommandProcessing\CommandProcessor.cs" />
     <Compile Include="Converters\EntryToBrushConverter.cs" />
     <Compile Include="Converters\EntryToDateTimeStringConverter.cs" />

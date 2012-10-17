@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Diagnostics;
+using Calendo.AutoSuggest;
 using Calendo.CommandProcessing;
 using Calendo.Data;
 
@@ -15,7 +16,7 @@ namespace Calendo
     /// </summary>
     public partial class MainWindow : Window
     {
-        private AutoSuggest AutoSuggestViewModel;
+        private AutoSuggest.AutoSuggest AutoSuggestViewModel;
         private CommandProcessor CommandProcessor;
 
         public static RoutedCommand UndoCommand = new RoutedCommand();
@@ -30,7 +31,7 @@ namespace Calendo
             RedoCommand.InputGestures.Add(new KeyGesture(Key.Y, ModifierKeys.Control));
             DelCommand.InputGestures.Add(new KeyGesture(Key.Delete));
 
-            AutoSuggestViewModel = new AutoSuggest();
+            AutoSuggestViewModel = new AutoSuggest.AutoSuggest();
             DataContext = AutoSuggestViewModel;
             CommandProcessor = new CommandProcessor();
             UpdateItemsList();
@@ -125,7 +126,7 @@ namespace Calendo
             }
             else if (e.Key == Key.Escape)
             {
-                DefocusCommandBar();
+                FocusOnTaskList();
             }
             else if (!CommandBar.Text.StartsWith("/"))
             {
@@ -158,7 +159,7 @@ namespace Calendo
             }
         }
 
-        private void DefocusCommandBar()
+        private void FocusOnTaskList()
         {
             TaskList.Focus();
             AutoSuggestBorder.Visibility = Visibility.Collapsed;
@@ -187,12 +188,16 @@ namespace Calendo
                 CommandBar.Focus();
                 AutoSuggestList.SelectedIndex = -1;
             }
+            else if (e.Key == Key.Escape)
+            {
+                FocusOnTaskList();
+            }
         }
 
         private void SetCommandFromSuggestion()
         {
-            string suggestion = (string)AutoSuggestList.SelectedItem;
-            bool isInputCommand = suggestion != null && suggestion.First() == AutoSuggest.COMMAND_INDICATOR;
+            string suggestion = ((AutoSuggestEntry)AutoSuggestList.SelectedItem).Command;
+            bool isInputCommand = suggestion != null && suggestion.First() == AutoSuggest.AutoSuggest.COMMAND_INDICATOR;
             if (isInputCommand)
             {
                 string command = suggestion.Split()[0];
@@ -243,7 +248,7 @@ namespace Calendo
 
         private void GridMouseDown(object sender, MouseButtonEventArgs e)
         {
-            DefocusCommandBar();
+            FocusOnTaskList();
         }
 
         private void DeleteHandler(object sender, ExecutedRoutedEventArgs e)
@@ -273,7 +278,7 @@ namespace Calendo
             // This is on KeyUp (and not KeyDown) to prevent the event
             // from bubbling through to the Command Bar - would cause
             // the command to be filled, then instantly executed.
-            if (e.Key == Key.Return)
+            if (e.Key == Key.Return || e.Key == Key.Space)
             {
                 SetCommandFromSuggestion();
             }
