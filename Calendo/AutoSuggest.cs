@@ -26,8 +26,8 @@ namespace Calendo
                 SuggestionList.Add("/change - edit an item");
                 SuggestionList.Add("/remove - remove an item");
                 SuggestionList.Add("/undo - undo the last action");
-                SuggestionList.Add("/import - import from Google Calendar");
-                SuggestionList.Add("/sync - export to Google Calendar");
+                SuggestionList.Add("/redo - revert an undone action");
+                SuggestionList.Add("/sync - synchronize with Google Calendar");
             }
 
             OnPropertyChanged("SuggestionList");
