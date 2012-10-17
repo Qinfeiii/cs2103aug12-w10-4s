@@ -156,13 +156,16 @@
 
         <Border Name="AutoSuggestBorder" Grid.Row="2" Style="{StaticResource AutoCompleteBoxStyle}" Margin="12,-4,12,0" Visibility="Collapsed"
                 Panel.ZIndex="1">
-            <ListBox Name="AutoSuggestList" ItemsSource="{Binding SuggestionList}" 
+            <ListBox Name="AutoSuggestList" ItemsSource="{Binding SuggestionList}"
                      KeyDown="AutoSuggestListKeyDown"
                      KeyUp="AutoSuggestListKeyUp"
-                     MouseUp="AutoSuggestListMouseUp">
+                     MouseUp="AutoSuggestListMouseUp" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Style="{StaticResource NormalTextStyle}" Margin="0,4" FontSize="14" Text="{Binding}" TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource NormalTextStyle}" Margin="0,4" FontSize="13" Text="{Binding Command}" TextWrapping="Wrap" />
+                            <TextBlock Style="{StaticResource ListBoxItemSubtleTextStyle}" Margin="5,4" FontSize="13" Text="{Binding Description}" />
+                        </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
