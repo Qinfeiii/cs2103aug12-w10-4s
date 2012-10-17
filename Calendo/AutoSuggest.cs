@@ -20,21 +20,14 @@ namespace Calendo
         {
             SuggestionList.Clear();
             bool isInputValid = input.Length > 0;
-            if (isInputValid)
+            if (isInputValid && input.First() == COMMAND_INDICATOR)
             {
-                if (input.First() == COMMAND_INDICATOR)
-                {
-                    SuggestionList.Add("/add - add a new item");
-                    SuggestionList.Add("/change - edit an item");
-                    SuggestionList.Add("/remove - remove an item");
-                    SuggestionList.Add("/undo - undo the last action");
-                    SuggestionList.Add("/import - import from Google Calendar");
-                    SuggestionList.Add("/sync - export to Google Calendar");
-                }
-                else
-                {
-                    SuggestionList.Add("search for " + input);
-                }
+                SuggestionList.Add("/add - add a new item");
+                SuggestionList.Add("/change - edit an item");
+                SuggestionList.Add("/remove - remove an item");
+                SuggestionList.Add("/undo - undo the last action");
+                SuggestionList.Add("/import - import from Google Calendar");
+                SuggestionList.Add("/sync - export to Google Calendar");
             }
 
             OnPropertyChanged("SuggestionList");

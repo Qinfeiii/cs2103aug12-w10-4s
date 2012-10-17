@@ -157,7 +157,8 @@
         <Border Name="AutoSuggestBorder" Grid.Row="2" Style="{StaticResource AutoCompleteBoxStyle}" Margin="12,-4,12,0" Visibility="Collapsed"
                 Panel.ZIndex="1">
             <ListBox Name="AutoSuggestList" ItemsSource="{Binding SuggestionList}" 
-                     KeyDown="AutoSuggestListKeyDown" 
+                     KeyDown="AutoSuggestListKeyDown"
+                     KeyUp="AutoSuggestListKeyUp"
                      MouseUp="AutoSuggestListMouseUp">
                 <ListBox.ItemTemplate>
                     <DataTemplate>

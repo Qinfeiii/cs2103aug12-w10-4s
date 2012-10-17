@@ -110,7 +110,8 @@ namespace Calendo
             {
                 // Select the first item in the auto-suggest list, and give it focus.
                 AutoSuggestList.SelectedIndex = 0;
-                AutoSuggestList.Focus();
+                ListBoxItem selectedItem = AutoSuggestList.ItemContainerGenerator.ContainerFromIndex(0) as ListBoxItem;
+                selectedItem.Focus();
             }
             else if (e.Key == Key.Return)
             {
@@ -160,6 +161,7 @@ namespace Calendo
         private void DefocusCommandBar()
         {
             TaskList.Focus();
+            AutoSuggestBorder.Visibility = Visibility.Collapsed;
         }
 
         private void UpdateItemsList()
@@ -185,10 +187,6 @@ namespace Calendo
                 CommandBar.Focus();
                 AutoSuggestList.SelectedIndex = -1;
             }
-            else if (e.Key == Key.Return)
-            {
-                SetCommandFromSuggestion();
-            }
         }
 
         private void SetCommandFromSuggestion()
@@ -208,9 +206,9 @@ namespace Calendo
 
         private void CommandBarTextChanged(object sender, TextChangedEventArgs e)
         {
-            //AutoSuggestViewModel.SetSuggestions(CommandBar.Text);
+            AutoSuggestViewModel.SetSuggestions(CommandBar.Text);
 
-            //AutoSuggestBorder.Visibility = Visibility.Visible;
+            AutoSuggestBorder.Visibility = CommandBar.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void SettingsButtonClick(object sender, RoutedEventArgs e)
@@ -267,6 +265,17 @@ namespace Calendo
                 CommandBar.Text = command + " " + selectedIndex;
                 CommandBar.Focus();
                 CommandBar.SelectionStart = CommandBar.Text.Length;
+            }
+        }
+
+        private void AutoSuggestListKeyUp(object sender, KeyEventArgs e)
+        {
+            // This is on KeyUp (and not KeyDown) to prevent the event
+            // from bubbling through to the Command Bar - would cause
+            // the command to be filled, then instantly executed.
+            if (e.Key == Key.Return)
+            {
+                SetCommandFromSuggestion();
             }
         }
     }
