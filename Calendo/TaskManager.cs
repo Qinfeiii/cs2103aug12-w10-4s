@@ -335,7 +335,7 @@ namespace Calendo
 
         public void Sync()
         {
-            // STUB
+            GoogleCalendar.GoogleCalendar.Import();
         }
 
         public void Import()
