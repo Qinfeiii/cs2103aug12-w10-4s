@@ -64,12 +64,17 @@
                 <Setter Property="Background" Value="#FFEAEAEA" />
                 <Setter Property="VerticalAlignment" Value="Top" />
             </Style>
+            <Style x:Key="ButtonStyle" TargetType="Button" BasedOn="{StaticResource TransparentWithBorder}">
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Foreground" Value="#FF464646" />
+            </Style>
         </Grid.Resources>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <!-- Title Bar-->
@@ -121,10 +126,10 @@
                      TextChanged="CommandBarTextChanged"/>
         </Grid>
 
-        <ListBox Name="TaskList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,6" HorizontalContentAlignment="Stretch" 
+        <ListBox Name="TaskList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,3" HorizontalContentAlignment="Stretch" 
                  Style="{StaticResource TransparentWithBorder}"
                  MouseDoubleClick="TaskListDoubleClick"
-                 FocusVisualStyle="{x:Null}">
+                 FocusVisualStyle="{x:Null}" SelectionChanged="TaskListSelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid HorizontalAlignment="Stretch">
@@ -170,5 +175,14 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Border>
+        
+        <Grid x:Name="ControlBar" Grid.Row="3" Margin="12,3" Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Style="{StaticResource ButtonStyle}" Margin="0,0,6,0" Click="ChangeButtonClick">change</Button>
+            <Button Grid.Column="1" Style="{StaticResource ButtonStyle}" Margin="6,0,0,0">remove</Button>
+        </Grid>
     </Grid>
 </Window>
