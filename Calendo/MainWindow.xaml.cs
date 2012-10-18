@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Diagnostics;
 using Calendo.AutoSuggest;
-using Calendo.CommandProcessing;
+using Calendo.Logic;
 using Calendo.Data;
 
 namespace Calendo

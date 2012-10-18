@@ -157,5 +157,17 @@ namespace CalendoUnitTests
             UTState2.Undo();
             Assert.IsTrue(UTState2.HasRedo);
         }
+        [TestMethod]
+        public void DataJSON()
+        {
+            Entry testEntry = new Entry();
+            testEntry.Description = "test";
+            JSON<Entry> jsonParser = new JSON<Entry>();
+            string jsonString = jsonParser.Serialize(testEntry);
+            Entry duplicate = jsonParser.Deserialize(jsonString);
+            string jsonDup = jsonParser.Serialize(duplicate);
+            Assert.IsTrue(duplicate.Description == "test");
+            Assert.IsTrue(jsonDup == jsonString);
+        }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Calendo;
+using Calendo.Logic;
+
 namespace CalendoUnitTests
 {
     [TestClass]
@@ -105,7 +107,7 @@ namespace CalendoUnitTests
         }
 
         [TestMethod]
-        public void TestAddInvalid()
+        public void TMAddInvalid()
         {
             TaskManager tm = new TaskManager();
             // Prevent past tests from affecting this test

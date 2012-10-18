@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Calendo.CommandProcessing
+namespace Calendo.Logic
 {
     //TODO: Refactor by abstraction
     //TODO: LOTS of re-factoring required

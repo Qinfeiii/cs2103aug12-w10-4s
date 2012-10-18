@@ -116,7 +116,7 @@
     </Compile>
     <Compile Include="AutoSuggest\AutoSuggest.cs" />
     <Compile Include="AutoSuggest\AutoSuggestEntry.cs" />
-    <Compile Include="CommandProcessing\CommandProcessor.cs" />
+    <Compile Include="Logic\CommandProcessor.cs" />
     <Compile Include="Converters\EntryToBrushConverter.cs" />
     <Compile Include="Converters\EntryToDateTimeStringConverter.cs" />
     <Compile Include="Converters\EntryToDateTimeVisibilityConverter.cs" />
@@ -132,8 +132,8 @@
     </Compile>
     <Compile Include="GoogleCalendar\GoogleCalendar.cs" />
     <Compile Include="Data\StateStorage.cs" />
-    <Compile Include="SettingsManager.cs" />
-    <Compile Include="TaskManager.cs" />
+    <Compile Include="Logic\SettingsManager.cs" />
+    <Compile Include="Logic\TaskManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

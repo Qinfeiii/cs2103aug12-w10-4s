@@ -4,7 +4,7 @@ using System.Text;
 using Calendo.Data;
 using Calendo.DebugTool;
 
-namespace Calendo
+namespace Calendo.Logic
 {
     class TaskTime
     {

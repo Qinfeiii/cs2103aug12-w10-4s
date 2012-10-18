@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Calendo.Data;
-using Calendo.CommandProcessing;
+using Calendo.Logic;
 using Calendo.GoogleCalendar;
 
 namespace Calendo

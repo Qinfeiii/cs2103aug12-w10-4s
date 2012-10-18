@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Calendo;
+using Calendo.Logic;
 
 namespace CalendoUnitTests
 {
