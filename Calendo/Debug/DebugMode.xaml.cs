@@ -99,5 +99,16 @@ namespace Calendo
             sm.SetSetting("test", "a");
             MessageBox.Show(sm.GetSetting("test"));
         }
+
+        private void buttonclose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void buttonnew_Click(object sender, RoutedEventArgs e)
+        {
+            TestShadow ts = new TestShadow();
+            ts.Show();
+        }
     }
 }
