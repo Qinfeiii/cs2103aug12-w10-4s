@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Calendo.Data;
 
-namespace Calendo
+namespace Calendo.Logic
 {
     [Serializable]
     public class KeyPair<K, V>
