@@ -120,6 +120,7 @@
     <Compile Include="Converters\EntryToBrushConverter.cs" />
     <Compile Include="Converters\EntryToDateTimeStringConverter.cs" />
     <Compile Include="Converters\EntryToDateTimeVisibilityConverter.cs" />
+    <Compile Include="Data\JSON.cs" />
     <Compile Include="Debug\Debug.cs" />
     <Compile Include="Debug\DebugMode.xaml.cs">
       <DependentUpon>DebugMode.xaml</DependentUpon>

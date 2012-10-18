@@ -17,6 +17,7 @@ namespace Calendo.CommandProcessing
         private const string COMMAND_TYPE_LIST = "list";
         private const string COMMAND_TYPE_UNDO = "undo";
         private const string COMMAND_TYPE_REDO = "redo";
+        private const string COMMAND_TYPE_SYNC = "sync";
 
         //TODO: Ideally, NOCOMMAND should be search in autosuggest mode,
         //      and when the user presses enter, treat it as ADD
@@ -27,6 +28,7 @@ namespace Calendo.CommandProcessing
         private string[] INPUT_COMMANDS_LIST = { "/list", "/ls", "/show" };
         private string[] INPUT_COMMANDS_UNDO = { "/undo" };
         private string[] INPUT_COMMANDS_REDO = { "/redo" };
+        private string[] INPUT_COMMANDS_SYNC = { "/sync" };
         private string INPUT_COMMAND_EMPTY = "/";
 
         private string[] INPUT_HANDLES_DATE = { "/date" };
@@ -76,6 +78,9 @@ namespace Calendo.CommandProcessing
                 case COMMAND_TYPE_REDO:
                     ExecuteRedo();
                     break;
+                case COMMAND_TYPE_SYNC:
+                    ExecuteSync();
+                    break;
                 default:
                     break;
             }
@@ -83,6 +88,11 @@ namespace Calendo.CommandProcessing
 
         private void ExecuteSearch()
         {
+        }
+
+        private void ExecuteSync()
+        {
+            taskManager.Sync();
         }
 
         private void ExecuteRemove()
@@ -174,6 +184,7 @@ namespace Calendo.CommandProcessing
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
             DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
+            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_SYNC, INPUT_COMMANDS_SYNC);
 
             VALID_INPUT_COMMAND_LIST = new List<string>();
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_SEARCH);
@@ -183,6 +194,7 @@ namespace Calendo.CommandProcessing
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_LIST);
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_UNDO);
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_REDO);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_SYNC);
 
             taskManager = new TaskManager();
         }
