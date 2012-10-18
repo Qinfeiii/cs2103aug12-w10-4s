@@ -163,6 +163,7 @@ namespace Calendo
         {
             TaskList.Focus();
             AutoSuggestBorder.Visibility = Visibility.Collapsed;
+            ControlBar.Visibility = Visibility.Collapsed;
         }
 
         private void UpdateItemsList()
@@ -229,8 +230,12 @@ namespace Calendo
 
         private void TaskListDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            string command = "/change";
+            ChangeSelectedTask();
+        }
 
+        private void ChangeSelectedTask()
+        {
+            string command = "/change";
             ExecuteCommandOnSelectedTask(command);
         }
 
@@ -254,7 +259,6 @@ namespace Calendo
         private void DeleteHandler(object sender, ExecutedRoutedEventArgs e)
         {
             string command = "/remove";
-
             ExecuteCommandOnSelectedTask(command);
         }
 
@@ -282,6 +286,23 @@ namespace Calendo
             {
                 SetCommandFromSuggestion();
             }
+        }
+
+        private void TaskListSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (TaskList.SelectedIndex != -1)
+            {
+                ControlBar.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ControlBar.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void ChangeButtonClick(object sender, RoutedEventArgs e)
+        {
+            ChangeSelectedTask();
         }
     }
 }
