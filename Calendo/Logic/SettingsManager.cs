@@ -43,7 +43,6 @@ namespace Calendo.Logic
             settingsDictionary = new Dictionary<string, int>();
             settingsStorage.Load();
             Debug.Assert(settingsStorage.Entries != null, "Settings entries cannot be null");
-            settingsStorage.Entries = new List<KeyPair<string, string>>();
             LoadList();
         }
 
@@ -108,6 +107,8 @@ namespace Calendo.Logic
         {
             settingsStorage.Entries = new List<KeyPair<string, string>>();
             settingsStorage.Save();
+            settingsStorage.Load();
+            LoadList();
         }
     }
 }
