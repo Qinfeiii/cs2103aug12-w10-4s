@@ -1,0 +1,123 @@
+﻿<Window x:Class="Calendo.TestShadow"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:f="clr-namespace:System;assembly=mscorlib"
+    Title="Resizing with shadows demo"
+    Background="Transparent" AllowsTransparency="True"
+    WindowStyle="None" WindowStartupLocation="CenterScreen"
+    MinHeight="100" Height="300"
+    MinWidth="100" Width="300" Activated="WindowActivated" Deactivated="WindowDeactivated">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="Brush_CriticalBorder" Color="#FFCA5100"/>
+        <SolidColorBrush x:Key="Brush_InactiveBackground" Color="White"/>
+        <SolidColorBrush x:Key="Brush_ActiveBackground" Color="White"/>
+        <SolidColorBrush x:Key="Brush_InactiveBorder" Color="Gray"/>
+        <SolidColorBrush x:Key="Brush_ActiveBorder" Color="#FF007ACC" />
+        <f:Double x:Key="ResizeBorderWidth">5</f:Double>
+        <!-- Determines how large the resize bars are -->
+    </Window.Resources>
+
+    <Border x:Name="FormBorder"
+     BorderBrush="{StaticResource Brush_InactiveBorder}" BorderThickness="1,1,1,1"
+     CornerRadius="2,2,2,2"
+     Width="Auto" Margin="10 10 10 10">
+        <!-- Shadow Effect -->
+        <Border.Effect>
+            <DropShadowEffect x:Name="FormShadow" Color="Black" Direction="300" 
+                                        ShadowDepth="0" Opacity=".5" BlurRadius="10" />
+        </Border.Effect>
+
+        <Grid x:Name="Grid" Background="White">
+
+            <Grid.RowDefinitions>
+                <RowDefinition x:Name="rowTop" Height="Auto"/>
+                <RowDefinition x:Name="rowMiddle" Height="*"/>
+                <RowDefinition x:Name="rowBottom" Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="colLeft" Width="Auto"/>
+                <ColumnDefinition x:Name="colMiddle" Width="*"/>
+                <ColumnDefinition x:Name="colRight" Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <!-- Resize Markers -->
+            <Rectangle x:Name="ResizeTopLeft"
+         Grid.Row="0" Grid.Column="0"
+         Width="{StaticResource ResizeBorderWidth}" Height="{StaticResource ResizeBorderWidth}"
+         Fill="{StaticResource Brush_InactiveBackground}"
+         Cursor="SizeNWSE"
+         MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
+         MouseMove="Resize"/>
+
+            <Rectangle x:Name="ResizeTopMiddle"
+         Grid.Row="0" Grid.Column="1"
+         Height="{StaticResource ResizeBorderWidth}"
+         Fill="{StaticResource Brush_InactiveBackground}"
+         Cursor="SizeNS"
+         MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
+         MouseMove="Resize"/>
+
+            <Rectangle x:Name="Rectangle_TopRight"
+         Grid.Row="0" Grid.Column="2"
+         Width="{StaticResource ResizeBorderWidth}" Height="{StaticResource ResizeBorderWidth}"
+         Fill="{StaticResource Brush_InactiveBackground}"
+         Cursor="SizeNESW"
+         MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
+         MouseMove="Resize"/>
+
+            <Rectangle x:Name="ResizeMiddleLeft"
+         Grid.Row="1" Grid.Column="0"
+         Width="{StaticResource ResizeBorderWidth}"
+         Fill="{StaticResource Brush_InactiveBackground}"
+         Cursor="SizeWE"
+         MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
+         MouseMove="Resize"/>
+
+            <Rectangle x:Name="ResizeMiddleRight"
+         Grid.Row="1" Grid.Column="2"
+         Width="{StaticResource ResizeBorderWidth}"
+         Fill="{StaticResource Brush_InactiveBackground}"
+         Cursor="SizeWE"
+         MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
+         MouseMove="Resize"/>
+
+            <Rectangle x:Name="ResizeBottomLeft"
+         Grid.Row="2" Grid.Column="0"
+         Width="{StaticResource ResizeBorderWidth}" Height="{StaticResource ResizeBorderWidth}"
+         Fill="{StaticResource Brush_InactiveBackground}"
+         Cursor="SizeNESW"
+         MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
+         MouseMove="Resize"/>
+
+            <Rectangle x:Name="ResizeBottomMiddle"
+         Grid.Row="2" Grid.Column="1"
+         Height="{StaticResource ResizeBorderWidth}"
+         Fill="{StaticResource Brush_InactiveBackground}"
+         Cursor="SizeNS"
+         MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
+         MouseMove="Resize"/>
+
+            <Rectangle x:Name="ResizeBottomRight"
+         Grid.Row="2" Grid.Column="2"
+         Width="{StaticResource ResizeBorderWidth}" Height="{StaticResource ResizeBorderWidth}"
+         Fill="{StaticResource Brush_InactiveBackground}"
+         Cursor="SizeNWSE"
+         MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
+         MouseMove="Resize"/>
+
+            <!-- Content -->
+            <Label Content="Mouse Down to Move, Double Click to Close"
+       Grid.Row="1" Grid.Column="1"
+       Background="White" Foreground="Black"
+       HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+       VerticalAlignment="Stretch" VerticalContentAlignment="Center"
+       MouseDoubleClick="WindowClose"
+       MouseLeftButtonDown="Move"/>
+
+            <Button Content="Change Border Color" Grid.Column="1" HorizontalAlignment="Center" Height="39" Margin="0,0,0,80" Grid.Row="1" VerticalAlignment="Center" Width="120" Click="ChangeBorderButton"/>
+        </Grid>
+
+    </Border>
+
+</Window>
