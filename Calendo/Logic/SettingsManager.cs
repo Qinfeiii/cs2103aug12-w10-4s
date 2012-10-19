@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 using Calendo.Data;
 
 namespace Calendo.Logic
@@ -41,10 +42,8 @@ namespace Calendo.Logic
             settingsStorage = new Storage<List<KeyPair<string, string>>>("settings.txt");
             settingsDictionary = new Dictionary<string, int>();
             settingsStorage.Load();
-            if (settingsStorage.Entries == null)
-            {
-                settingsStorage.Entries = new List<KeyPair<string, string>>();
-            }
+            Debug.Assert(settingsStorage.Entries != null, "Settings entries cannot be null");
+            settingsStorage.Entries = new List<KeyPair<string, string>>();
             LoadList();
         }
 
