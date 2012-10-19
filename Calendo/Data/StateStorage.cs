@@ -3,23 +3,26 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
 using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Diagnostics;
 
 namespace Calendo.Data
 {
     [XmlRoot("Data")]
     public class State<T> where T : new()
     {
-        private Data<T> baseValue;
-        private Stack<Data<T>> redoStack;
+        private T baseValue;
+        private Stack<T> redoStack;
 
         /// <summary>
         /// Create a State object to represent object states
         /// </summary>
         public State()
         {
-            baseValue = new Data<T>();
-            redoStack = new Stack<Data<T>>();
-            States = new List<Data<T>>();
+            baseValue = new T();
+            redoStack = new Stack<T>();
+            States = new List<T>();
         }
 
         /// <summary>
@@ -27,15 +30,15 @@ namespace Calendo.Data
         /// </summary>
         public T Value
         {
-            get { return baseValue.Value; }
-            set { baseValue.Value = value; }
+            get { return baseValue; }
+            set { baseValue = value; }
         }
 
         /// <summary>
         /// List of States
         /// </summary>
         [XmlArrayItem("State")]
-        public List<Data<T>> States
+        public List<T> States
         {
             get;
             set;
@@ -48,9 +51,9 @@ namespace Calendo.Data
         {
             if (States.Count == 0)
             {
-                States.Add(new Data<T>());
+                States.Add(new T());
             }
-            States.Add((Data<T>)baseValue.Clone());
+            States.Add(PerformClone(baseValue));
             redoStack.Clear();
         }
 
@@ -65,7 +68,7 @@ namespace Calendo.Data
                 // First state does not count
                 redoStack.Push(States[States.Count - 1]);
                 States.RemoveAt(States.Count - 1);
-                baseValue = (Data<T>)States[States.Count - 1].Clone();
+                baseValue = PerformClone(States[States.Count - 1]);
                 return true;
             }
             else
@@ -94,7 +97,7 @@ namespace Calendo.Data
         {
             if (redoStack.Count > 0)
             {
-                baseValue = (Data<T>)redoStack.Pop().Clone();
+                baseValue = PerformClone(redoStack.Pop());
                 States.Add(baseValue);
                 return true;
             }
@@ -115,6 +118,22 @@ namespace Calendo.Data
                 return (redoStack.Count > 0);
             }
         }
+
+        /// <summary>
+        /// Clones the object
+        /// </summary>
+        /// <param name="obj">Provided object</param>
+        /// <returns>Deep copy of the object</returns>
+        private T PerformClone(T obj)
+        {
+            Debug.Assert(typeof(T).IsSerializable, "Object is not serializable!");
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryFormatter formatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.Clone));
+            formatter.Serialize(memoryStream, obj);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            T clone = (T)formatter.Deserialize(memoryStream);
+            return clone;
+        }
     }
 
     public class StateStorage<T> where T : new()
@@ -130,7 +149,7 @@ namespace Calendo.Data
         {
             dataStorage = new Storage<State<T>>();
         }
-        
+
         /// <summary>
         /// Creates a Storage object
         /// </summary>

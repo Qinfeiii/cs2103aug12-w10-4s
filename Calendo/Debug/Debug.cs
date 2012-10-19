@@ -5,9 +5,9 @@ using System.Windows;
 using System.IO;
 using System.Diagnostics;
 
-namespace Calendo.DebugTool
+namespace Calendo.Diagnostics
 {
-    public class Debug
+    public class DebugTool
     {
         private const string LOG_FILEPATH = "log.txt";
         private const string CONFIG_FILEPATH = "debugcfg.txt";
@@ -62,7 +62,7 @@ namespace Calendo.DebugTool
             {
                 LoadConfig();
             }
-            if (Debug.Enable)
+            if (DebugTool.Enable)
             {
                 MessageBox.Show(message);
             }
@@ -78,27 +78,11 @@ namespace Calendo.DebugTool
             {
                 LoadConfig();
             }
-            if (Debug.Enable)
+            if (DebugTool.Enable)
             {
                 StreamWriter file = new StreamWriter(LOG_FILEPATH);
                 file.WriteLine(message);
                 file.Close();
-            }
-        }
-
-        /// <summary>
-        /// Assert a condition
-        /// </summary>
-        /// <param name="condition"></param>
-        public static void Assert(bool condition)
-        {
-            if (!loaded)
-            {
-                LoadConfig();
-            }
-            if (Debug.Enable && !condition)
-            {
-                System.Diagnostics.Debug.Assert(condition);
             }
         }
     }

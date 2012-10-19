@@ -4,8 +4,9 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
+using System.Diagnostics;
 using System.IO;
-using Calendo.DebugTool;
+using Calendo.Diagnostics;
 
 namespace Calendo.Data
 {
@@ -30,6 +31,8 @@ namespace Calendo.Data
         /// <returns></returns>
         public object Clone()
         {
+            
+            Debug.Assert(typeof(T).IsSerializable, "Object is not serializable!");
             MemoryStream memoryStream = new MemoryStream();
             BinaryFormatter formatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.Clone));
             formatter.Serialize(memoryStream, this);
@@ -108,7 +111,7 @@ namespace Calendo.Data
             }
             catch
             {
-                Debug.Alert(ERROR_UNWRITABLE);
+                DebugTool.Alert(ERROR_UNWRITABLE);
                 return false;
             }
             finally
@@ -140,7 +143,7 @@ namespace Calendo.Data
             catch
             {
                 // Invalid file, recreate empty state
-                Debug.Alert(ERROR_INCOMPATIBLE);
+                DebugTool.Alert(ERROR_INCOMPATIBLE);
                 dataWrapper = new Data<T>();
                 return false;
             }

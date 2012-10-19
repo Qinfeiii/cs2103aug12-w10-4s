@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Calendo.Data;
-using Calendo.DebugTool;
+using Calendo.Diagnostics;
 
 namespace Calendo.Logic
 {
@@ -253,7 +253,7 @@ namespace Calendo.Logic
             }
             else
             {
-                Debug.Alert(ERROR_ENTRYNOTFOUND);
+                DebugTool.Alert(ERROR_ENTRYNOTFOUND);
             }
         }
 
@@ -287,7 +287,7 @@ namespace Calendo.Logic
             }
             else
             {
-                Debug.Alert(ERROR_ENTRYNOTFOUND);
+                DebugTool.Alert(ERROR_ENTRYNOTFOUND);
             }
         }
 
@@ -636,7 +636,7 @@ namespace Calendo.Logic
 
             if (hasError)
             {
-                Debug.Alert(ERROR_INVALIDDATETIME);
+                DebugTool.Alert(ERROR_INVALIDDATETIME);
             }
 
             TaskTime tt = new TaskTime();

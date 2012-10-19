@@ -101,7 +101,7 @@ namespace CalendoUnitTests
             testEntry.StartTimeFormat = TimeFormat.DATE;
             testEntry.EndTimeFormat = TimeFormat.DATETIME;
             testEntry.Type = EntryType.DEADLINE;
-            Entry cloneEntry = testEntry.clone();
+            Entry cloneEntry = (Entry)testEntry.Clone();
             Assert.IsFalse(cloneEntry == testEntry);
             Assert.IsTrue(cloneEntry.ID == testEntry.ID);
             Assert.IsTrue(cloneEntry.Created == testEntry.Created);
@@ -127,7 +127,7 @@ namespace CalendoUnitTests
             testEntry.ID = 15;
             UTState.Entries.Add(testEntry);
             UTState.Save();
-            UTState.Entries.Add(testEntry.clone());
+            UTState.Entries.Add((Entry)testEntry.Clone());
             UTState.Save();
             UTState.Load();
             Assert.IsTrue(UTState.Entries.Count == 2);
