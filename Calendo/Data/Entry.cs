@@ -28,7 +28,7 @@ namespace Calendo.Data
     /// An entry represents a task in Calendo
     /// </summary>
     [Serializable]
-    public class Entry
+    public class Entry : ICloneable
     {
         private static int IDCounter = 0;
 
@@ -119,7 +119,7 @@ namespace Calendo.Data
         /// Make a copy of the Entry object
         /// </summary>
         /// <returns>Returns a copy of the object</returns>
-        public Entry clone()
+        public object Clone()
         {
             Entry EntryClone = new Entry();
             EntryClone.ID = ID;
@@ -130,7 +130,7 @@ namespace Calendo.Data
             EntryClone.EndTime = EndTime;
             EntryClone.EndTimeFormat = EndTimeFormat;
             EntryClone.Type = Type;
-            return EntryClone;
+            return (object) EntryClone;
         }
     }
 }
