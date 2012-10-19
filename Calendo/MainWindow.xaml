@@ -141,7 +141,7 @@
                     </Image>
                 </Button>
 
-                <Button x:Name="CloseButton" Click="CloseWindow" Style="{StaticResource WindowControlButtonStyle}" MouseEnter="WindowButtonHover">
+                <Button x:Name="CloseButton" Click="CloseWindow" Style="{StaticResource WindowControlButtonStyle}">
                     <Image>
                         <Image.Style>
                             <Style TargetType="Image">
