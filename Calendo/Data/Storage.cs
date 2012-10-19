@@ -12,7 +12,7 @@ namespace Calendo.Data
 {
     [Serializable]
     [XmlRoot("Data")]
-    public class Data<T> : ICloneable where T : new()
+    public class Data<T> where T : new()
     {
         public Data() {
             Value = new T();
@@ -23,22 +23,6 @@ namespace Calendo.Data
         {
             get;
             set;
-        }
-
-        /// <summary>
-        /// Returns a copy of this object
-        /// </summary>
-        /// <returns></returns>
-        public object Clone()
-        {
-            
-            Debug.Assert(typeof(T).IsSerializable, "Object is not serializable!");
-            MemoryStream memoryStream = new MemoryStream();
-            BinaryFormatter formatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.Clone));
-            formatter.Serialize(memoryStream, this);
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            object clone = formatter.Deserialize(memoryStream);
-            return clone;
         }
     }
 

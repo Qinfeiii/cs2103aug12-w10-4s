@@ -119,6 +119,31 @@ namespace CalendoUnitTests
         [TestMethod]
         public void DataState()
         {
+            // State with class
+            State<Data<int>> state = new State<Data<int>>();
+            Assert.IsNotNull(state.Value);
+            state.Value.Value = 2;
+            state.AddState();
+            state.Value.Value = 4;
+            state.AddState();
+            state.Undo();
+            Assert.IsTrue(state.Value.Value == 2);
+
+            // State with variable
+            State<int> statevar = new State<int>();
+            statevar.Value = 3;
+            statevar.AddState();
+            statevar.Value = 5;
+            statevar.AddState();
+            statevar.Undo();
+            Assert.IsTrue(statevar.Value == 3);
+            statevar.States.Clear();
+            statevar.AddState();
+            Assert.IsFalse(statevar.Value == 0);
+        }
+        [TestMethod]
+        public void DataStateStorage()
+        {
             StateStorage<List<Entry>> UTState = new StateStorage<List<Entry>>();
             UTState.Entries.Clear();
             UTState.Save();
