@@ -97,19 +97,63 @@
 
             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Click="MinimiseWindow" Style="{StaticResource WindowControlButtonStyle}">
-                    <Image Source=".\Images\minimise.png" />
+                    <Image>
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Setter Property="Source" Value=".\Images\minimise.png" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Source" Value=".\Images\minimiseHover.png" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
                 </Button>
 
                 <Button x:Name="MaximiseButton" Click="MaximiseWindow" Style="{StaticResource WindowControlButtonStyle}">
-                    <Image Source=".\Images\maximise.png" />
+                    <Image>
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Setter Property="Source" Value=".\Images\maximise.png" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Source" Value=".\Images\maximiseHover.png" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
                 </Button>
 
                 <Button x:Name="RestoreButton" Click="MaximiseWindow" Style="{StaticResource WindowControlButtonStyle}" Visibility="Collapsed">
-                    <Image Source=".\Images\restore.png" />
+                    <Image>
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Setter Property="Source" Value=".\Images\restore.png" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Source" Value=".\Images\restoreHover.png" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
                 </Button>
 
-                <Button Click="CloseWindow" Style="{StaticResource WindowControlButtonStyle}">
-                    <Image Source=".\Images\close.png" />
+                <Button x:Name="CloseButton" Click="CloseWindow" Style="{StaticResource WindowControlButtonStyle}" MouseEnter="WindowButtonHover">
+                    <Image>
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Setter Property="Source" Value=".\Images\close.png" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Source" Value=".\Images\closeHover.png" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
                 </Button>
             </StackPanel>
         </Grid>
@@ -175,7 +219,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Border>
-        
+
         <Grid x:Name="ControlBar" Grid.Row="3" Margin="12,3" Visibility="Collapsed">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />

@@ -198,6 +198,12 @@
   <ItemGroup>
     <Resource Include="icon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\closeHover.png" />
+    <Resource Include="Images\maximiseHover.png" />
+    <Resource Include="Images\minimiseHover.png" />
+    <Resource Include="Images\restoreHover.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

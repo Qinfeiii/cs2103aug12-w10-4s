@@ -304,5 +304,14 @@ namespace Calendo
         {
             ChangeSelectedTask();
         }
+
+        private void WindowButtonHover(object sender, MouseEventArgs e)
+        {
+            Button senderButton = sender as Button;
+            if(senderButton != null)
+            {
+                
+            }
+        }
     }
 }
