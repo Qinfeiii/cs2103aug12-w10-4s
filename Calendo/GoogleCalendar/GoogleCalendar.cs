@@ -86,7 +86,8 @@ namespace Calendo.GoogleCalendar
             String taskListId = "";
             for (int c = 0; c < values.items.Count; c++)
             {
-                taskListId += Console.WriteLine(values.items[c].id);
+                //taskListId += Console.WriteLine(values.items[c].id);
+                taskListId += values.items[c].id;
             }
             return taskListId;
         }
