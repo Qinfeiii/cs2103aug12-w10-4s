@@ -5,6 +5,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Diagnostics;
+using Calendo.AutoSuggest;
+using Calendo.Logic;
+using Calendo.Data;
 
 namespace Calendo
 {
@@ -13,29 +16,38 @@ namespace Calendo
     /// </summary>
     public partial class MainWindow : Window
     {
-        private AutoSuggest AutoSuggestViewModel;
-        private TaskManager TaskManagerObject;
+        private AutoSuggest.AutoSuggest AutoSuggestViewModel;
+        private CommandProcessor CommandProcessor;
+
+        public static RoutedCommand UndoCommand = new RoutedCommand();
+        public static RoutedCommand RedoCommand = new RoutedCommand();
+        public static RoutedCommand DelCommand = new RoutedCommand();
 
         public MainWindow()
         {
             InitializeComponent();
-            AutoSuggestViewModel = new AutoSuggest();
+
+            UndoCommand.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
+            RedoCommand.InputGestures.Add(new KeyGesture(Key.Y, ModifierKeys.Control));
+            DelCommand.InputGestures.Add(new KeyGesture(Key.Delete));
+
+            AutoSuggestViewModel = new AutoSuggest.AutoSuggest();
             DataContext = AutoSuggestViewModel;
-            TaskManagerObject = new TaskManager();
+            CommandProcessor = new CommandProcessor();
             UpdateItemsList();
         }
 
-        private void TbxCommandBarLostFocus(object sender, RoutedEventArgs e)
+        private void CommandBarLostFocus(object sender, RoutedEventArgs e)
         {
-            if (tbxCommandBar.Text.Length == 0)
+            if (CommandBar.Text.Length == 0)
             {
-                txbEnterCommand.Visibility = Visibility.Visible;
+                EnterCommandWatermark.Visibility = Visibility.Visible;
             }
         }
 
-        private void TbxCommandBarGotFocus(object sender, RoutedEventArgs e)
+        private void CommandBarGotFocus(object sender, RoutedEventArgs e)
         {
-            txbEnterCommand.Visibility = Visibility.Collapsed;
+            EnterCommandWatermark.Visibility = Visibility.Collapsed;
         }
 
         private void DragWindow(object sender, MouseButtonEventArgs e)
@@ -83,35 +95,75 @@ namespace Calendo
                 WindowState = WindowState.Maximized;
                 WindowStyle = WindowStyle.None;
 
-                btnRestore.Visibility = Visibility.Visible;
-                btnMaximise.Visibility = Visibility.Collapsed;
+                RestoreButton.Visibility = Visibility.Visible;
+                MaximiseButton.Visibility = Visibility.Collapsed;
             }
             else
             {
-                btnRestore.Visibility = Visibility.Collapsed;
-                btnMaximise.Visibility = Visibility.Visible;
+                RestoreButton.Visibility = Visibility.Collapsed;
+                MaximiseButton.Visibility = Visibility.Visible;
             }
         }
 
-        private void TbxCommandBarKeyUp(object sender, KeyEventArgs e)
+        private void CommandBarKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Down)
             {
                 // Select the first item in the auto-suggest list, and give it focus.
-                lsbAutoSuggestList.SelectedIndex = 0;
-                lsbAutoSuggestList.Focus();
+                AutoSuggestList.SelectedIndex = 0;
+                ListBoxItem selectedItem = AutoSuggestList.ItemContainerGenerator.ContainerFromIndex(0) as ListBoxItem;
+                selectedItem.Focus();
             }
-                // This portion of code is temporary for v0.1 only.
-                // UI is essentially linking directly to TaskManager, which
-                // SHOULD NOT BE THE CASE IN THE FINAL.
-            else if (e.Key == Key.Return && tbxCommandBar.Text.Length > 0)
+            else if (e.Key == Key.Return)
             {
-                TaskManagerObject.PerformCommand(tbxCommandBar.Text);
-                
-                UpdateItemsList();
-
-                tbxCommandBar.Clear();
+                string inputString = CommandBar.Text;
+                if (inputString.Length > 0)
+                {
+                    CommandProcessor.ExecuteCommand(inputString);
+                    CommandBar.Clear();
+                    UpdateItemsList();
+                }
             }
+            else if (e.Key == Key.Escape)
+            {
+                FocusOnTaskList();
+            }
+            else if (!CommandBar.Text.StartsWith("/"))
+            {
+                FilterListContents();
+            }
+        }
+
+        private void FilterListContents()
+        {
+            string searchString = CommandBar.Text.ToLowerInvariant().Trim();
+            if (CommandBar.Text != "")
+            {
+                TaskList.Items.Filter = delegate(object o)
+                                                {
+                                                    KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
+                                                    Entry currentEntry = currentPair.Value;
+                                                    if (currentEntry != null)
+                                                    {
+                                                        string lowercaseDescription =
+                                                            currentEntry.Description.ToLowerInvariant();
+                                                        return lowercaseDescription.Contains(searchString);
+                                                    }
+
+                                                    return false;
+                                                };
+            }
+            else
+            {
+                TaskList.Items.Filter = null;
+            }
+        }
+
+        private void FocusOnTaskList()
+        {
+            TaskList.Focus();
+            AutoSuggestBorder.Visibility = Visibility.Collapsed;
+            ControlBar.Visibility = Visibility.Collapsed;
         }
 
         private void UpdateItemsList()
@@ -119,79 +171,138 @@ namespace Calendo
             Dictionary<int, Entry> itemDictionary = new Dictionary<int, Entry>();
 
             int count = 1;
-            foreach (Entry currentEntry in TaskManagerObject.Entries)
+            foreach (Entry currentEntry in CommandProcessor.TaskList)
             {
                 itemDictionary.Add(count, currentEntry);
                 count++;
             }
 
-            lsbItemsList.ItemsSource = itemDictionary;
+            TaskList.ItemsSource = itemDictionary;
         }
 
-        private void LsbAutoSuggestListKeyDown(object sender, KeyEventArgs e)
+        private void AutoSuggestListKeyDown(object sender, KeyEventArgs e)
         {
             // This is on KeyDown, as KeyUp triggers after the SelectedIndex has already changed.
             // (Results in the first item being impossible to select via keyboard.)
-            if (e.Key == Key.Up && lsbAutoSuggestList.SelectedIndex == 0)
+            if (e.Key == Key.Up && AutoSuggestList.SelectedIndex == 0)
             {
-                tbxCommandBar.Focus();
-                lsbAutoSuggestList.SelectedIndex = -1;
+                CommandBar.Focus();
+                AutoSuggestList.SelectedIndex = -1;
             }
-            else if (e.Key == Key.Return)
+            else if (e.Key == Key.Escape)
             {
-                SetCommandFromSuggestion();
+                FocusOnTaskList();
             }
         }
 
         private void SetCommandFromSuggestion()
         {
-            string suggestion = (string) lsbAutoSuggestList.SelectedItem;
-            bool isInputCommand = suggestion != null && suggestion.First() == AutoSuggest.COMMAND_INDICATOR;
+            string suggestion = ((AutoSuggestEntry)AutoSuggestList.SelectedItem).Command;
+            bool isInputCommand = suggestion != null && suggestion.First() == AutoSuggest.AutoSuggest.COMMAND_INDICATOR;
             if (isInputCommand)
             {
                 string command = suggestion.Split()[0];
-                tbxCommandBar.Text = command;
-                tbxCommandBar.Focus();
-                tbxCommandBar.SelectionStart = command.Length;
+                CommandBar.Text = command;
+                CommandBar.Focus();
+                CommandBar.SelectionStart = command.Length;
 
-                bdrAutoSuggestBorder.Visibility = Visibility.Collapsed;
+                AutoSuggestBorder.Visibility = Visibility.Collapsed;
             }
         }
 
-        private void TbxCommandBarTextChanged(object sender, TextChangedEventArgs e)
+        private void CommandBarTextChanged(object sender, TextChangedEventArgs e)
         {
-            //AutoSuggestViewModel.SetSuggestions(tbxCommandBar.Text);
+            AutoSuggestViewModel.SetSuggestions(CommandBar.Text);
 
-            //bdrAutoSuggestBorder.Visibility = Visibility.Visible;
+            AutoSuggestBorder.Visibility = CommandBar.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        private void BtnSettingsClick(object sender, RoutedEventArgs e)
+        private void SettingsButtonClick(object sender, RoutedEventArgs e)
         {
             DebugMode dm = new DebugMode();
             dm.Show();
         }
 
-        private void LsbAutoSuggestListMouseUp(object sender, MouseButtonEventArgs e)
+        private void AutoSuggestListMouseUp(object sender, MouseButtonEventArgs e)
         {
             SetCommandFromSuggestion();
         }
 
-        private void LsbItemsListSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TaskListDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            var selectedItem = lsbItemsList.SelectedItem;
+            ChangeSelectedTask();
+        }
+
+        private void ChangeSelectedTask()
+        {
+            string command = "/change";
+            ExecuteCommandOnSelectedTask(command);
+        }
+
+        private void UndoHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            CommandProcessor.ExecuteCommand("/undo");
+            UpdateItemsList();
+        }
+
+        private void RedoHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            CommandProcessor.ExecuteCommand("/redo");
+            UpdateItemsList();
+        }
+
+        private void GridMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            FocusOnTaskList();
+        }
+
+        private void DeleteHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            string command = "/remove";
+            ExecuteCommandOnSelectedTask(command);
+        }
+
+        private void ExecuteCommandOnSelectedTask(string command)
+        {
+            var selectedItem = TaskList.SelectedItem;
             if (selectedItem != null)
             {
                 KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>)selectedItem;
                 Entry selectedEntry = selectedPair.Value;
 
-                if (tbxCommandBar.Text.Length == 0)
-                {
-                    int selectedIndex = selectedPair.Key;
-                    tbxCommandBar.Text = "/change " + selectedIndex;
-                    tbxCommandBar.Focus();
-                    tbxCommandBar.SelectionStart = tbxCommandBar.Text.Length;
-                }
+                int selectedIndex = selectedPair.Key;
+                CommandBar.Text = command + " " + selectedIndex;
+                CommandBar.Focus();
+                CommandBar.SelectionStart = CommandBar.Text.Length;
             }
+        }
+
+        private void AutoSuggestListKeyUp(object sender, KeyEventArgs e)
+        {
+            // This is on KeyUp (and not KeyDown) to prevent the event
+            // from bubbling through to the Command Bar - would cause
+            // the command to be filled, then instantly executed.
+            if (e.Key == Key.Return || e.Key == Key.Space)
+            {
+                SetCommandFromSuggestion();
+            }
+        }
+
+        private void TaskListSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (TaskList.SelectedIndex != -1)
+            {
+                ControlBar.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ControlBar.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void ChangeButtonClick(object sender, RoutedEventArgs e)
+        {
+            ChangeSelectedTask();
         }
     }
 }
