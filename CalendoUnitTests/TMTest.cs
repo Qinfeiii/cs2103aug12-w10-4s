@@ -25,7 +25,7 @@ namespace CalendoUnitTests
             tm.Add("Test Floating");
             tm.Add("Test Deadline 1", "31/12", "");
             tm.Add("Test Deadline 2", "", "23:59");
-            tm.Add("Test Deadline 3", "1/1/" + DateTime.Today.Year.ToString(), "12:59 AM");
+            tm.Add("Test Deadline 3", "1/1/" + (DateTime.Today.Year + 1).ToString(), "12:59 AM");
             tm.Add("Test Timed", "1/12", "14.00", "31.1", "3:02PM");
             tm.Add("Test Deadline 4", "", "0:01");
             tm.Add("Test Timed 2", "1/12-31/12", "14.00");

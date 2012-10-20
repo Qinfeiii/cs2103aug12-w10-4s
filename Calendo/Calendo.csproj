@@ -142,6 +142,7 @@
     <Compile Include="Data\StateStorage.cs" />
     <Compile Include="Logic\SettingsManager.cs" />
     <Compile Include="Logic\TaskManager.cs" />
+    <Compile Include="Logic\TimeConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
