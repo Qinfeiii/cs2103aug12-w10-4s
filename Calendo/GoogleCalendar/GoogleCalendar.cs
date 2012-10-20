@@ -20,11 +20,10 @@ namespace Calendo.GoogleCalendar
     class GoogleCalendar
     {
 
-        public static bool Sync(List<Entry> entries)
+        public static String Sync(List<String> tasks)
         {
             string auth = Authorize();
-            //postTasks(tasks, auth);
-            return false;
+            return postTasks(tasks, auth);
         }
         public static string Import()
         {
@@ -119,27 +118,39 @@ namespace Calendo.GoogleCalendar
             return authCode;
         }
 
-        private static void postTasks(Entry tasks, string auth)
-        {
-            HttpWebRequest httpWReq =
-            (HttpWebRequest)WebRequest.Create("https://www.googleapis.com/tasks/v1/lists/MTU4OTEwNzMxMTYxNzgzMjEwNDc6MDow/tasks?access_token=" + auth);
-
+        private static String postTasks(List<String> tasks, string auth)
+        {	
+		HttpWebRequest httpWReq =
+            (HttpWebRequest)WebRequest.Create("https://www.googleapis.com/tasks/v1/lists/"+getTaskListId(auth)+"/tasks?key=AIzaSyDQPMYzYwXWh4JUZX16RnV2DNJddg_5INo&access_token="+auth);
+            
+            httpWReq.ContentType = "application/json";
             ASCIIEncoding encoding = new ASCIIEncoding();
-            //string postData = "{ kind: tasks#task,";
-            string postData = "\"title\": lol_its_task";
-            //postData += "status: completed}";
 
-            byte[] data = encoding.GetBytes(postData);
-
-            httpWReq.Method = "POST";
-            //httpWReq.ContentType = "application/x-www-form-urlencoded";
-            httpWReq.ContentLength = data.Length;
-
-            using (Stream newStream = httpWReq.GetRequestStream())
+            var responseText = "";
+            foreach (String taskTitle in tasks)
             {
-                newStream.Write(data, 0, data.Length);
+                string postData = "{\"title\": \"lol_its_task\"}";
+                byte[] data = encoding.GetBytes(postData);
+
+                httpWReq.Method = "POST";
+                httpWReq.ContentLength = data.Length;
+
+                using (Stream newStream = httpWReq.GetRequestStream())
+                {
+                    newStream.Write(data, 0, data.Length);
+                }
+
+                var httpResponse = (HttpWebResponse)httpWReq.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    responseText += streamReader.ReadToEnd();
+                }
             }
-        }
+            
+
+        return responseText;
+        return "";
+		}
 
     }
 }
