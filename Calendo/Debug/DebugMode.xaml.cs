@@ -110,5 +110,14 @@ namespace Calendo
             TestShadow ts = new TestShadow();
             ts.Show();
         }
+
+        private void button6_Click(object sender, RoutedEventArgs e)
+        {
+            JSON<string> test = new JSON<string>();
+            string testDate = test.DateToJSON(DateTime.Now);
+            MessageBox.Show(testDate);
+            DateTime testDateTime = test.JSONToDate(testDate).ToLocalTime();
+            MessageBox.Show(testDateTime.ToString());
+        }
     }
 }

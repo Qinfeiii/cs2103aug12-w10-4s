@@ -116,6 +116,15 @@ namespace Calendo.Data
         }
 
         /// <summary>
+        /// Meta information about the entry
+        /// </summary>
+        public string Meta
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Make a copy of the Entry object
         /// </summary>
         /// <returns>Returns a copy of the object</returns>
@@ -130,6 +139,7 @@ namespace Calendo.Data
             EntryClone.EndTime = EndTime;
             EntryClone.EndTimeFormat = EndTimeFormat;
             EntryClone.Type = Type;
+            EntryClone.Meta = Meta;
             return (object) EntryClone;
         }
     }
