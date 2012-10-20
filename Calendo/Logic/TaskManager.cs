@@ -6,36 +6,7 @@ using Calendo.Diagnostics;
 
 namespace Calendo.Logic
 {
-    class TaskTime
-    {
-        public TaskTime()
-        {
-            this.Format = TimeFormat.NONE;
-            this.Time = DateTime.Today;
-            this.IsDefault = true;
-        }
-        public TaskTime(DateTime Time, TimeFormat Format)
-        {
-            this.Time = Time;
-            this.Format = Format;
-            this.IsDefault = false;
-        }
-        public TimeFormat Format
-        {
-            get;
-            set;
-        }
-        public DateTime Time
-        {
-            get;
-            set;
-        }
-        public bool IsDefault
-        {
-            get;
-            set;
-        }
-    }
+
     public class TaskManager
     {
         private StateStorage<List<Entry>> storage;
@@ -206,12 +177,12 @@ namespace Calendo.Logic
                 // Description changed
                 flag |= FLAG_DESCRIPTION;
             }
-            if (!startDateTime.IsDefault && (startDate + startTime) != "")
+            if (!startDateTime.HasError && (startDate + startTime) != "")
             {
                 // Start Date changed
                 flag |= FLAG_STARTTIME;
             }
-            if (!endDateTime.IsDefault && (endDate + endTime) != "")
+            if (!endDateTime.HasError && (endDate + endTime) != "")
             {
                 // End Date changed
                 flag |= FLAG_ENDTIME;
@@ -298,15 +269,6 @@ namespace Calendo.Logic
         /// <returns>Returns Entry object matching the ID, null if not found</returns>
         public Entry Get(int id)
         {
-            /*
-            for (int i = 0; i < storage.Entries.Count; i++)
-            {
-                if (storage.Entries[i].ID == id)
-                {
-                    return storage.Entries[i];
-                }
-            }
-            */
             if (id >= 1 && id <= storage.Entries.Count)
             {
                 return storage.Entries[id - 1];
@@ -382,7 +344,7 @@ namespace Calendo.Logic
         {
             storage.Load();
         }
-
+        
         /// <summary>
         /// Converts a string to a processable type
         /// </summary>
@@ -401,274 +363,16 @@ namespace Calendo.Logic
         }
 
         /// <summary>
-        /// Is it a leap year?
-        /// </summary>
-        /// <param name="year">Year</param>
-        /// <returns>Returns true if it is a leap year, false otherwise</returns>
-        private bool isLeapYear(int year) {
-            bool isLeap = false;
-            if (year % 4 == 0)
-            {
-                isLeap = true;
-            }
-            if (year % 100 == 0)
-            {
-                isLeap = false;
-            }
-            if (year % 400 == 0)
-            {
-                isLeap = true;
-            }
-            return isLeap;
-        }
-
-        /// <summary>
-        /// Get the maximum number of days in the specified month
-        /// </summary>
-        /// <param name="month">Month</param>
-        /// <param name="year">Year</param>
-        /// <returns></returns>
-        private int MaxDays(int month, int year)
-        {
-            if (month >= 1 && month <= 12 && year >= 0)
-            {
-                // Max days of each month
-                int[] maxDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-                if (isLeapYear(year))
-                {
-                    // February has an extra day
-                    maxDays[1] = 29;
-                }
-                return maxDays[month - 1];
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        /// <summary>
         /// Converts a string date and time to DateTime object
         /// </summary>
         /// <param name="date">Date in Day/Month/Year</param>
         /// <param name="time">Time in Hour/Minutes (24 hour)</param>
-        /// <returns>Returns DateTime object</returns>
+        /// <returns>Returns TaskTime object</returns>
         private TaskTime ConvertTime(string date, string time)
         {
-            date = DefaultString(date);
-            time = DefaultString(time);
-
-            bool isValidDate = true;
-            bool isValidTime = true;
-            bool hasError = false;
-
-
-            DateTime defaultDateTime = DateTime.Today;
-
-            // Defaults
-            int year = DateTime.Today.Year;
-            int day = DateTime.Today.Day;
-            int month = DateTime.Today.Month;
-            int hour = 0;
-            int minute = 0;
-            int second = 0;
-
-            // Date: Day/Month[/Year]
-            string[] dateFrag = date.Split(new char[] { '/', '.' }, 3);
-            if (date == "")
-            {
-                // No date supplied (not an error)
-                isValidDate = false;
-            }
-            // Month
-            if (isValidDate && dateFrag.Length > 1 && dateFrag[1] != "")
-            {
-                int convertedMonth = this.ConvertInt(dateFrag[1]);
-                if (convertedMonth >= 1 && convertedMonth <= 12)
-                {
-                    month = convertedMonth;
-                    if (month < defaultDateTime.Month)
-                    {
-                        // The month is actually before this month
-                        // Assume referring to next year
-                        year++;
-                    }
-                }
-                else
-                {
-                    // Invalid month
-                    hasError = true;
-                    isValidDate = false;
-                }
-            }
-            // Year (must be in future)
-            if (isValidDate && dateFrag.Length > 2 && dateFrag[2] != "")
-            {
-                int convertedYear = this.ConvertInt(dateFrag[2]);
-                if (convertedYear >= defaultDateTime.Year)
-                {
-                    year = convertedYear;
-                }
-                else
-                {
-                    // Invalid year
-                    hasError = true;
-                    isValidDate = false;
-                }
-            }
-            // Day
-            if (isValidDate && dateFrag.Length > 0 && dateFrag[0] != "")
-            {
-                int convertedDay = this.ConvertInt(dateFrag[0]);
-                if (convertedDay >= 1 && convertedDay <= MaxDays(month, year))
-                {
-                    day = convertedDay;
-                }
-                else
-                {
-                    // Invalid day
-                    hasError = true;
-                    isValidDate = false;
-                }
-            }
-
-            // Time (24HR): Hour:Minute
-            string timeMeta = "";
-            if (time.Length > 2)
-            {
-                timeMeta = time.Substring(time.Length - 2); // Get last 2 letters
-                timeMeta = timeMeta.ToUpper();
-            }
-            
-            // Only used by 12 hour format
-            // If both are false, 24 hour format is used
-            bool isAM = false;
-            bool isPM = false;
-
-            // Handle PM
-            if (timeMeta == "PM")
-            {
-                isPM = true;
-            }
-            if (timeMeta == "AM")
-            {
-                isAM = true;
-            }
-            if (isAM || isPM)
-            {
-                // Get the remainder
-                time = time.Substring(0, time.Length - 2);
-                time = time.Trim();
-            }
-
-            string[] timeFrag = time.Split(new char[] { ':', '.' }, 2);
-
-            if (time == "")
-            {
-                // No time supplied (not an error)
-                isValidTime = false;
-            }
-
-            // Process the time field
-            // Hour
-            if (timeFrag.Length > 0 && timeFrag[0] != "")
-            {
-                int convertedHour = this.ConvertInt(timeFrag[0]);
-                int originalHour = convertedHour;
-                if (convertedHour == 12 && isAM)
-                {
-                    convertedHour = 0;
-                }
-                if (isPM)
-                {
-                    if (convertedHour != 12)
-                    {
-                        convertedHour += 12;
-                    }
-                }
-                // Reject if the original provided hour is invalid, even if resulting hour is correct
-                if (originalHour >= 0 && originalHour < 24 && convertedHour >= 0 && convertedHour < 24)
-                {
-                    hour = convertedHour;
-
-                    if (day == DateTime.Today.Day && month == DateTime.Today.Month && year == DateTime.Today.Year && hour < DateTime.Now.Hour)
-                    {
-                        // It is on the next day
-                        day++;
-                        // Last day of the month, roll over to next month
-                        if (day >= MaxDays(month, year))
-                        {
-                            day = 1;
-                            month++;
-                        }
-                        // Last day of the year, roll over to next year
-                        if (month > 12)
-                        {
-                            month = 1;
-                            year++;
-                        }
-                        // Mark as valid date
-                        isValidDate = true;
-                    }
-                }
-                else
-                {
-                    hasError = true;
-                    isValidTime = false;
-                }
-
-            }
-
-            // Minute
-            if (timeFrag.Length > 1 && timeFrag[1] != "")
-            {
-                int convertedMinute = this.ConvertInt(timeFrag[1]);
-                if (convertedMinute >= 0 && convertedMinute <= 59)
-                {
-                    minute = convertedMinute;
-                }
-                else
-                {
-                    hasError = true;
-                    isValidTime = false;
-                }
-            }
-
-            if (hasError)
-            {
-                DebugTool.Alert(ERROR_INVALIDDATETIME);
-            }
-
-            TaskTime tt = new TaskTime();
-            DateTime dt = DateTime.Today;
-            if (isValidDate || isValidTime)
-            {
-                dt = new DateTime(year, month, day, hour, minute, second);
-            }
-            tt.Format = GetFormat(isValidDate, isValidTime);
-            tt.Time = dt;
-            tt.IsDefault = hasError;
-            return tt;
+            TimeConverter tc = new TimeConverter();
+            return tc.Convert(date, time);
         }
-
-        /// <summary>
-        /// Converts a string to an integer
-        /// </summary>
-        /// <param name="str">Integer in string format</param>
-        /// <returns>Return the converted numeric value. or -1 if conversion failed</returns>
-        private int ConvertInt(string str)
-        {
-            try
-            {
-                return int.Parse(str);
-            }
-            catch
-            {
-                // -1 used for detecting errors
-                return -1;
-            }
-        }
-
 
     }
 }
