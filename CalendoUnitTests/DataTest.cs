@@ -101,6 +101,7 @@ namespace CalendoUnitTests
             testEntry.StartTimeFormat = TimeFormat.DATE;
             testEntry.EndTimeFormat = TimeFormat.DATETIME;
             testEntry.Type = EntryType.DEADLINE;
+            testEntry.Meta = "meta test";
             Entry cloneEntry = (Entry)testEntry.Clone();
             Assert.IsFalse(cloneEntry == testEntry);
             Assert.IsTrue(cloneEntry.ID == testEntry.ID);
@@ -112,6 +113,7 @@ namespace CalendoUnitTests
             Assert.IsTrue(cloneEntry.StartTimeFormat == testEntry.StartTimeFormat);
             Assert.IsTrue(cloneEntry.EndTimeFormat == testEntry.EndTimeFormat);
             Assert.IsTrue(cloneEntry.Type == testEntry.Type);
+            Assert.IsTrue(cloneEntry.Meta == testEntry.Meta);
 
             testEntry.ID = 1;
             Assert.IsFalse(cloneEntry.ID == testEntry.ID);
