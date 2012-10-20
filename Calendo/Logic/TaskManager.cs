@@ -234,13 +234,6 @@ namespace Calendo.Logic
         /// <param name="index">The 0-indexed index of the item to be removed.</param>
         public void RemoveByIndex(int index)
         {
-            /*
-            if (index >= 0 && index < Entries.Count)
-            {
-                storage.Entries.RemoveAt(index);
-                storage.Save();
-            }
-             * */
             Remove(index + 1);
         }
 
@@ -303,30 +296,6 @@ namespace Calendo.Logic
         public void Import()
         {
             // STUB
-        }
-
-        /// <summary>
-        /// Gets the TimeFormat associated with the date and time
-        /// </summary>
-        /// <param name="hasDate">Format has a date</param>
-        /// <param name="hasTime">Format has a time</param>
-        /// <returns>Returns TimeFormat value</returns>
-        public TimeFormat GetFormat(bool hasDate, bool hasTime)
-        {
-            TimeFormat newTimeFormat = TimeFormat.NONE;
-            if (hasDate)
-            {
-                newTimeFormat = TimeFormat.DATE;
-            }
-            if (hasTime)
-            {
-                newTimeFormat = TimeFormat.TIME;
-            }
-            if (hasDate && hasTime)
-            {
-                newTimeFormat = TimeFormat.DATETIME;
-            }
-            return newTimeFormat;
         }
 
         /// <summary>

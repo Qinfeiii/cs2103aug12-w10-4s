@@ -114,8 +114,8 @@ namespace CalendoUnitTests
             tm.Entries.Clear();
 
             // Non-existant date
-            tm.Add("Test Invalid 1", "32/12", ""); 
-            tm.Add("Test Invalid 2", "29/2/2011", "25:00"); // Bad date and invalid time
+            tm.Add("Test Invalid 1", "32/12", "0:00 PM");  // Bad daate and invalid time
+            tm.Add("Test Invalid 2", "1/2/" + (DateTime.Today.Year.ToString()), "25:00"); // Day in past (same year) and invalid time
             tm.Add("Test Invalid 3", "1/1/2011", null); // Day in past and null string
             tm.Add("Test Invalid 4", "a/b/c", "-1:m");
             // Invalid fields should be ignored
