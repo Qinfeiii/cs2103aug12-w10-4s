@@ -191,7 +191,7 @@ namespace Calendo.Logic
 
             if (convertedTime < DateTime.Now)
             {
-                if (taskDuration.Format == TimeFormat.TIME || (taskDuration.Format == TimeFormat.DATETIME && convertedTime.Year == DateTime.Today.Year))
+                if (taskDuration.Format == TimeFormat.TIME)
                 {
                     // Date is actually the next day
                     convertedTime = convertedTime.AddDays(1);
