@@ -2,13 +2,87 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Debug Mode" Icon="/icon.png" Height="331" Width="320" Loaded="Window_Loaded">
+    <Window.Resources>
+        <SolidColorBrush x:Key="Brush_White" Color="White"/>
+        <SolidColorBrush x:Key="Brush_InactiveBackground" Color="White"/>
+        <SolidColorBrush x:Key="Brush_InactiveBorder" Color="Gray"/>
+        <SolidColorBrush x:Key="Brush_ListActiveBackground" Color="#FFE4F2FA"/>
+        <SolidColorBrush x:Key="Brush_ListActiveBorder" Color="#FF71C0E7" />
+        <SolidColorBrush x:Key="Brush_ListSelectBorder" Color="#FF269FD9" />
+
+        <Style x:Key="CListBox" TargetType="{x:Type ListBoxItem}">
+            <Style.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
+                             Color="#FFCBE8F6"/>
+            </Style.Resources>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="BorderBrush"
+                                 Value="{StaticResource Brush_White}" />
+            <Setter Property="BorderThickness"
+                                 Value="1" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsMouseOver,
+                                            RelativeSource={RelativeSource
+                                              Self}}"
+                                Value="True">
+                    <Setter Property="BorderBrush"
+                                 Value="{StaticResource Brush_ListActiveBorder}" />
+                    <Setter Property="BorderThickness"
+                                 Value="1" />
+                    <Setter Property="Background"
+                                 Value="{StaticResource Brush_ListActiveBackground}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsSelected,
+                                            RelativeSource={RelativeSource
+                                              Self}}"
+                                Value="True">
+                    <Setter Property="BorderBrush"
+                                 Value="{StaticResource Brush_ListSelectBorder}" />
+                    <Setter Property="BorderThickness"
+                                 Value="1" />
+                    <Setter Property="Foreground" Value="Black" />
+                </DataTrigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsSelected" Value="true"></Condition>
+                        <Condition Property="IsFocused" Value="false"></Condition>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="BorderBrush"
+                                 Value="{StaticResource Brush_InactiveBorder}" />
+                </MultiTrigger>
+
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
 
 
-
-        <Grid Height="300">
+    <Grid Height="300" x:Name="gridTest">
                     <TextBox Height="23" Margin="12,12,12,0" Name="textBox1" VerticalAlignment="Top" TextChanged="textBox1_TextChanged" KeyUp="textBox1_KeyUp" Grid.ColumnSpan="2" />
-                    <ListBox Margin="12,41,88,12" Name="listBox1" Grid.ColumnSpan="2" />
-                    <Button Content="Add" Height="23" Margin="0,43,7,0" Name="button1" VerticalAlignment="Top" Click="button1_Click" HorizontalAlignment="Right" Width="75" Grid.ColumnSpan="2" />
+                    <!--<ListBox Margin="12,41,88,12" Name="listBox1" Grid.ColumnSpan="2" />-->
+        <ListBox ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource CListBox}" Margin="12,41,88,12" Name="listBox1" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" SizeChanged="listBox1_SizeChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border HorizontalAlignment="Stretch">
+                    <Grid Width="Auto" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="30px" />
+                            <ColumnDefinition Width="*" /> <!-- * is important -->
+                            <ColumnDefinition Width="20px" />
+                         </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="1" Text="{Binding Value.ID}"></TextBlock>
+                            <WrapPanel Grid.Column="2">
+                                <TextBlock TextWrapping="Wrap" HorizontalAlignment="Stretch" Text="{Binding Value.Description}"></TextBlock>
+                            </WrapPanel>
+                                
+                            <TextBlock Grid.Column="3" HorizontalAlignment="Right" Text=""><Button Name="buttonInput" Click="buttonInput_Click">?</Button></TextBlock>
+                    </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Button Content="Add" Height="23" Margin="0,43,7,0" Name="button1" VerticalAlignment="Top" Click="button1_Click" HorizontalAlignment="Right" Width="75" Grid.ColumnSpan="2" />
                     <Button Content="Remove" Height="23" Margin="0,72,7,0" Name="button2" VerticalAlignment="Top" Click="button2_Click" HorizontalAlignment="Right" Width="75" Grid.ColumnSpan="2" />
                     <Button Content="Undo" Height="23" Margin="0,101,7,0" Name="button3" VerticalAlignment="Top" Click="button3_Click" Grid.ColumnSpan="2" HorizontalAlignment="Right" Width="75" />
                     <Button Content="GC Test" HorizontalAlignment="Right" Margin="0,0,7,12" Name="button4" Width="75" Click="button4_Click" Height="23" VerticalAlignment="Bottom" />
