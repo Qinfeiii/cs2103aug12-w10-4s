@@ -10,7 +10,8 @@ namespace Calendo.Data
     public enum EntryType {
         FLOATING,
         DEADLINE,
-        TIMED
+        TIMED,
+        COMPLETE
     }
 
     /// <summary>
@@ -32,6 +33,9 @@ namespace Calendo.Data
     {
         private static int IDCounter = 0;
 
+        /// <summary>
+        /// Creates a new entry object
+        /// </summary>
         public Entry() {
             ID = IDCounter++;
             Created = DateTime.Now;

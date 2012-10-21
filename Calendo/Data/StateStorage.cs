@@ -107,7 +107,6 @@ namespace Calendo.Data
             }
         }
 
-
         /// <summary>
         /// Gets a boolean value determining if there are redo states
         /// </summary>
