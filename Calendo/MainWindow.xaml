@@ -42,7 +42,7 @@
                     <SolidColorBrush x:Key="BorderColourBrush" Color="Transparent" />
                 </Grid.Resources>
 
-                <Grid Grid.Row="1" Grid.Column="1">
+                <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="3">
                     <Grid.Resources>
                         <Style x:Key="NormalTextStyle" TargetType="TextBlock">
                             <Setter Property="FontSize" Value="16" />
