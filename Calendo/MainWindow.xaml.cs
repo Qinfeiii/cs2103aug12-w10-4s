@@ -234,6 +234,11 @@ namespace Calendo
             AutoSuggestViewModel.SetSuggestions(CommandBar.Text);
 
             AutoSuggestBorder.Visibility = CommandBar.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
+            if (CommandBar.Text.Length > 0 && CommandBar.Text[0] != '/')
+            {
+                // Not a command (search mode)
+                AutoSuggestBorder.Visibility = Visibility.Collapsed;
+            }
         }
 
         private void SettingsButtonClick(object sender, RoutedEventArgs e)
