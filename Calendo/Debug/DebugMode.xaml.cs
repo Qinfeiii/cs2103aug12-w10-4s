@@ -140,5 +140,6 @@ namespace Calendo
             JSON<Entry> jsonParse = new JSON<Entry>();
             MessageBox.Show(jsonParse.Serialize(currentEntry));
         }
+
     }
 }
