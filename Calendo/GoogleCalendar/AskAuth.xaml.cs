@@ -33,5 +33,26 @@ namespace Calendo.GoogleCalendar
         {
             this.Close();
         }
+
+        private void WindowActivated(object sender, EventArgs e)
+        {
+            Brush activeBrush = (Brush)this.Resources[(object)"Brush_CriticalBorder"];
+            FormBorder.BorderBrush = activeBrush;
+            FormShadow.Color = ((SolidColorBrush)activeBrush).Color;
+        }
+
+        private void WindowDeactivated(object sender, EventArgs e)
+        {
+            Brush activeBrush = (Brush)this.Resources[(object)"Brush_InactiveBorder"];
+            FormBorder.BorderBrush = activeBrush;
+            FormShadow.Color = ((SolidColorBrush)activeBrush).Color;
+        }
+
+        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.Cursor = Cursors.SizeAll;
+            DragMove();
+            this.Cursor = Cursors.Arrow;
+        }
     }
 }
