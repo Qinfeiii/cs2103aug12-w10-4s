@@ -35,13 +35,18 @@ namespace Calendo
             
         }
 
+        private Dictionary<int, Entry> entryDictionary;
         private void UpdateList()
         {
-            this.listBox1.Items.Clear();
+            //this.listBox1.Items.Clear();
+            entryDictionary = new Dictionary<int, Entry>();
+
             for (int i = 0; i < tm.Entries.Count; i++)
             {
-                this.listBox1.Items.Add("[" + tm.Entries[i].ID.ToString() + "] " + tm.Entries[i].Description);
+                //this.listBox1.Items.Add("[" + tm.Entries[i].ID.ToString() + "] " + tm.Entries[i].Description);
+                entryDictionary.Add(i, tm.Entries[i]);
             }
+            this.listBox1.ItemsSource = entryDictionary;
         }
 
         private void textBox1_KeyUp(object sender, KeyEventArgs e)
@@ -118,6 +123,22 @@ namespace Calendo
             MessageBox.Show(testDate);
             DateTime testDateTime = test.JSONToDate(testDate).ToLocalTime();
             MessageBox.Show(testDateTime.ToString());
+        }
+
+        private void listBox1_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
+        }
+
+        private void buttonInput_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            Type t = btn.DataContext.GetType();
+            KeyValuePair<int, Entry> dContext = (KeyValuePair<int, Entry>)btn.DataContext;
+
+            Entry currentEntry = dContext.Value;
+            JSON<Entry> jsonParse = new JSON<Entry>();
+            MessageBox.Show(jsonParse.Serialize(currentEntry));
         }
     }
 }
