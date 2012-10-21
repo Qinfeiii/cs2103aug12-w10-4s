@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using WinInterop = System.Windows.Interop;
 using System.Runtime.InteropServices;
 
 namespace Calendo
@@ -15,7 +13,7 @@ namespace Calendo
     public class FormMaximize
     {
         /// <summary>
-        /// Directly override WinProc messages if needed
+        /// Directly override WinProc messages
         /// </summary>
         public static System.IntPtr WindowProc(
               System.IntPtr hwnd,
@@ -62,6 +60,8 @@ namespace Calendo
             Marshal.StructureToPtr(mmInfo, param, true);
         }
 
+        // Structures below are used by WinAPI
+
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
         {
@@ -104,7 +104,7 @@ namespace Calendo
         }
 
         // Win API external reference
-        [DllImport("user32")]
+        [DllImport("User32")]
         internal static extern bool GetMonitorInfo(IntPtr hMonitor, MONITORINFO lpmi);
         [DllImport("User32")]
         internal static extern IntPtr MonitorFromWindow(IntPtr handle, int flags);
