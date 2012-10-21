@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Diagnostics;
+using System.Windows.Shapes;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
 using Calendo.Data;
@@ -18,6 +19,11 @@ namespace Calendo
     {
         private AutoSuggest.AutoSuggest AutoSuggestViewModel;
         private CommandProcessor CommandProcessor;
+
+        private const double CURSOR_OFFSET = 10;
+        private double resizeX = 0;
+        private double resizeY = 0;
+        private bool isResize = false;
 
         public static RoutedCommand UndoCommand = new RoutedCommand();
         public static RoutedCommand RedoCommand = new RoutedCommand();
@@ -303,6 +309,111 @@ namespace Calendo
         private void ChangeButtonClick(object sender, RoutedEventArgs e)
         {
             ChangeSelectedTask();
+        }
+
+        private void ResizeStart(object sender, MouseEventArgs e)
+        {
+            isResize = true;
+            ((Rectangle)sender).CaptureMouse();
+        }
+
+        private void ResizeEnd(object sender, MouseEventArgs e)
+        {
+            isResize = false;
+            ((Rectangle)sender).ReleaseMouseCapture();
+        }
+
+        private void Resize(object sender, MouseEventArgs e)
+        {
+            if (!isResize)
+            {
+                return;
+            }
+            resizeX = e.GetPosition(this).X;
+            resizeY = e.GetPosition(this).Y;
+            switch (((Rectangle)sender).Name)
+            {
+                case "ResizeTopLeft":
+                    ResizeLeft();
+                    ResizeTop();
+                    break;
+                case "ResizeTopMiddle":
+                    ResizeTop();
+                    break;
+                case "ResizeTopRight":
+                    ResizeRight();
+                    ResizeTop();
+                    break;
+                case "ResizeMiddleLeft":
+                    ResizeLeft();
+                    break;
+                case "ResizeMiddleRight":
+                    ResizeRight();
+                    break;
+                case "ResizeBottomLeft":
+                    ResizeLeft();
+                    ResizeBottom();
+                    break;
+                case "ResizeBottomMiddle":
+                    ResizeBottom();
+                    break;
+                case "ResizeBottomRight":
+                    ResizeRight();
+                    ResizeBottom();
+                    break;
+            }
+        }
+
+        // Resize on left of window
+        private void ResizeLeft()
+        {
+            resizeX -= CURSOR_OFFSET;
+            double newWidth = Width - resizeX;
+            if (newWidth >= MinWidth)
+            {
+                Width = newWidth;
+                Left += resizeX;
+            }
+        }
+
+        // Resize on right of window
+        private void ResizeRight()
+        {
+            resizeX += CURSOR_OFFSET;
+            if (resizeX < MinWidth)
+            {
+                Width = MinWidth;
+            }
+            else
+            {
+                Width = resizeX;
+            }
+        }
+
+        // Resize on top of window
+        private void ResizeTop()
+        {
+            resizeY -= CURSOR_OFFSET;
+            double newHeight = Height - resizeY;
+            if (newHeight >= MinHeight)
+            {
+                Height = newHeight;
+                Top += resizeY;
+            }
+        }
+
+        // Resize on bottom of window
+        private void ResizeBottom()
+        {
+            resizeY += CURSOR_OFFSET;
+            if (resizeY < MinHeight)
+            {
+                Height = MinHeight;
+            }
+            else
+            {
+                Height = resizeY;
+            }
         }
     }
 }
