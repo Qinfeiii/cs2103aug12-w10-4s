@@ -5,7 +5,7 @@
         xmlns:Converters="clr-namespace:Calendo.Converters" 
         xmlns:Calendo="clr-namespace:Calendo" 
         Title="Calendo" Icon="icon.png" Height="400" Width="300" MinHeight="150" MinWidth="300"
-        WindowStyle="None" StateChanged="WindowStateChanged" AllowsTransparency="True" BorderThickness="15">
+        WindowStyle="None" StateChanged="WindowStateChanged" AllowsTransparency="True" BorderThickness="12">
 
     <Window.Resources>
         <Converters:EntryToDateTimeStringConverter x:Key="DateTimeConverter" />
@@ -21,7 +21,7 @@
 
     <Border>
         <Border.Effect>
-            <DropShadowEffect Color="Black" Direction="-75" ShadowDepth="2" BlurRadius="25" />
+            <DropShadowEffect Color="Black" Direction="-75" ShadowDepth="2" BlurRadius="12" />
         </Border.Effect>
         <Grid Background="#FEFEFE" MouseDown="GridMouseDown">
             <Grid>
