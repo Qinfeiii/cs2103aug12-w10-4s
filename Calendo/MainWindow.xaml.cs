@@ -9,6 +9,7 @@ using System.Windows.Shapes;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
 using Calendo.Data;
+using System.Windows.Interop;
 
 namespace Calendo
 {
@@ -32,6 +33,7 @@ namespace Calendo
         public MainWindow()
         {
             InitializeComponent();
+            this.SourceInitialized += new EventHandler(FormSourceInitialized);
 
             UndoCommand.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
             RedoCommand.InputGestures.Add(new KeyGesture(Key.Y, ModifierKeys.Control));
@@ -42,6 +44,14 @@ namespace Calendo
             CommandProcessor = new CommandProcessor();
             UpdateItemsList();
         }
+
+        // Fixes for maximize
+        void FormSourceInitialized(object sender, EventArgs e)
+        {
+            System.IntPtr handle = (new WindowInteropHelper(this)).Handle;
+            HwndSource.FromHwnd(handle).AddHook(new HwndSourceHook(FormMaximize.WindowProc));
+        }
+        // End Fixes
 
         private void CommandBarLostFocus(object sender, RoutedEventArgs e)
         {
@@ -97,15 +107,18 @@ namespace Calendo
             {
                 // Toggling of WindowStyle is needed to get around the window
                 // overlapping the TaskBar if it is maximized when WindowStyle is None.
+                /*
                 WindowStyle = WindowStyle.SingleBorderWindow;
                 WindowState = WindowState.Maximized;
                 WindowStyle = WindowStyle.None;
-
+                */
+                this.BorderThickness = new Thickness(0);
                 RestoreButton.Visibility = Visibility.Visible;
                 MaximiseButton.Visibility = Visibility.Collapsed;
             }
             else
             {
+                this.BorderThickness = new Thickness(15);
                 RestoreButton.Visibility = Visibility.Collapsed;
                 MaximiseButton.Visibility = Visibility.Visible;
             }
