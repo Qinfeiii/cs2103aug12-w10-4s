@@ -124,6 +124,7 @@
     <Compile Include="Debug\TestShadow.xaml.cs">
       <DependentUpon>TestShadow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FormMaximize.cs" />
     <Compile Include="Logic\CommandProcessor.cs" />
     <Compile Include="Converters\EntryToBrushConverter.cs" />
     <Compile Include="Converters\EntryToDateTimeStringConverter.cs" />
