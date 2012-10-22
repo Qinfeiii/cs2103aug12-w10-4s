@@ -105,14 +105,14 @@ namespace Calendo.Logic
             int index = 0;
             try
             {
-                index = Convert.ToInt32(commandText) - 1;
+                index = Convert.ToInt32(commandText);
             }
             catch
             {
                 // Invalid ID
                 return;
             }
-            taskManager.RemoveByIndex(index);
+            taskManager.Remove(index);
         }
 
         private void ExecuteChange()
