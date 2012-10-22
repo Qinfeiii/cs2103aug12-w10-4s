@@ -63,10 +63,19 @@
                             <Setter Property="Foreground"
                                     Value="{Binding Value, Converter={StaticResource EntryToBrushConverter}}" />
                         </Style>
+                        <SolidColorBrush x:Key="ItemSelectedBorder" Color="#FF38A7CB" />
                         <Style x:Key="TransparentWithBorder" TargetType="Control">
                             <Setter Property="Background" Value="Transparent" />
                             <Setter Property="BorderThickness" Value="3" />
                             <Setter Property="BorderBrush" Value="DarkGray" />
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource ItemSelectedBorder}" />
+                                </Trigger>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource ItemSelectedBorder}" />
+                                </Trigger>
+                            </Style.Triggers>
                         </Style>
                         <Style x:Key="WindowControlButtonStyle" TargetType="Button">
                             <Setter Property="Template">
@@ -197,7 +206,7 @@
                     <Grid Grid.Row="1">
                         <TextBlock Name="EnterCommandWatermark" Grid.Row="1" Margin="22,8"
                                    Style="{StaticResource NormalTextStyle}">
-                            enter /command, or search
+                            Search, or type /
                         </TextBlock>
                         <TextBox Name="CommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="16" Foreground="#FF464646"
                                  Style="{StaticResource TransparentWithBorder}" LostFocus="CommandBarLostFocus" GotFocus="CommandBarGotFocus"
