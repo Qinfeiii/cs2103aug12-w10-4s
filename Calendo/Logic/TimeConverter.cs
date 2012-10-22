@@ -280,6 +280,11 @@ namespace Calendo.Logic
                         // 12 Midnight case
                         hour = 0;
                     }
+                    else if (hour == 12 && isPM)
+                    {
+                        // 12 Noon case
+                        hour = 12;
+                    }
                     else if (hour > 0 && isPM)
                     {
                         // 1 to 11PM case

@@ -196,5 +196,17 @@ namespace CalendoUnitTests
             Assert.IsTrue(duplicate.Description == "test");
             Assert.IsTrue(jsonDup == jsonString);
         }
+        [TestMethod]
+        public void DataJSONTime()
+        {
+            JSON<Entry> jsonParser = new JSON<Entry>();
+            DateTime nowTime = DateTime.Now;
+            // JSON time does not include milli and micro seconds
+            DateTime properTime = new DateTime(nowTime.Year, nowTime.Month, nowTime.Day, nowTime.Hour, nowTime.Minute, nowTime.Second);
+
+            string jsonTime = jsonParser.DateToJSON(properTime);
+            DateTime parsedTime = jsonParser.JSONToDate(jsonTime).ToLocalTime();
+            Assert.IsTrue(properTime == parsedTime);
+        }
     }
 }
