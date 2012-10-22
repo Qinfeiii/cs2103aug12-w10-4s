@@ -40,6 +40,9 @@ namespace Calendo.Logic
     {
         private const string ERROR_INVALIDDATETIME = "Specified Date or Time is invalid";
         private const int INVALID_VALUE = -1;
+        private const int IS_24HOUR = 0;
+        private const int IS_AM = 1;
+        private const int IS_PM = 2;
 
         public TimeConverter()
         {
@@ -59,8 +62,7 @@ namespace Calendo.Logic
             }
             catch
             {
-                // -1 used for detecting errors
-                return -1;
+                return INVALID_VALUE;
             }
         }
 
@@ -72,7 +74,6 @@ namespace Calendo.Logic
         /// <returns>Returns TimeFormat value</returns>
         private TimeFormat GetFormat(bool hasDate, bool hasTime)
         {
-
             TimeFormat newTimeFormat = TimeFormat.NONE;
             if (hasDate)
             {
@@ -133,7 +134,7 @@ namespace Calendo.Logic
             }
             else
             {
-                return 0;
+                return INVALID_VALUE;
             }
         }
 
@@ -219,83 +220,103 @@ namespace Calendo.Logic
             }
         }
 
+        private string GetSubstring(string inputString, int start)
+        {
+            if (inputString.Length >= start && start >= 0)
+            {
+                return inputString.Substring(start);
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        private int ConvertAMPM(int hour, int flagAMPM)
+        {
+            bool isAM = (flagAMPM == IS_AM);
+            bool isPM = (flagAMPM == IS_PM);
+
+            if (hour >= 0)
+            {
+                if (hour == 12 && isAM)
+                {
+                    // 12 Midnight case
+                    hour = 0;
+                }
+                else if (hour == 12 && isPM)
+                {
+                    // 12 Noon case
+                    hour = 12;
+                }
+                else if (hour > 0 && isPM)
+                {
+                    // 1 to 11PM case
+                    hour += 12;
+                }
+                else if (hour == 0 && isPM)
+                {
+                    // 0 PM case (0 AM is valid)
+                    hour = INVALID_VALUE;
+                }
+            }
+            return hour;
+        }
+
+        private int GetFlagAMPM(string timeString)
+        {
+            // Get last 2 letters
+            string timeMeta = GetSubstring(timeString, timeString.Length - 2); 
+            timeMeta = timeMeta.ToUpper();
+
+            // Handle AM or PM
+            int flagAMPM = IS_24HOUR;
+            if (timeMeta == "AM")
+            {
+                flagAMPM = IS_AM;
+            }
+            if (timeMeta == "PM")
+            {
+                flagAMPM = IS_PM;
+            }
+            return flagAMPM;
+        }
+
         /// <summary>
         /// Converts time to DateTime
         /// </summary>
-        /// <param name="time">Input time</param>
+        /// <param name="timeString">Input time</param>
         /// <param name="newTime">DateTime object to modify</param>
         /// <param name="hasError">Has Error</param>
         /// <param name="isValidTime">Is Valid Time</param>
-        private void ConvertTime(string time, ref DateTime newTime, ref bool hasError, ref bool isValidTime)
+        private void ConvertTime(string timeString, ref DateTime newTime, ref bool hasError, ref bool isValidTime)
         {
-            // Hour and minute must be specified
+            // Hour must be specified, Minute is optional
             int hour = INVALID_VALUE;
-            int minute = INVALID_VALUE;
-
-            // Time (24HR): Hour:Minute
-            string timeMeta = "";
-            if (time.Length > 2)
+            int minute = 0;
+            
+            // Handle AM or PM
+            int flagAMPM = GetFlagAMPM(timeString);
+            if (flagAMPM != IS_24HOUR)
             {
-                timeMeta = time.Substring(time.Length - 2); // Get last 2 letters
-                timeMeta = timeMeta.ToUpper();
+                // Get the remainder excluding AM and PM
+                timeString = timeString.Substring(0, timeString.Length - 2);
+                timeString = timeString.Trim();
             }
 
-            // Only used by 12 hour format
-            // If both are false, 24 hour format is used
-            bool isAM = false;
-            bool isPM = false;
-
-            // Handle PM
-            if (timeMeta == "PM")
-            {
-                isPM = true;
-            }
-            if (timeMeta == "AM")
-            {
-                isAM = true;
-            }
-            if (isAM || isPM)
-            {
-                // Get the remainder
-                time = time.Substring(0, time.Length - 2);
-                time = time.Trim();
-            }
-
-            string[] timeFragment = time.Split(new char[] { ':', '.' }, 2);
+            string[] timeFragment = timeString.Split(new char[] { ':', '.' }, 2);
 
             // Hour
             if (timeFragment.Length > 0)
             {
                 int minHour = 0;
                 int maxHour = 24;
-                if (isAM || isPM)
+                if (flagAMPM != IS_24HOUR)
                 {
                     maxHour = 12;
                 }
                 hour = this.ConvertValue(timeFragment[0], minHour, maxHour);
-                if (hour >= 0)
-                {
-                    if (hour == 12 && isAM)
-                    {
-                        // 12 Midnight case
-                        hour = 0;
-                    }
-                    else if (hour == 12 && isPM)
-                    {
-                        // 12 Noon case
-                        hour = 12;
-                    }
-                    else if (hour > 0 && isPM)
-                    {
-                        // 1 to 11PM case
-                        hour += 12;
-                    }
-                    else if (hour == 0 && isPM)
-                    {
-                        // 0 PM case (0 AM is valid)
-                        hour = INVALID_VALUE;
-                    }
-                }
+                hour = this.ConvertAMPM(hour, flagAMPM);
             }
 
             // Minute
@@ -304,7 +325,7 @@ namespace Calendo.Logic
                 minute = this.ConvertValue(timeFragment[1], 0, 59);
             }
 
-            if (time == "")
+            if (timeString == "")
             {
                 // No time supplied
                 isValidTime = false;
@@ -332,8 +353,8 @@ namespace Calendo.Logic
         private void ConvertDate(string date, ref DateTime newDate, ref bool hasError, ref bool isValidDate)
         {
             bool isYearProvided = false;
-            // Day and month must be specified
-            int year = DateTime.Today.Year; // Default value
+            // Day and Month must be specified, Year is optional
+            int year = DateTime.Today.Year;
             int day = INVALID_VALUE;
             int month = INVALID_VALUE;
 
