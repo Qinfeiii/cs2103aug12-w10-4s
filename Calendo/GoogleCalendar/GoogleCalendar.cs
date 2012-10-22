@@ -53,6 +53,7 @@ namespace Calendo.GoogleCalendar
                 if (sLine != null)
                     tasks += i + ": " + sLine;
             }
+            Sync(new List<String> {"test1", "test2" });
             return tasks;
         }
 
@@ -128,7 +129,7 @@ namespace Calendo.GoogleCalendar
             var responseText = "";
             foreach (String taskTitle in tasks)
             {
-                string postData = "{\"title\": \"lol_its_task\"}";
+                string postData = "{\"title\": \""+taskTitle+"\"}";
                 byte[] data = encoding.GetBytes(postData);
 
                 httpWReq.Method = "POST";
