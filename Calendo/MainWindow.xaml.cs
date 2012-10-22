@@ -210,7 +210,7 @@ namespace Calendo
                                  {
                                      return 0;
                                  }
-                                 else if (isFirstOverdue && isSecondOverdue || isFirstActive && isSecondActive || !isFirstFloating && !isSecondFloating)
+                                 else if (isFirstOverdue && isSecondOverdue || isFirstActive && isSecondActive)
                                  {
                                      return UiTaskHelper.CompareByDate(first, second);
                                  }
@@ -238,13 +238,19 @@ namespace Calendo
                                      return 1;
                                  }
                                  // Neither is active.
+                                 else if (!isFirstFloating && !isSecondFloating)
+                                 {
+                                     // Neither are floating.
+                                     return UiTaskHelper.CompareByDate(first, second);
+                                 }
                                  else if (isFirstFloating)
                                  {
+                                     // First is floating, second isn't.
                                      return 1;
                                  }
                                  else
                                  {
-                                     // The second is floating, and the first isn't.
+                                     // Second is floating, first isn't.
                                      return -1;
                                  }
                              });

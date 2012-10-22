@@ -54,8 +54,29 @@ namespace Calendo
             bool isFirstTimed = first.Type == EntryType.TIMED;
             bool isSecondTimed = second.Type == EntryType.TIMED;
 
-            DateTime firstRelevantTime = isFirstTimed ? first.EndTime : first.StartTime;
-            DateTime secondRelevantTime = isSecondTimed ? second.EndTime : second.StartTime;
+            bool isFirstOverdue = IsTaskOverdue(first);
+            bool isSecondOverdue = IsTaskOverdue(second);
+
+            DateTime firstRelevantTime;
+            DateTime secondRelevantTime;
+
+            if (isFirstTimed && isFirstOverdue)
+            {
+                firstRelevantTime = first.EndTime;
+            }
+            else
+            {
+                firstRelevantTime = first.StartTime;
+            }
+
+            if (isSecondTimed && isSecondOverdue)
+            {
+                secondRelevantTime = second.EndTime;
+            }
+            else
+            {
+                secondRelevantTime = second.StartTime;
+            }
 
             int firstCompareSecond = firstRelevantTime.CompareTo(secondRelevantTime);
             return firstCompareSecond;
