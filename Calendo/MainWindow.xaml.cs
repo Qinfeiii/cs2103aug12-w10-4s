@@ -342,6 +342,11 @@ namespace Calendo
 
         private void DeleteHandler(object sender, ExecutedRoutedEventArgs e)
         {
+            DeleteSelectedTask();
+        }
+
+        private void DeleteSelectedTask()
+        {
             string command = "/remove";
             ExecuteCommandOnSelectedTask(command);
         }
@@ -372,14 +377,26 @@ namespace Calendo
             }
         }
 
-        private void TaskListSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
         private void ChangeButtonClick(object sender, RoutedEventArgs e)
         {
+            SelectTaskFromCommandButton(sender);
             ChangeSelectedTask();
+        }
+
+        private void SelectTaskFromCommandButton(object sender)
+        {
+// Find the Grid that this button was in.
+            Button senderButton = sender as Button;
+            FrameworkElement currentItem = senderButton.Parent as FrameworkElement;
+            Grid relevantItem = null;
+            while (relevantItem == null)
+            {
+                currentItem = currentItem.Parent as FrameworkElement;
+                relevantItem = currentItem as Grid;
+            }
+
+            KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>) relevantItem.DataContext;
+            TaskList.SelectedIndex = selectedPair.Key;
         }
 
         private void ResizeStart(object sender, MouseEventArgs e)
@@ -485,6 +502,12 @@ namespace Calendo
             {
                 Height = resizeY;
             }
+        }
+
+        private void DeleteButtonClick(object sender, RoutedEventArgs e)
+        {
+            SelectTaskFromCommandButton(sender);
+            DeleteSelectedTask();
         }
     }
 }
