@@ -18,11 +18,14 @@ namespace Calendo.GoogleCalendar
 {
     class GoogleCalendar
     {
-
-        public static String Sync(List<String> tasks)
+        private static string STORAGE_PATH = "archive.txt";
+        private static StateStorage<List<Entry>> storage = new StateStorage<List<Entry>>(STORAGE_PATH);
+        
+        public static String Sync()
         {
+            storage.Load();
             string auth = Authorize();
-            return postTasks(tasks, auth);
+            return postTasks(storage.Entries, auth);
         }
         public static string Import()
         {
@@ -51,9 +54,8 @@ namespace Calendo.GoogleCalendar
                 i++;
                 sLine = objReader.ReadLine();
                 if (sLine != null)
-                    tasks += i + ": " + sLine;
+                    tasks += sLine;
             }
-            Sync(new List<String> {"test1", "test2" });
             return tasks;
         }
 
@@ -118,18 +120,23 @@ namespace Calendo.GoogleCalendar
             return authCode;
         }
 
-        private static String postTasks(List<String> tasks, string auth)
-        {	
-		HttpWebRequest httpWReq =
-            (HttpWebRequest)WebRequest.Create("https://www.googleapis.com/tasks/v1/lists/"+getTaskListId(auth)+"/tasks?key=AIzaSyDQPMYzYwXWh4JUZX16RnV2DNJddg_5INo&access_token="+auth);
-            
-            httpWReq.ContentType = "application/json";
-            ASCIIEncoding encoding = new ASCIIEncoding();
-
+        private static String postTasks(List<Entry> tasks, string auth)
+        {
+            String taskListId = getTaskListId(auth);
             var responseText = "";
-            foreach (String taskTitle in tasks)
+
+            foreach (Entry task in tasks)
             {
-                string postData = "{\"title\": \""+taskTitle+"\"}";
+                HttpWebRequest httpWReq =
+                    (HttpWebRequest)WebRequest.Create("https://www.googleapis.com/tasks/v1/lists/" + taskListId + "/tasks?key=AIzaSyDQPMYzYwXWh4JUZX16RnV2DNJddg_5INo&access_token=" + auth);
+
+                httpWReq.ContentType = "application/json";
+                ASCIIEncoding encoding = new ASCIIEncoding();
+
+                responseText = "";
+                JSON<TI> jtest = new JSON<TI>();
+                string postData = "{\"title\": \"" + task.Description + "\",\"due\": \"" + jtest.DateToJSON(task.StartTime) + "\"}";
+
                 byte[] data = encoding.GetBytes(postData);
 
                 httpWReq.Method = "POST";
