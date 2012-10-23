@@ -216,6 +216,11 @@
     <Resource Include="Images\minimiseHover.png" />
     <Resource Include="Images\restoreHover.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\delete.png" />
+    <Resource Include="Images\done.png" />
+    <Resource Include="Images\edit.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
