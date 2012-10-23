@@ -276,10 +276,10 @@
                                                 Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, 
                                         Path=IsMouseOver, Converter={StaticResource BooleanToVisibilityConverter}}">
                                         <Button Style="{StaticResource ButtonStyle}" Click="ChangeButtonClick">
-                                            <Image Source="./Images/edit.png" Height="32" />
+                                            <Image Source="./Images/edit.png" Height="24" />
                                         </Button>
                                         <Button Style="{StaticResource ButtonStyle}" Click="DeleteButtonClick">
-                                            <Image Source="./Images/delete.png" Height="32" />
+                                            <Image Source="./Images/delete.png" Height="24" />
                                         </Button>
                                         <!--
                         <Button Grid.Column="2" Style="{StaticResource WindowControlButtonStyle}">
