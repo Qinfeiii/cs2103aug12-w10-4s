@@ -41,8 +41,8 @@ namespace Calendo.Logic
         #endregion
 
         private List<string> VALID_INPUT_COMMAND_LIST;
-        //The following is public so that it can be "read" by the UI for auto-completion
-        public Dictionary<string, string[]> DICTIONARY_COMMAND_TYPE;
+        // This maps the recognised user-input commands to their "proper" command type
+        private Dictionary<string, string[]> DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE;
 
         string inputString;
         List<string> inputStringWords;
@@ -55,6 +55,10 @@ namespace Calendo.Logic
 
         TaskManager taskManager;
 
+        //The following is public so that it can be "read" by the UI for auto-completion
+        public Dictionary<string, string[]> GetInputCommandList() {
+            return DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE;
+        }
         public List<Calendo.Data.Entry> TaskList { get { return taskManager.Entries; } }
 
         #region execution
@@ -171,15 +175,15 @@ namespace Calendo.Logic
 
         public CommandProcessor()
         {
-            DICTIONARY_COMMAND_TYPE = new Dictionary<string, string[]>();
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_SEARCH, INPUT_COMMANDS_SEARCH);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_ADD, INPUT_COMMANDS_ADD);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REMOVE, INPUT_COMMANDS_REMOVE);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_SYNC, INPUT_COMMANDS_SYNC);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE = new Dictionary<string, string[]>();
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_SEARCH, INPUT_COMMANDS_SEARCH);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_ADD, INPUT_COMMANDS_ADD);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_REMOVE, INPUT_COMMANDS_REMOVE);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_SYNC, INPUT_COMMANDS_SYNC);
 
             VALID_INPUT_COMMAND_LIST = new List<string>();
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_SEARCH);
@@ -263,7 +267,7 @@ namespace Calendo.Logic
         private void GetCommandType(string commandTypeInput)
         {
 
-            KeyValuePair<string, string[]> commandTypePair = DICTIONARY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
+            KeyValuePair<string, string[]> commandTypePair = DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
             commandType = commandTypePair.Key;
         }
 
