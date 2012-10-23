@@ -396,7 +396,7 @@ namespace Calendo
             }
 
             KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>) relevantItem.DataContext;
-            TaskList.SelectedIndex = selectedPair.Key;
+            TaskList.SelectedIndex = selectedPair.Key - 1;
         }
 
         private void ResizeStart(object sender, MouseEventArgs e)
