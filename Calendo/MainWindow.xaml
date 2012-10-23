@@ -300,12 +300,18 @@
                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Style="{StaticResource NormalTextStyle}" Margin="0,4" FontSize="13"
-                                                   Text="{Binding Command}" TextWrapping="Wrap" />
-                                        <TextBlock Style="{StaticResource ListBoxItemSubtleTextStyle}" Margin="5,4"
-                                                   FontSize="13" Text="{Binding Description}" />
-                                    </StackPanel>
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Style="{StaticResource NormalTextStyle}" Margin="0,4" FontSize="13"
+                                                   Text="{Binding Command}" />
+                                        <WrapPanel Grid.Column="1">
+                                            <TextBlock Style="{StaticResource ListBoxItemSubtleTextStyle}" Margin="5,4"
+                                                   FontSize="13" Text="{Binding Description}" TextWrapping="Wrap" />
+                                        </WrapPanel>
+                                    </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
