@@ -218,17 +218,19 @@
                     <!--Task List-->
                     <ListBox Name="TaskList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,3"
                              HorizontalContentAlignment="Stretch" Style="{StaticResource TransparentWithBorder}"
-                             MouseDoubleClick="TaskListDoubleClick" FocusVisualStyle="{x:Null}" SelectionChanged="TaskListSelectionChanged">
+                             MouseDoubleClick="TaskListDoubleClick" FocusVisualStyle="{x:Null}" SelectionChanged="TaskListSelectionChanged"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="{Binding Key}"
                                                Style="{StaticResource ListBoxItemTextStyle}" Margin="0,0,6,0" />
-                                    <StackPanel Grid.Column="1">
+                                    <WrapPanel Grid.Column="1">
+                                    <StackPanel>
                                         <TextBlock Text="{Binding Value.Description}"
                                                    Style="{StaticResource TaskTextStyle}" TextWrapping="WrapWithOverflow" />
                                         <StackPanel Grid.Row="1" Orientation="Horizontal"
@@ -245,6 +247,7 @@
                                                 Visibility="{Binding Value, Converter={StaticResource DateTimeVisibilityConverter}, ConverterParameter='RangeText'}" />
                                         </StackPanel>
                                     </StackPanel>
+                                    </WrapPanel>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
