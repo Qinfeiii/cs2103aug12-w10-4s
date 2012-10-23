@@ -79,6 +79,18 @@
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
+                        <Style x:Key="ListItemStyle" TargetType="ListBoxItem">
+                            <Setter Property="BorderThickness" Value="1" />
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource ItemSelectedBorder}" />
+                                </Trigger>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource ItemSelectedBorder}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
                         <Style x:Key="WindowControlButtonStyle" TargetType="Button">
                             <Setter Property="Template">
                                 <Setter.Value>
@@ -219,7 +231,7 @@
                     <ListBox Name="TaskList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,3"
                              HorizontalContentAlignment="Stretch" Style="{StaticResource TransparentWithBorder}"
                              MouseDoubleClick="TaskListDoubleClick" FocusVisualStyle="{x:Null}" SelectionChanged="TaskListSelectionChanged"
-                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListItemStyle}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid HorizontalAlignment="Stretch">
