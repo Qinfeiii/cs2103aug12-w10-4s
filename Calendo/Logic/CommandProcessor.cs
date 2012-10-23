@@ -335,7 +335,7 @@ namespace Calendo.Logic
         private string RemoveAndReturnCommandTime(string[] timeInputHandles)
         {
             string timeValue = null;
-            int timeIndex = inputStringWords.FindIndex(x => timeInputHandles.Contains(x));
+            int timeIndex = inputStringWords.FindIndex(x => timeInputHandles.Contains(x.ToLower()));
 
             if (IsInvalidIndex(timeIndex))
                 return null;
