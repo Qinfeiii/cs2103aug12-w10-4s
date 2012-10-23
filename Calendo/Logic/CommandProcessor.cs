@@ -10,6 +10,7 @@ namespace Calendo.Logic
     class CommandProcessor
     {
         #region constants
+        // This is the list of "actual" command types identified by the program
         private const string COMMAND_TYPE_SEARCH = "search";
         private const string COMMAND_TYPE_ADD = "add";
         private const string COMMAND_TYPE_REMOVE = "remove";
@@ -19,6 +20,7 @@ namespace Calendo.Logic
         private const string COMMAND_TYPE_REDO = "redo";
         private const string COMMAND_TYPE_SYNC = "sync";
 
+        // This is the list of user-inputs the program can handle and process as a "proper" command
         //TODO: Ideally, NOCOMMAND should be search in autosuggest mode,
         //      and when the user presses enter, treat it as ADD
         private string[] INPUT_COMMANDS_SEARCH = { "/search", "/find" };
@@ -31,31 +33,39 @@ namespace Calendo.Logic
         private string[] INPUT_COMMANDS_SYNC = { "/sync" };
         private string INPUT_COMMAND_EMPTY = "/";
 
-        private string[] INPUT_HANDLES_DATE = { "/date" };
-        private string[] INPUT_HANDLES_TIME = { "/time" };
+        // If only one date-time is given, it is defined as the start, not the end
+        private string[] INPUT_HANDLES_START_DATE = { "/date", "/startdate" };
+        private string[] INPUT_HANDLES_START_TIME = { "/time", "/starttime" };
+        private string[] INPUT_HANDLES_END_DATE = { "/enddate" };
+        private string[] INPUT_HANDLES_END_TIME = { "/endtime" };
         #endregion
 
         private List<string> VALID_INPUT_COMMAND_LIST;
-        private Dictionary<string, string[]> DICTIONARY_COMMAND_TYPE;
+        // This maps the recognised user-input commands to their "proper" command type
+        private Dictionary<string, string[]> DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE;
 
         string inputString;
         List<string> inputStringWords;
         string commandType;
-        string commandDate;
-        string commandTime;
+        string commandStartDate;
+        string commandStartTime;
+        string commandEndDate;
+        string commandEndTime;
         string commandText;
 
         TaskManager taskManager;
 
-        #region Temp for v0.1
+        //The following is public so that it can be "read" by the UI for auto-completion
+        public Dictionary<string, string[]> GetInputCommandList() {
+            return DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE;
+        }
         public List<Calendo.Data.Entry> TaskList { get { return taskManager.Entries; } }
-        #endregion
 
         #region execution
         private void HandleCommand()
         {
             // TaskManager.ExecuteCommand(commandType, commandDate, commandTime, commandText);
-            switch (commandType)
+            switch (commandType.ToLower())
             {
                 case COMMAND_TYPE_SEARCH:
                     ExecuteSearch();
@@ -140,7 +150,7 @@ namespace Calendo.Logic
             {
                 newTaskName = listOfCommandTextPieces.Aggregate((x, y) => x + " " + y);
             }
-            taskManager.Change(taskNumberToChange, newTaskName, commandDate, commandTime, "", "");
+            taskManager.Change(taskNumberToChange, newTaskName, commandStartDate, commandStartTime, commandEndDate, commandEndTime);
         }
 
         private void ExecuteList()
@@ -159,32 +169,21 @@ namespace Calendo.Logic
 
         private void ExecuteAdd()
         {
-            /*
-            if (commandDate == null)
-            {
-                taskManager.Add(commandText);
-            }
-            else
-            {
-                taskManager.Add(commandText, commandDate, commandTime);
-            }
-             * */
-            taskManager.Add(commandText, commandDate, commandTime);
+            taskManager.Add(commandText, commandStartDate, commandStartTime, commandEndDate, commandEndTime);
         }
         #endregion execution
 
-        #region Temp for v0.1
         public CommandProcessor()
         {
-            DICTIONARY_COMMAND_TYPE = new Dictionary<string, string[]>();
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_SEARCH, INPUT_COMMANDS_SEARCH);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_ADD, INPUT_COMMANDS_ADD);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REMOVE, INPUT_COMMANDS_REMOVE);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
-            DICTIONARY_COMMAND_TYPE.Add(COMMAND_TYPE_SYNC, INPUT_COMMANDS_SYNC);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE = new Dictionary<string, string[]>();
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_SEARCH, INPUT_COMMANDS_SEARCH);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_ADD, INPUT_COMMANDS_ADD);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_REMOVE, INPUT_COMMANDS_REMOVE);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_SYNC, INPUT_COMMANDS_SYNC);
 
             VALID_INPUT_COMMAND_LIST = new List<string>();
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_SEARCH);
@@ -199,6 +198,7 @@ namespace Calendo.Logic
             taskManager = new TaskManager();
         }
 
+        // Public method called by UI to execute user-input command
         public void ExecuteCommand(string userInput)
         {
             inputString = userInput;
@@ -206,13 +206,14 @@ namespace Calendo.Logic
             GetCommandParts();
             HandleCommand();
         }
-        #endregion
 
         private void InitialiseCommandParts()
         {
-            commandDate = null;
+            commandStartDate = null;
+            commandStartTime = null;
+            commandEndDate = null;
+            commandEndTime = null;
             commandType = null;
-            commandTime = null;
             commandText = null;
         }
 
@@ -220,8 +221,10 @@ namespace Calendo.Logic
         {
             CreateInputStringArray();
             ExtractAndRemoveCommandType();
-            ExtractAndRemoveCommandDate();
-            ExtractAndRemoveCommandTime();
+            ExtractAndRemoveCommandStartDate();
+            ExtractAndRemoveCommandStartTime();
+            ExtractAndRemoveCommandEndDate();
+            ExtractAndRemoveCommandEndTime();
             ExtractCommandText();
         }
 
@@ -264,7 +267,7 @@ namespace Calendo.Logic
         private void GetCommandType(string commandTypeInput)
         {
 
-            KeyValuePair<string, string[]> commandTypePair = DICTIONARY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
+            KeyValuePair<string, string[]> commandTypePair = DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
             commandType = commandTypePair.Key;
         }
 
@@ -284,68 +287,88 @@ namespace Calendo.Logic
             return inputList.Count == 0;
         }
 
-        private void ExtractAndRemoveCommandDate()
+        private void ExtractAndRemoveCommandStartDate()
         {
-            int dateIndex = inputStringWords.FindIndex(x => INPUT_HANDLES_DATE.Contains(x));
+            commandStartDate = RemoveAndReturnCommandDate(INPUT_HANDLES_START_DATE);
+        }
 
-            if (dateIndex >= 0)
+        private void ExtractAndRemoveCommandEndDate()
+        {
+            commandEndDate = RemoveAndReturnCommandDate(INPUT_HANDLES_END_DATE);
+        }
+
+        private string RemoveAndReturnCommandDate(string[] dateInputHandles)
+        {
+            string dateWord = null;
+
+            // Process the presence of the given date input handle
+            int dateIndex = inputStringWords.FindIndex(x => dateInputHandles.Contains(x));
+            if (IsInvalidIndex(dateIndex))
+                return null;
+
+            // Perform extraction and removal
+            if (inputStringWords.Count > dateIndex + 1) //If the next string exists
             {
-                if (inputStringWords.Count > dateIndex + 1) //If the next string exists
-                {
-                    // Get date word(s) from input
-                    string dateWord = inputStringWords[dateIndex + 1];
-
-                    //TODO: Process date (alternative style: keep taking words until next handle)
-
-                    commandDate = dateWord;
-
-                    // Remove date word(s)
-                    inputStringWords.RemoveAt(dateIndex + 1);
-                }
-
-                //Remove handle
-                inputStringWords.RemoveAt(dateIndex);
+                // Get date word(s) from input
+                dateWord = inputStringWords[dateIndex + 1];
+                //TODO: Process date (alternative style: keep taking words until next handle
+                // Remove date word(s)
+                inputStringWords.RemoveAt(dateIndex + 1);
             }
+            //Remove handle
+            inputStringWords.RemoveAt(dateIndex);
+
+            return dateWord;
+        }
+
+        private void ExtractAndRemoveCommandStartTime()
+        {
+            commandStartTime = RemoveAndReturnCommandTime(INPUT_HANDLES_START_TIME);
+        }
+
+        private void ExtractAndRemoveCommandEndTime()
+        {
+            commandEndTime = RemoveAndReturnCommandTime(INPUT_HANDLES_END_TIME);
         }
 
         // Expecting time as: HH:MM ["AM"/"PM"]
-        private void ExtractAndRemoveCommandTime()
+        private string RemoveAndReturnCommandTime(string[] timeInputHandles)
         {
-            int timeIndex = inputStringWords.FindIndex(x => INPUT_HANDLES_TIME.Contains(x));
+            string timeValue = null;
+            int timeIndex = inputStringWords.FindIndex(x => timeInputHandles.Contains(x));
 
-            if (timeIndex >= 0)
+            if (IsInvalidIndex(timeIndex))
+                return null;
+
+            if (inputStringWords.Count > timeIndex + 1)
             {
-                if (inputStringWords.Count > timeIndex + 1)
+                timeValue = inputStringWords[timeIndex + 1];
+                // Handle optional AM/PM
+                bool hasAMPM = false;
+                if (inputStringWords.Count > timeIndex + 2)
                 {
-                    string timeValue = inputStringWords[timeIndex + 1];
-                    // Handle optional AM/PM
-                    bool hasAMPM = false;
-                    if (inputStringWords.Count > timeIndex + 2)
+                    string timeAMPM = inputStringWords[timeIndex + 2].ToUpper();
+                    // Only add AM/PM if it really is AM/PM
+                    if (timeAMPM == "PM" || timeAMPM == "AM")
                     {
-                        string timeAMPM = inputStringWords[timeIndex + 2].ToUpper();
-                        // Only add AM/PM if it really is AM/PM
-                        if (timeAMPM == "PM" || timeAMPM == "AM")
-                        {
-                            timeValue = timeValue + " " + timeAMPM;
-                            hasAMPM = true;
-                        }
+                        timeValue = timeValue + " " + timeAMPM;
+                        hasAMPM = true;
                     }
-
-                    commandTime = timeValue;
-
-                    // Remove time value
+                }
+                // Remove time value
+                inputStringWords.RemoveAt(timeIndex + 1);
+                if (hasAMPM)
+                {
+                    // Remove AM/PM
                     inputStringWords.RemoveAt(timeIndex + 1);
-                    if (hasAMPM)
-                    {
-                        // Remove AM/PM
-                        inputStringWords.RemoveAt(timeIndex + 1);
-                    }
-
                 }
 
-                //Remove handle
-                inputStringWords.RemoveAt(timeIndex);
             }
+
+            //Remove handle
+            inputStringWords.RemoveAt(timeIndex);
+
+            return timeValue;
         }
 
         private void ExtractCommandText()
@@ -358,6 +381,11 @@ namespace Calendo.Logic
         private Boolean IsNoCommand()
         {
             return !inputStringWords.First().StartsWith("/");
+        }
+
+        private static bool IsInvalidIndex(int dateIndex)
+        {
+            return dateIndex < 0;
         }
     }
 }
