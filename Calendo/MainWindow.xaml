@@ -242,7 +242,7 @@
                     <!--Task List-->
                     <ListBox Name="TaskList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,4,12,12"
                              HorizontalContentAlignment="Stretch" Style="{StaticResource TransparentWithBorder}"
-                             MouseDoubleClick="TaskListDoubleClick" FocusVisualStyle="{x:Null}" SelectionChanged="TaskListSelectionChanged"
+                             FocusVisualStyle="{x:Null}"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListItemStyle}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -274,12 +274,12 @@
                                     </WrapPanel>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal" Panel.ZIndex="1" HorizontalAlignment="Right"
                                                 Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, 
-                                        Path=IsFocused, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                        <Button Style="{StaticResource ButtonStyle}" Click="ChangeButtonClick" Margin="0,0,6,0">
-                                            <Image Source="./Images/edit.png" Height="28" />
+                                        Path=IsMouseOver, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <Button Style="{StaticResource ButtonStyle}" Click="ChangeButtonClick">
+                                            <Image Source="./Images/edit.png" Height="32" />
                                         </Button>
-                                        <Button Style="{StaticResource ButtonStyle}">
-                                            <Image Source="./Images/delete.png" Height="28" />
+                                        <Button Style="{StaticResource ButtonStyle}" Click="DeleteButtonClick">
+                                            <Image Source="./Images/delete.png" Height="32" />
                                         </Button>
                                         <!--
                         <Button Grid.Column="2" Style="{StaticResource WindowControlButtonStyle}">
