@@ -10,6 +10,30 @@
         <SolidColorBrush x:Key="Brush_ListActiveBorder" Color="#FF71C0E7" />
         <SolidColorBrush x:Key="Brush_ListSelectBorder" Color="#FF269FD9" />
 
+        <Style x:Key="EditableBox" TargetType="{x:Type TextBox}">
+            <Setter Property="Cursor" Value="Arrow" />
+            <Setter Property="Background"
+                                 Value="Transparent" />
+            <Setter Property="BorderBrush"
+                                 Value="Transparent" />
+            <Setter Property="BorderThickness"
+                                 Value="0px" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsReadOnly,
+                                            RelativeSource={RelativeSource
+                                              Self}}"
+                                Value="False">
+                    <Setter Property="BorderBrush"
+                                 Value="{StaticResource Brush_ListSelectBorder}" />
+                    <Setter Property="BorderThickness"
+                                 Value="1px" />
+                    <Setter Property="Background" Value="White" />
+                    <Setter Property="Foreground" Value="Black" />
+                    <Setter Property="Cursor" Value="IBeam" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <Style x:Key="CListBox" TargetType="{x:Type ListBoxItem}">
             <Style.Resources>
                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"
@@ -52,7 +76,16 @@
                     <Setter Property="BorderBrush"
                                  Value="{StaticResource Brush_InactiveBorder}" />
                 </MultiTrigger>
-
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsSelected" Value="true"></Condition>
+                        <Condition Property="IsKeyboardFocusWithin" Value="true"></Condition>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="BorderBrush"
+                                 Value="{StaticResource Brush_ListSelectBorder}" />
+                    <Setter Property="BorderThickness"
+                                 Value="1" />
+                </MultiTrigger>
             </Style.Triggers>
         </Style>
 
@@ -74,9 +107,9 @@
                             <ColumnDefinition Width="20px" />
                          </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="1" Text="{Binding Value.ID}"></TextBlock>
-                            <WrapPanel Grid.Column="2">
-                                <TextBlock TextWrapping="Wrap" HorizontalAlignment="Stretch" Text="{Binding Value.Description}"></TextBlock>
-                            </WrapPanel>
+                            <!--<WrapPanel Grid.Column="2" HorizontalAlignment="Stretch">-->
+                                <TextBox Grid.Column="2" Style="{StaticResource EditableBox}" Width="Auto" TextWrapping="Wrap" HorizontalAlignment="Stretch" Text="{Binding Value.Description}" KeyUp="TextBox_KeyUp_1" MouseDoubleClick="TextBox_MouseDoubleClick_1" IsReadOnly="True" LostKeyboardFocus="TextBox_LostKeyboardFocus_1" PreviewMouseDown="TextBox_PreviewMouseDown_1"></TextBox>
+                            <!--</WrapPanel>-->
 
                             <TextBlock Grid.Column="3" HorizontalAlignment="Right" Text=""><Button Name="buttonInput" BorderThickness="0"  
     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="buttonInput_Click"><Image Source="info.png" /></Button></TextBlock>
