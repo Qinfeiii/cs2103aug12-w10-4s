@@ -184,7 +184,6 @@ namespace Calendo
         {
             TaskList.Focus();
             AutoSuggestBorder.Visibility = Visibility.Collapsed;
-            ControlBar.Visibility = Visibility.Collapsed;
         }
 
         private void UpdateItemsList()
@@ -299,12 +298,7 @@ namespace Calendo
         {
             AutoSuggestViewModel.SetSuggestions(CommandBar.Text);
 
-            AutoSuggestBorder.Visibility = CommandBar.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
-            if (CommandBar.Text.Length > 0 && CommandBar.Text[0] != '/')
-            {
-                // Not a command (search mode)
-                AutoSuggestBorder.Visibility = Visibility.Collapsed;
-            }
+            AutoSuggestBorder.Visibility = AutoSuggestViewModel.SuggestionList.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void SettingsButtonClick(object sender, RoutedEventArgs e)
@@ -343,11 +337,15 @@ namespace Calendo
 
         private void GridMouseDown(object sender, MouseButtonEventArgs e)
         {
-            // Disabled as behavior conflicts with several controls
-            //FocusOnTaskList();
+            FocusOnTaskList();
         }
 
         private void DeleteHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            DeleteSelectedTask();
+        }
+
+        private void DeleteSelectedTask()
         {
             string command = "/remove";
             ExecuteCommandOnSelectedTask(command);
@@ -379,21 +377,26 @@ namespace Calendo
             }
         }
 
-        private void TaskListSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (TaskList.SelectedIndex != -1)
-            {
-                ControlBar.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                ControlBar.Visibility = Visibility.Collapsed;
-            }
-        }
-
         private void ChangeButtonClick(object sender, RoutedEventArgs e)
         {
+            SelectTaskFromCommandButton(sender);
             ChangeSelectedTask();
+        }
+
+        private void SelectTaskFromCommandButton(object sender)
+        {
+// Find the Grid that this button was in.
+            Button senderButton = sender as Button;
+            FrameworkElement currentItem = senderButton.Parent as FrameworkElement;
+            Grid relevantItem = null;
+            while (relevantItem == null)
+            {
+                currentItem = currentItem.Parent as FrameworkElement;
+                relevantItem = currentItem as Grid;
+            }
+
+            KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>) relevantItem.DataContext;
+            TaskList.SelectedIndex = selectedPair.Key;
         }
 
         private void ResizeStart(object sender, MouseEventArgs e)
@@ -499,6 +502,12 @@ namespace Calendo
             {
                 Height = resizeY;
             }
+        }
+
+        private void DeleteButtonClick(object sender, RoutedEventArgs e)
+        {
+            SelectTaskFromCommandButton(sender);
+            DeleteSelectedTask();
         }
     }
 }
