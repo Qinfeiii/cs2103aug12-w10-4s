@@ -55,7 +55,7 @@
                         </Style>
                         <Style x:Key="ListBoxItemSubtleTextStyle" TargetType="{x:Type TextBlock}"
                                BasedOn="{StaticResource ListBoxItemTextStyle}">
-                            <Setter Property="FontSize" Value="14" />
+                            <Setter Property="FontSize" Value="12" />
                             <Setter Property="Foreground" Value="Gray" />
                         </Style>
                         <Style x:Key="TaskTextStyle" TargetType="TextBlock"
@@ -63,10 +63,37 @@
                             <Setter Property="Foreground"
                                     Value="{Binding Value, Converter={StaticResource EntryToBrushConverter}}" />
                         </Style>
+                        <SolidColorBrush x:Key="ItemSelectedBorder" Color="#FF71C0E7" />
                         <Style x:Key="TransparentWithBorder" TargetType="Control">
                             <Setter Property="Background" Value="Transparent" />
                             <Setter Property="BorderThickness" Value="3" />
                             <Setter Property="BorderBrush" Value="DarkGray" />
+                        </Style>
+                        <Style x:Key="TransparentBorderHighlights" TargetType="Control" BasedOn="{StaticResource TransparentWithBorder}">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource ItemSelectedBorder}" />
+                                </Trigger>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource ItemSelectedBorder}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                        <Style x:Key="ListItemStyle" TargetType="ListBoxItem">
+                            <Style.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FFCBE8F6" />
+                            </Style.Resources>
+                            <Setter Property="BorderThickness" Value="1" />
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource ItemSelectedBorder}" />
+                                    <Setter Property="Background" Value="#FFE4F2FA" />
+                                </Trigger>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter Property="BorderBrush" Value="{StaticResource ItemSelectedBorder}" />
+                                </Trigger>
+                            </Style.Triggers>
                         </Style>
                         <Style x:Key="WindowControlButtonStyle" TargetType="Button">
                             <Setter Property="Template">
@@ -197,27 +224,29 @@
                     <Grid Grid.Row="1">
                         <TextBlock Name="EnterCommandWatermark" Grid.Row="1" Margin="22,8"
                                    Style="{StaticResource NormalTextStyle}">
-                            enter /command, or search
+                            Search, or type /
                         </TextBlock>
                         <TextBox Name="CommandBar" Grid.Row="1" Margin="12,6,12,4" FontSize="16" Foreground="#FF464646"
-                                 Style="{StaticResource TransparentWithBorder}" LostFocus="CommandBarLostFocus" GotFocus="CommandBarGotFocus"
+                                 Style="{StaticResource TransparentBorderHighlights}" LostFocus="CommandBarLostFocus" GotFocus="CommandBarGotFocus"
                                  KeyUp="CommandBarKeyUp" TextChanged="CommandBarTextChanged" />
                     </Grid>
 
                     <!--Task List-->
                     <ListBox Name="TaskList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,10"
                              HorizontalContentAlignment="Stretch" Style="{StaticResource TransparentWithBorder}"
-                             MouseDoubleClick="TaskListDoubleClick" FocusVisualStyle="{x:Null}" SelectionChanged="TaskListSelectionChanged">
+                             MouseDoubleClick="TaskListDoubleClick" FocusVisualStyle="{x:Null}" SelectionChanged="TaskListSelectionChanged"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListItemStyle}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Grid.Column="0" Text="{Binding Key}"
                                                Style="{StaticResource ListBoxItemTextStyle}" Margin="0,0,6,0" />
-                                    <StackPanel Grid.Column="1">
+                                    <WrapPanel Grid.Column="1">
+                                    <StackPanel>
                                         <TextBlock Text="{Binding Value.Description}"
                                                    Style="{StaticResource TaskTextStyle}" TextWrapping="WrapWithOverflow" />
                                         <StackPanel Grid.Row="1" Orientation="Horizontal"
@@ -234,6 +263,7 @@
                                                 Visibility="{Binding Value, Converter={StaticResource DateTimeVisibilityConverter}, ConverterParameter='RangeText'}" />
                                         </StackPanel>
                                     </StackPanel>
+                                    </WrapPanel>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
