@@ -34,10 +34,10 @@ namespace Calendo.Logic
         private string INPUT_COMMAND_EMPTY = "/";
 
         // If only one date-time is given, it is defined as the start, not the end
-        private string[] INPUT_HANDLES_START_DATE = { "/date", "/startDate" };
-        private string[] INPUT_HANDLES_START_TIME = { "/time", "/startTime" };
-        private string[] INPUT_HANDLES_END_DATE = { "/endDate" };
-        private string[] INPUT_HANDLES_END_TIME = { "/endTime" };
+        private string[] INPUT_HANDLES_START_DATE = { "/date", "/startdate" };
+        private string[] INPUT_HANDLES_START_TIME = { "/time", "/starttime" };
+        private string[] INPUT_HANDLES_END_DATE = { "/enddate" };
+        private string[] INPUT_HANDLES_END_TIME = { "/endtime" };
         #endregion
 
         private List<string> VALID_INPUT_COMMAND_LIST;
@@ -65,7 +65,7 @@ namespace Calendo.Logic
         private void HandleCommand()
         {
             // TaskManager.ExecuteCommand(commandType, commandDate, commandTime, commandText);
-            switch (commandType)
+            switch (commandType.ToLower())
             {
                 case COMMAND_TYPE_SEARCH:
                     ExecuteSearch();
