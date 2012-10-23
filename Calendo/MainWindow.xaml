@@ -63,7 +63,7 @@
                             <Setter Property="Foreground"
                                     Value="{Binding Value, Converter={StaticResource EntryToBrushConverter}}" />
                         </Style>
-                        <SolidColorBrush x:Key="ItemSelectedBorder" Color="#FF38A7CB" />
+                        <SolidColorBrush x:Key="ItemSelectedBorder" Color="#FF71C0E7" />
                         <Style x:Key="TransparentWithBorder" TargetType="Control">
                             <Setter Property="Background" Value="Transparent" />
                             <Setter Property="BorderThickness" Value="3" />
@@ -80,11 +80,15 @@
                             </Style.Triggers>
                         </Style>
                         <Style x:Key="ListItemStyle" TargetType="ListBoxItem">
+                            <Style.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FFCBE8F6" />
+                            </Style.Resources>
                             <Setter Property="BorderThickness" Value="1" />
                             <Setter Property="BorderBrush" Value="Transparent" />
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="BorderBrush" Value="{StaticResource ItemSelectedBorder}" />
+                                    <Setter Property="Background" Value="#FFE4F2FA" />
                                 </Trigger>
                                 <Trigger Property="IsFocused" Value="True">
                                     <Setter Property="BorderBrush" Value="{StaticResource ItemSelectedBorder}" />
