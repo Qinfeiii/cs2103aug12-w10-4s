@@ -71,7 +71,7 @@
                 <MultiTrigger>
                     <MultiTrigger.Conditions>
                         <Condition Property="IsSelected" Value="true"></Condition>
-                        <Condition Property="IsFocused" Value="false"></Condition>
+                        <Condition Property="IsKeyboardFocusWithin" Value="false"></Condition>
                     </MultiTrigger.Conditions>
                     <Setter Property="BorderBrush"
                                  Value="{StaticResource Brush_InactiveBorder}" />
