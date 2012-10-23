@@ -337,7 +337,8 @@ namespace Calendo
 
         private void GridMouseDown(object sender, MouseButtonEventArgs e)
         {
-            FocusOnTaskList();
+            // Disabled as behavior conflicts with several controls
+            //FocusOnTaskList();
         }
 
         private void DeleteHandler(object sender, ExecutedRoutedEventArgs e)
