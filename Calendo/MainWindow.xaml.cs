@@ -298,7 +298,7 @@ namespace Calendo
         {
             AutoSuggestViewModel.SetSuggestions(CommandBar.Text);
 
-            AutoSuggestBorder.Visibility = CommandBar.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
+            AutoSuggestBorder.Visibility = AutoSuggestViewModel.SuggestionList.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void SettingsButtonClick(object sender, RoutedEventArgs e)
