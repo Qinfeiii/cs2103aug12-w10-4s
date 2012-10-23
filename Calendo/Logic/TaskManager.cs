@@ -103,12 +103,12 @@ namespace Calendo.Logic
         private void Add(string description, TaskTime startTime, TaskTime endTime)
         {
             Entry entry = new Entry();
+            entry.Type = GetTaskType(startTime, endTime);
             entry.Description = description;
             entry.StartTime = startTime.Time;
             entry.StartTimeFormat = startTime.Format;
             entry.EndTime = endTime.Time;
             entry.EndTimeFormat = endTime.Format;
-            entry.Type = GetTaskType(startTime, endTime);
             Add(entry);
         }
 
@@ -130,8 +130,25 @@ namespace Calendo.Logic
         /// <returns></returns>
         private EntryType GetTaskType(TaskTime startTime, TaskTime endTime)
         {
+            if (startTime != null && endTime != null && startTime.Format != TimeFormat.NONE && endTime.Format != TimeFormat.NONE)
+            {
+                if (startTime.Time > endTime.Time)
+                {
+                    // End is before start, mark both as invalid
+                    startTime.Format = TimeFormat.NONE;
+                    endTime.Format = TimeFormat.NONE;
+                    DebugTool.Alert("End date cannot be before start date.");
+                    return EntryType.FLOATING;
+                }
+            }
+            // Start and end times are valid
             if (startTime == null || startTime.Format == TimeFormat.NONE)
             {
+                if (endTime != null)
+                {
+                    // Mark end time as not valid
+                    endTime.Format = TimeFormat.NONE;
+                }
                 // No start or end time
                 return EntryType.FLOATING;
             }
@@ -205,16 +222,16 @@ namespace Calendo.Logic
             Entry entry = this.Get(id);
             if (entry != null)
             {
-                if ((flag & FLAG_DESCRIPTION) == FLAG_DESCRIPTION)
+                if (FlagContains(flag, FLAG_DESCRIPTION))
                 {
                     entry.Description = description;
                 }
-                if ((flag & FLAG_STARTTIME) == FLAG_STARTTIME)
+                if (FlagContains(flag, FLAG_STARTTIME))
                 {
                     entry.StartTime = startTime.Time;
                     entry.StartTimeFormat = startTime.Format;
                 }
-                if ((flag & FLAG_ENDTIME) == FLAG_ENDTIME)
+                if (FlagContains(flag, FLAG_ENDTIME))
                 {
                     entry.EndTime = endTime.Time;
                     entry.EndTimeFormat = endTime.Format;
@@ -229,12 +246,14 @@ namespace Calendo.Logic
         }
 
         /// <summary>
-        /// Takes in the index of an item to remove from the Entries list, removes that item.
+        /// Checks if a flag contains the attribute
         /// </summary>
-        /// <param name="index">The 0-indexed index of the item to be removed.</param>
-        public void RemoveByIndex(int index)
+        /// <param name="flag">Binary Flag</param>
+        /// <param name="attribute">Attribute</param>
+        /// <returns>Returns true if flag contains the attribute</returns>
+        private bool FlagContains(int flag, int attribute)
         {
-            Remove(index + 1);
+            return (flag & attribute) == attribute;
         }
 
         /// <summary>
@@ -339,8 +358,8 @@ namespace Calendo.Logic
         /// <returns>Returns TaskTime object</returns>
         private TaskTime ConvertTime(string date, string time)
         {
-            TimeConverter tc = new TimeConverter();
-            return tc.Convert(date, time);
+            TimeConverter timeConvert = new TimeConverter();
+            return timeConvert.Convert(date, time);
         }
 
     }

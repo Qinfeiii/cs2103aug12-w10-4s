@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 using System.Diagnostics;
 using System.IO;
@@ -10,14 +8,24 @@ using Calendo.Diagnostics;
 
 namespace Calendo.Data
 {
+    /// <summary>
+    /// Wrapper class for object used in serialization
+    /// </summary>
+    /// <typeparam name="T">Generic type to wrap</typeparam>
     [Serializable]
     [XmlRoot("Data")]
     public class Data<T> where T : new()
     {
+        /// <summary>
+        /// Creates a new Data object
+        /// </summary>
         public Data() {
             Value = new T();
         }
 
+        /// <summary>
+        /// Gets or sets the value represented by the object
+        /// </summary>
         [XmlElement("Entry")]
         public T Value
         {

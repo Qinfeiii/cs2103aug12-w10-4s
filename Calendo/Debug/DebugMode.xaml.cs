@@ -133,7 +133,6 @@ namespace Calendo
         private void buttonInput_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
-            Type t = btn.DataContext.GetType();
             KeyValuePair<int, Entry> dContext = (KeyValuePair<int, Entry>)btn.DataContext;
 
             Entry currentEntry = dContext.Value;
@@ -141,5 +140,58 @@ namespace Calendo
             MessageBox.Show(jsonParse.Serialize(currentEntry));
         }
 
+        private void TextBox_KeyUp_1(object sender, KeyEventArgs e)
+        {
+            TextBox currentTextbox = sender as TextBox;
+            KeyValuePair<int, Entry> dContext = (KeyValuePair<int, Entry>)currentTextbox.DataContext;
+            if (e.Key == Key.Return)
+            {
+                // Request change command if needed
+                if (currentTextbox.Text != dContext.Value.Description)
+                {
+                    // Show command in textbox
+                    this.textBox1.Text = "/change " + (dContext.Key + 1).ToString() + " " + currentTextbox.Text;
+                    currentTextbox.Text = dContext.Value.Description;
+                }
+                currentTextbox.IsReadOnly = true;
+            }
+        }
+
+        private void TextBox_MouseDoubleClick_1(object sender, MouseButtonEventArgs e)
+        {
+            TextBox currentTextbox = sender as TextBox;
+            currentTextbox.IsReadOnly = false;
+            currentTextbox.Focusable = true;
+            currentTextbox.Focus();
+            e.Handled = true; // Required, so that focus do not go back to list item
+        }
+
+        private void TextBox_LostKeyboardFocus_1(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            TextBox currentTextbox = sender as TextBox;
+            if (!currentTextbox.IsReadOnly)
+            {
+                // Request change command if needed
+                KeyValuePair<int, Entry> dContext = (KeyValuePair<int, Entry>)currentTextbox.DataContext;
+                if (currentTextbox.Text != dContext.Value.Description)
+                {
+                    // Show command in textbox
+                    this.textBox1.Text = "/change " + (dContext.Key + 1).ToString() + " " + currentTextbox.Text;
+                    currentTextbox.Text = dContext.Value.Description;
+                }
+            }
+            currentTextbox.IsReadOnly = true;
+            currentTextbox.Focusable = false;
+        }
+
+        private void TextBox_PreviewMouseDown_1(object sender, MouseButtonEventArgs e)
+        {
+            TextBox currentTextbox = sender as TextBox;
+            KeyValuePair<int, Entry> dContext = (KeyValuePair<int, Entry>)currentTextbox.DataContext;
+            if (currentTextbox.IsReadOnly)
+            {
+                currentTextbox.Focusable = false; // So that can select list item
+            }
+        }
     }
 }

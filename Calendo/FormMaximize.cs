@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using WinInterop = System.Windows.Interop;
 using System.Runtime.InteropServices;
 
 namespace Calendo
@@ -14,20 +12,22 @@ namespace Calendo
     /// </summary>
     public class FormMaximize
     {
+        private const int WM_GETMINMAXINFO = 0x0024;
+
         /// <summary>
-        /// Directly override WinProc messages if needed
+        /// Directly override WinProc messages
         /// </summary>
         public static System.IntPtr WindowProc(
-              System.IntPtr hwnd,
-              int msg,
+              System.IntPtr handle,
+              int message,
               System.IntPtr wParam,
               System.IntPtr lParam,
               ref bool handled)
         {
-            switch (msg)
+            switch (message)
             {
-                case 0x0024: // Directly handle WM_GETMINMAXINFO message
-                    WmGetMinMaxInfo(hwnd, lParam);
+                case WM_GETMINMAXINFO: // Directly handle WM_GETMINMAXINFO message
+                    WmGetMinMaxInfo(handle, lParam);
                     handled = true;
                     break;
             }
@@ -36,13 +36,13 @@ namespace Calendo
         }
 
         /// <summary>
-        /// Get Min-Max screen information from WinAPI
+        /// Get Min-Max screen information from Windows API
         /// </summary>
-        /// <param name="handle"></param>
-        /// <param name="param"></param>
-        private static void WmGetMinMaxInfo(System.IntPtr handle, System.IntPtr param)
+        /// <param name="handle">Pointer to window</param>
+        /// <param name="lParam">Long Parameter</param>
+        private static void WmGetMinMaxInfo(System.IntPtr handle, System.IntPtr lParam)
         {
-            MINMAXINFO mmInfo = (MINMAXINFO)Marshal.PtrToStructure(param, typeof(MINMAXINFO));
+            MinMaxInfo minmaxInfo = (MinMaxInfo)Marshal.PtrToStructure(lParam, typeof(MinMaxInfo));
 
             // Get current monitor information
             int MONITOR_DEFAULT_TO_NEAREST = 0x00000002;
@@ -50,62 +50,64 @@ namespace Calendo
 
             if (monitor != System.IntPtr.Zero) // Not null pointer
             {
-                MONITORINFO monitorInfo = new MONITORINFO();
+                MonitorInfo monitorInfo = new MonitorInfo();
                 GetMonitorInfo(monitor, monitorInfo);
-                RECT rcWorkArea = monitorInfo.rcWork;
-                RECT rcMonitorArea = monitorInfo.rcMonitor;
-                mmInfo.ptMaxPosition.x = Math.Abs(rcWorkArea.left - rcMonitorArea.left);
-                mmInfo.ptMaxPosition.y = Math.Abs(rcWorkArea.top - rcMonitorArea.top);
-                mmInfo.ptMaxSize.x = Math.Abs(rcWorkArea.right - rcWorkArea.left);
-                mmInfo.ptMaxSize.y = Math.Abs(rcWorkArea.bottom - rcWorkArea.top);
+                Rectangle rcWorkArea = monitorInfo.WorkArea;
+                Rectangle rcMonitorArea = monitorInfo.MonitorArea;
+                minmaxInfo.MaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
+                minmaxInfo.MaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
+                minmaxInfo.MaxSize.X = Math.Abs(rcWorkArea.Right - rcWorkArea.Left);
+                minmaxInfo.MaxSize.Y = Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top);
             }
-            Marshal.StructureToPtr(mmInfo, param, true);
+            Marshal.StructureToPtr(minmaxInfo, lParam, true);
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        public struct POINT
-        {
-            public int x;
-            public int y;
+        // Structures below are used by Windows API
 
-            public POINT(int x, int y)
+        [StructLayout(LayoutKind.Sequential)]
+        public struct Point
+        {
+            public int X;
+            public int Y;
+
+            public Point(int x, int y)
             {
-                this.x = x;
-                this.y = y;
+                this.X = x;
+                this.Y = y;
             }
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct MINMAXINFO
+        public struct MinMaxInfo
         {
-            public POINT ptReserved;
-            public POINT ptMaxSize;
-            public POINT ptMaxPosition;
-            public POINT ptMinTrackSize;
-            public POINT ptMaxTrackSize;
+            public Point Reserved;
+            public Point MaxSize;
+            public Point MaxPosition;
+            public Point MinTrackSize;
+            public Point MaxTrackSize;
         };
 
         [StructLayout(LayoutKind.Sequential)]
-        public class MONITORINFO
+        public class MonitorInfo
         {
-            public int cbSize = Marshal.SizeOf(typeof(MONITORINFO));
-            public RECT rcMonitor = new RECT();
-            public RECT rcWork = new RECT();
-            public int dwFlags = 0;
+            public int Size = Marshal.SizeOf(typeof(MonitorInfo));
+            public Rectangle MonitorArea = new Rectangle();
+            public Rectangle WorkArea = new Rectangle();
+            public int Flags = 0;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
+        public struct Rectangle
         {
-            public int left;
-            public int top;
-            public int right;
-            public int bottom;
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
         }
 
-        // Win API external reference
-        [DllImport("user32")]
-        internal static extern bool GetMonitorInfo(IntPtr hMonitor, MONITORINFO lpmi);
+        // Windows API external reference
+        [DllImport("User32")]
+        internal static extern bool GetMonitorInfo(IntPtr hMonitor, MonitorInfo lpMonitorInfo);
         [DllImport("User32")]
         internal static extern IntPtr MonitorFromWindow(IntPtr handle, int flags);
     }

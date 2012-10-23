@@ -232,7 +232,7 @@
                     </Grid>
 
                     <!--Task List-->
-                    <ListBox Name="TaskList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,3"
+                    <ListBox Name="TaskList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,10"
                              HorizontalContentAlignment="Stretch" Style="{StaticResource TransparentWithBorder}"
                              MouseDoubleClick="TaskListDoubleClick" FocusVisualStyle="{x:Null}" SelectionChanged="TaskListSelectionChanged"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListItemStyle}">
