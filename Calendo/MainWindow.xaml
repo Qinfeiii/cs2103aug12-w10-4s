@@ -82,6 +82,8 @@
                         <Style x:Key="ListItemStyle" TargetType="ListBoxItem">
                             <Style.Resources>
                                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FFCBE8F6" />
+                                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#FFF5F5F5"/>
+                                <SolidColorBrush x:Key="ItemInactiveBorder" Color="#FFDADADA"/>
                             </Style.Resources>
                             <Setter Property="BorderThickness" Value="1" />
                             <Setter Property="BorderBrush" Value="Transparent" />
@@ -90,9 +92,28 @@
                                     <Setter Property="BorderBrush" Value="{StaticResource ItemSelectedBorder}" />
                                     <Setter Property="Background" Value="#FFE4F2FA" />
                                 </Trigger>
-                                <Trigger Property="IsFocused" Value="True">
+                                <Trigger Property="IsSelected" Value="True">
                                     <Setter Property="BorderBrush" Value="{StaticResource ItemSelectedBorder}" />
                                 </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="true"></Condition>
+                                        <Condition Property="IsKeyboardFocusWithin" Value="false"></Condition>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Background" Value="#FFF5F5F5" />
+                                    <Setter Property="BorderBrush"
+                                 Value="{StaticResource ItemInactiveBorder}" />
+                                </MultiTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="true"></Condition>
+                                        <Condition Property="IsKeyboardFocusWithin" Value="true"></Condition>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="BorderBrush"
+                                 Value="{StaticResource ItemSelectedBorder}" />
+                                    <Setter Property="BorderThickness"
+                                 Value="1" />
+                                </MultiTrigger>
                             </Style.Triggers>
                         </Style>
                         <Style x:Key="WindowControlButtonStyle" TargetType="Button">
@@ -274,7 +295,7 @@
                             Margin="12,-4,12,0" Visibility="Collapsed" Panel.ZIndex="1">
                         <ListBox Name="AutoSuggestList" ItemsSource="{Binding SuggestionList}"
                                  KeyDown="AutoSuggestListKeyDown" KeyUp="AutoSuggestListKeyUp" MouseUp="AutoSuggestListMouseUp"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListItemStyle}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
