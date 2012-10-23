@@ -118,7 +118,7 @@
                             <!--</WrapPanel>-->
 
                             <TextBlock Grid.Column="3" HorizontalAlignment="Right" Text=""><Button Name="buttonInput" BorderThickness="0"  
-    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="buttonInput_Click"><Image Source="info.png" /></Button></TextBlock>
+    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="buttonInput_Click"><Image Source="/Images/close.png" /></Button></TextBlock>
                     </Grid>
                     </Border>
                 </DataTemplate>
