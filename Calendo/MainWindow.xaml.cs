@@ -184,7 +184,6 @@ namespace Calendo
         {
             TaskList.Focus();
             AutoSuggestBorder.Visibility = Visibility.Collapsed;
-            ControlBar.Visibility = Visibility.Collapsed;
         }
 
         private void UpdateItemsList()
@@ -375,14 +374,7 @@ namespace Calendo
 
         private void TaskListSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (TaskList.SelectedIndex != -1)
-            {
-                ControlBar.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                ControlBar.Visibility = Visibility.Collapsed;
-            }
+
         }
 
         private void ChangeButtonClick(object sender, RoutedEventArgs e)

@@ -11,6 +11,7 @@
         <Converters:EntryToDateTimeStringConverter x:Key="DateTimeConverter" />
         <Converters:EntryToDateTimeVisibilityConverter x:Key="DateTimeVisibilityConverter" />
         <Converters:EntryToBrushConverter x:Key="EntryToBrushConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
 
     <Window.CommandBindings>
@@ -121,9 +122,16 @@
                             <Setter Property="Background" Value="#FFEAEAEA" />
                             <Setter Property="VerticalAlignment" Value="Top" />
                         </Style>
-                        <Style x:Key="ButtonStyle" TargetType="Button" BasedOn="{StaticResource TransparentWithBorder}">
-                            <Setter Property="FontSize" Value="14" />
-                            <Setter Property="Foreground" Value="#FF464646" />
+                        <Style x:Key="ButtonStyle" TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Name="ButtonBorder">
+                                            <ContentPresenter />
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </Grid.Resources>
 
@@ -232,7 +240,7 @@
                     </Grid>
 
                     <!--Task List-->
-                    <ListBox Name="TaskList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,0,12,3"
+                    <ListBox Name="TaskList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,4,12,12"
                              HorizontalContentAlignment="Stretch" Style="{StaticResource TransparentWithBorder}"
                              MouseDoubleClick="TaskListDoubleClick" FocusVisualStyle="{x:Null}" SelectionChanged="TaskListSelectionChanged"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListItemStyle}">
@@ -246,24 +254,39 @@
                                     <TextBlock Grid.Column="0" Text="{Binding Key}"
                                                Style="{StaticResource ListBoxItemTextStyle}" Margin="0,0,6,0" />
                                     <WrapPanel Grid.Column="1">
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding Value.Description}"
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Value.Description}"
                                                    Style="{StaticResource TaskTextStyle}" TextWrapping="WrapWithOverflow" />
-                                        <StackPanel Grid.Row="1" Orientation="Horizontal"
+                                            <StackPanel Grid.Row="1" Orientation="Horizontal"
                                                     Visibility="{Binding Value, Converter={StaticResource DateTimeVisibilityConverter}, ConverterParameter='StackPanel'}">
-                                            <TextBlock
+                                                <TextBlock
                                                 Text="{Binding Value, Converter={StaticResource DateTimeConverter}, ConverterParameter='StartDate'}"
                                                 Style="{StaticResource ListBoxItemSubtleTextStyle}" />
-                                            <TextBlock Text="to" Margin="4,0,4,0"
+                                                <TextBlock Text="to" Margin="4,0,4,0"
                                                        Style="{StaticResource ListBoxItemSubtleTextStyle}"
                                                        Visibility="{Binding Value, Converter={StaticResource DateTimeVisibilityConverter}, ConverterParameter='RangeText'}" />
-                                            <TextBlock
+                                                <TextBlock
                                                 Text="{Binding Value, Converter={StaticResource DateTimeConverter}, ConverterParameter='EndDate'}"
                                                 Style="{StaticResource ListBoxItemSubtleTextStyle}"
                                                 Visibility="{Binding Value, Converter={StaticResource DateTimeVisibilityConverter}, ConverterParameter='RangeText'}" />
+                                            </StackPanel>
                                         </StackPanel>
-                                    </StackPanel>
                                     </WrapPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Panel.ZIndex="1" HorizontalAlignment="Right"
+                                                Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, 
+                                        Path=IsFocused, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <Button Style="{StaticResource ButtonStyle}" Click="ChangeButtonClick" Margin="0,0,6,0">
+                                            <Image Source="./Images/edit.png" Height="28" />
+                                        </Button>
+                                        <Button Style="{StaticResource ButtonStyle}">
+                                            <Image Source="./Images/delete.png" Height="28" />
+                                        </Button>
+                                        <!--
+                        <Button Grid.Column="2" Style="{StaticResource WindowControlButtonStyle}">
+                            <Image Source="./Images/done.png" />
+                        </Button>
+                        -->
+                                    </StackPanel>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -287,17 +310,6 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                     </Border>
-
-                    <!--Control Bar-->
-                    <Grid x:Name="ControlBar" Grid.Row="3" Margin="12,3" Visibility="Collapsed">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Style="{StaticResource ButtonStyle}" Margin="0,0,6,0"
-                                Click="ChangeButtonClick">change</Button>
-                        <Button Grid.Column="1" Style="{StaticResource ButtonStyle}" Margin="6,0,0,0">remove</Button>
-                    </Grid>
                 </Grid>
 
                 <Rectangle x:Name="ResizeTopLeft" Grid.Row="0" Grid.Column="0" Width="{StaticResource BorderWidth}"
