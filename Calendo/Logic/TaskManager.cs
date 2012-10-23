@@ -103,12 +103,12 @@ namespace Calendo.Logic
         private void Add(string description, TaskTime startTime, TaskTime endTime)
         {
             Entry entry = new Entry();
+            entry.Type = GetTaskType(startTime, endTime);
             entry.Description = description;
             entry.StartTime = startTime.Time;
             entry.StartTimeFormat = startTime.Format;
             entry.EndTime = endTime.Time;
             entry.EndTimeFormat = endTime.Format;
-            entry.Type = GetTaskType(startTime, endTime);
             Add(entry);
         }
 
@@ -130,8 +130,25 @@ namespace Calendo.Logic
         /// <returns></returns>
         private EntryType GetTaskType(TaskTime startTime, TaskTime endTime)
         {
+            if (startTime != null && endTime != null && startTime.Format != TimeFormat.NONE && endTime.Format != TimeFormat.NONE)
+            {
+                if (startTime.Time > endTime.Time)
+                {
+                    // End is before start, mark both as invalid
+                    startTime.Format = TimeFormat.NONE;
+                    endTime.Format = TimeFormat.NONE;
+                    DebugTool.Alert("End date cannot be before start date.");
+                    return EntryType.FLOATING;
+                }
+            }
+            // Start and end times are valid
             if (startTime == null || startTime.Format == TimeFormat.NONE)
             {
+                if (endTime != null)
+                {
+                    // Mark end time as not valid
+                    endTime.Format = TimeFormat.NONE;
+                }
                 // No start or end time
                 return EntryType.FLOATING;
             }
