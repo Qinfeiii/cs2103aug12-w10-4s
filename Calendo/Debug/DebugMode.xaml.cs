@@ -40,7 +40,7 @@ namespace Calendo
         {
             //this.listBox1.Items.Clear();
             entryDictionary = new Dictionary<int, Entry>();
-
+            tm.Load(); // prevent concurrency issues
             for (int i = 0; i < tm.Entries.Count; i++)
             {
                 //this.listBox1.Items.Add("[" + tm.Entries[i].ID.ToString() + "] " + tm.Entries[i].Description);
@@ -107,7 +107,8 @@ namespace Calendo
 
         private void buttonclose_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            //this.Close();
+            ((ListBoxItem)this.listBox1.Items[0]).Focus();
         }
 
         private void buttonnew_Click(object sender, RoutedEventArgs e)
@@ -140,6 +141,9 @@ namespace Calendo
             MessageBox.Show(jsonParse.Serialize(currentEntry));
         }
 
+        // Used to prevent list update conflicts when items are dynamically changed
+        private bool isUpdating = false;
+
         private void TextBox_KeyUp_1(object sender, KeyEventArgs e)
         {
             TextBox currentTextbox = sender as TextBox;
@@ -149,8 +153,11 @@ namespace Calendo
                 // Request change command if needed
                 if (currentTextbox.Text != dContext.Value.Description)
                 {
-                    // Show command in textbox
-                    this.textBox1.Text = "/change " + (dContext.Key + 1).ToString() + " " + currentTextbox.Text;
+                    string command = "/change " + (dContext.Key + 1).ToString() + " " + currentTextbox.Text;
+                    isUpdating = true;
+                    cp.ExecuteCommand(command);
+                    UpdateList();
+                    this.listBox1.SelectedIndex = dContext.Key;
                     currentTextbox.Text = dContext.Value.Description;
                 }
                 currentTextbox.IsReadOnly = true;
@@ -169,17 +176,23 @@ namespace Calendo
         private void TextBox_LostKeyboardFocus_1(object sender, KeyboardFocusChangedEventArgs e)
         {
             TextBox currentTextbox = sender as TextBox;
-            if (!currentTextbox.IsReadOnly)
+            if (!currentTextbox.IsReadOnly && !isUpdating)
             {
                 // Request change command if needed
                 KeyValuePair<int, Entry> dContext = (KeyValuePair<int, Entry>)currentTextbox.DataContext;
                 if (currentTextbox.Text != dContext.Value.Description)
                 {
                     // Show command in textbox
-                    this.textBox1.Text = "/change " + (dContext.Key + 1).ToString() + " " + currentTextbox.Text;
+                    //this.textBox1.Text = "/change " + (dContext.Key + 1).ToString() + " " + currentTextbox.Text;
+                    //currentTextbox.Text = dContext.Value.Description;
+                    string command = "/change " + (dContext.Key + 1).ToString() + " " + currentTextbox.Text;
+                    cp.ExecuteCommand(command);
+                    UpdateList();
+                    this.listBox1.SelectedIndex = dContext.Key;
                     currentTextbox.Text = dContext.Value.Description;
                 }
             }
+            isUpdating = false;
             currentTextbox.IsReadOnly = true;
             currentTextbox.Focusable = false;
         }
@@ -192,6 +205,10 @@ namespace Calendo
             {
                 currentTextbox.Focusable = false; // So that can select list item
             }
+        }
+
+        private void listBox1_GotFocus(object sender, RoutedEventArgs e)
+        {
         }
     }
 }
