@@ -142,6 +142,7 @@ namespace Calendo
                     CommandProcessor.ExecuteCommand(inputString);
                     CommandBar.Clear();
                     UpdateItemsList();
+                    FilterListContents();
                 }
             }
             else if (e.Key == Key.Escape)
