@@ -13,6 +13,7 @@ using Google.Apis.Tasks.v1;
 using Google.Apis.Tasks.v1.Data;
 using Google.Apis.Util;
 using Calendo.Data;
+using System.Windows.Forms;
 
 namespace Calendo.GoogleCalendar
 {
@@ -20,22 +21,24 @@ namespace Calendo.GoogleCalendar
     {
         private static string STORAGE_PATH = "archive.txt";
         private static StateStorage<List<Entry>> storage = new StateStorage<List<Entry>>(STORAGE_PATH);
-        
+       // private static String auth = Authorize();
+       // private static String taskListId = getTaskListId(auth);
+    
         public static String Sync()
         {
             storage.Load();
             string auth = Authorize();
-            return postTasks(storage.Entries, auth);
+            List<String> tasks = getTasksDetails(getTaskResponse(auth));
+            postTasks(storage.Entries, auth);
+            deleteGcalTasks(tasks, auth);
+            return "";
         }
-        public static string Import()
+
+        private static string getTaskResponse(String auth)
         {
-            string auth = Authorize();
-            if (auth == "")
-            {
-                return "";
-            }
             string sURL;
-            sURL = "https://www.googleapis.com/tasks/v1/lists/" + getTaskListId(auth) + "/tasks?access_token=" + auth;
+            String taskListId = getTaskListId(auth);
+            sURL = "https://www.googleapis.com/tasks/v1/lists/" + taskListId + "/tasks?access_token=" + auth;
 
             WebRequest wrGETURL;
             wrGETURL = WebRequest.Create(sURL);
@@ -56,7 +59,12 @@ namespace Calendo.GoogleCalendar
                 if (sLine != null)
                     tasks += sLine;
             }
+            deleteGcalTasks(getTasksDetails(tasks), auth);
             return tasks;
+        }
+        public static String Import()
+        {
+            return "";     
         }
 
         private static string getTaskListId(String auth)
@@ -72,7 +80,6 @@ namespace Calendo.GoogleCalendar
             StreamReader objReader = new StreamReader(objStream);
             string sLine = "", taskListDetails = "";
             int i = 0;
-
 
             while (sLine != null)
             {
@@ -122,11 +129,12 @@ namespace Calendo.GoogleCalendar
 
         private static String postTasks(List<Entry> tasks, string auth)
         {
-            String taskListId = getTaskListId(auth);
             var responseText = "";
 
             foreach (Entry task in tasks)
             {
+                //MessageBox.Show(task.Description);
+                String taskListId = getTaskListId(auth);
                 HttpWebRequest httpWReq =
                     (HttpWebRequest)WebRequest.Create("https://www.googleapis.com/tasks/v1/lists/" + taskListId + "/tasks?key=AIzaSyDQPMYzYwXWh4JUZX16RnV2DNJddg_5INo&access_token=" + auth);
 
@@ -153,10 +161,40 @@ namespace Calendo.GoogleCalendar
                     responseText += streamReader.ReadToEnd();
                 }
             }
-            
 
         return responseText;
 		}
+		
+		private static void deleteGcalTasks(List<String> taskIds, String auth)
+        {
+            String taskListId = getTaskListId(auth);
+            storage.Load();
+            foreach (String taskId in taskIds)
+            {
+                //MessageBox.Show(taskId);
+                HttpWebRequest httpWReq =
+                        (HttpWebRequest)WebRequest.Create("https://www.googleapis.com/tasks/v1/lists/" + taskListId + "/tasks/"+taskId+"?key=AIzaSyDQPMYzYwXWh4JUZX16RnV2DNJddg_5INo&access_token=" + auth);
+
+                ASCIIEncoding encoding = new ASCIIEncoding();
+                httpWReq.Method = "DELETE";
+                HttpWebResponse response = (HttpWebResponse)httpWReq.GetResponse();
+            }
+            //MessageBox.Show("delete loop over");
+        }
+		
+		private static List<String> getTasksDetails(string tasks)
+		{
+            JSON<TaskResponse> jtest = new JSON<TaskResponse>();
+            TaskResponse values = jtest.Deserialize(tasks);
+            List<String> taskList = new List<string>();
+            for (int c = 0; c < values.items.Count; c++)
+            {
+                //taskListId += Console.WriteLine(values.items[c].id);
+                if (values.items[c].title!="")
+                    taskList.Add(values.items[c].id);
+            }
+            return taskList;
+        }
 
     }
 }
