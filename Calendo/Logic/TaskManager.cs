@@ -17,10 +17,48 @@ namespace Calendo.Logic
         private const string ERROR_INVALIDDATETIME = "Specified Date or Time is invalid";
         private const string STORAGE_PATH = "archive.txt";
 
-        public TaskManager()
+        private TaskManager()
         {
             storage = new StateStorage<List<Entry>>(STORAGE_PATH);
             storage.Load();
+            UpdateSubscribers();
+        }
+
+        private static TaskManager currentInstance = new TaskManager();
+        public static TaskManager Instance
+        {
+            get
+            {
+                return currentInstance;
+            }
+        }
+
+        private List<Delegate> subscriberList = new List<Delegate>();
+
+        /// <summary>
+        /// List of subscribers to invoke update methods
+        /// </summary>
+        public List<Delegate> Subscribers
+        {
+            get
+            {
+                return subscriberList;
+            }
+            set
+            {
+                subscriberList = value;
+            }
+        }
+
+        /// <summary>
+        /// Call each subscriber update methods
+        /// </summary>
+        private void UpdateSubscribers()
+        {
+            foreach (Delegate d in Subscribers)
+            {
+                d.DynamicInvoke();
+            }
         }
 
         /// <summary>
@@ -48,26 +86,11 @@ namespace Calendo.Logic
         /// <param name="time">Start Time</param>
         public void Add(string description, string date, string time)
         {
-
-            TaskTime endTime = new TaskTime();
-            date = DefaultString(date);
-            if (date.Contains("-"))
-            {
-                // Date is of format [Start Date]-[End Date]
-                string[] dateFrag = date.Split(new char[] { '-' }, 2);
-                if (dateFrag.Length > 1)
-                {
-                    date = dateFrag[0];
-                    string endDate = dateFrag[1];
-                    endTime = this.ConvertTime(endDate, "");
-                }
-            }
-            TaskTime startTime = this.ConvertTime(date, time);
-            this.Add(description, startTime, endTime);
+            this.Add(description, date, time, "", "");
         }
 
         /// <summary>
-        /// Add a timed task
+        /// Add a task
         /// </summary>
         /// <param name="description">Task Description</param>
         /// <param name="startDate">Start Date</param>
@@ -93,7 +116,7 @@ namespace Calendo.Logic
         }
 
         /// <summary>
-        /// Add a timed task
+        /// Add a task
         /// </summary>
         /// <param name="description">Task Description</param>
         /// <param name="startDate">Start Date</param>
@@ -113,13 +136,14 @@ namespace Calendo.Logic
         }
 
         /// <summary>
-        /// Add a task
+        /// Add an entry to task list
         /// </summary>
         /// <param name="entry"></param>
         private void Add(Entry entry)
         {
             storage.Entries.Add(entry);
             storage.Save();
+            UpdateSubscribers();
         }
 
         /// <summary>
@@ -168,12 +192,7 @@ namespace Calendo.Logic
         /// <param name="description">Description</param>
         public void Change(int id, string description)
         {
-            Entry entry = this.Get(id);
-            if (entry != null)
-            {
-                entry.Description = description;
-                storage.Save();
-            }
+            this.Change(id, description, "", "", "", "");
         }
 
         /// <summary>
@@ -238,6 +257,7 @@ namespace Calendo.Logic
                 }
                 entry.Type = GetTaskType(new TaskTime(entry.StartTime, entry.StartTimeFormat), new TaskTime(entry.EndTime, entry.EndTimeFormat));
                 storage.Save();
+                UpdateSubscribers();
             }
             else
             {
@@ -267,6 +287,7 @@ namespace Calendo.Logic
             {
                 storage.Entries.Remove(entry);
                 storage.Save();
+                UpdateSubscribers();
             }
             else
             {
@@ -297,6 +318,7 @@ namespace Calendo.Logic
         public void Undo()
         {
             storage.Undo();
+            UpdateSubscribers();
         }
 
         /// <summary>
@@ -305,6 +327,7 @@ namespace Calendo.Logic
         public void Redo()
         {
             storage.Redo();
+            UpdateSubscribers();
         }
 
         public void Sync()
@@ -312,7 +335,7 @@ namespace Calendo.Logic
             GoogleCalendar.GoogleCalendar.Import();
         }
 
-        public void Import()
+        public void Export()
         {
             // STUB
         }
@@ -323,6 +346,7 @@ namespace Calendo.Logic
         public void Save()
         {
             storage.Save();
+            UpdateSubscribers();
         }
 
         /// <summary>
@@ -330,6 +354,7 @@ namespace Calendo.Logic
         /// </summary>
         public void Load()
         {
+            // Note: Loading does not require updating subscribers
             storage.Load();
         }
         
