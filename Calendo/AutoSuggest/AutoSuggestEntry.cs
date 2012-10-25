@@ -21,21 +21,14 @@ namespace Calendo.AutoSuggest
         public string Description { get; set; }
         public EntryType Type { get; set; }
         public string[] Aliases { get; set; }
+        public bool IsMaster { get { return Type == EntryType.MASTER; } }
 
         public AutoSuggestEntry(string command, string description, EntryType type, string[] aliases)
         {
             Command = command;
             Description = description;
             Type = type;
-            if (aliases == null || aliases.Length <= 1)
-            {
-                Aliases = aliases;
-            }
-            else
-            {
-                Aliases = new string[aliases.Length - 1];
-                Array.Copy(aliases, 1, Aliases, 0, aliases.Length - 1);
-            }
+            Aliases = aliases;
         }
     }
 }
