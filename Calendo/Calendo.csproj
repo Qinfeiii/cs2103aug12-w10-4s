@@ -82,6 +82,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -126,6 +127,8 @@
       <DependentUpon>TestShadow.xaml</DependentUpon>
     </Compile>
     <Compile Include="FormMaximize.cs" />
+    <Compile Include="GoogleCalendar\Class2.cs" />
+    <Compile Include="GoogleCalendar\Task.cs" />
     <Compile Include="Logic\CommandProcessor.cs" />
     <Compile Include="Converters\EntryToBrushConverter.cs" />
     <Compile Include="Converters\EntryToDateTimeStringConverter.cs" />

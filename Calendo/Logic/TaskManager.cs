@@ -332,12 +332,12 @@ namespace Calendo.Logic
 
         public void Sync()
         {
-            GoogleCalendar.GoogleCalendar.Import();
+            GoogleCalendar.GoogleCalendar.Sync();
         }
 
         public void Export()
         {
-            // STUB
+            GoogleCalendar.GoogleCalendar.Import();
         }
 
         /// <summary>
