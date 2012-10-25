@@ -26,11 +26,14 @@ namespace Calendo.GoogleCalendar
     
         public static String Sync()
         {
+            Import();
+            /*return "";
+            MessageBox.Show("fuck");
             storage.Load();
             string auth = Authorize();
-            List<String> tasks = getTasksDetails(getTaskResponse(auth));
+            List<String> tasks = getTasksIds(getTaskResponse(auth));
             postTasks(storage.Entries, auth);
-            deleteGcalTasks(tasks, auth);
+            deleteGcalTasks(tasks, auth);*/
             return "";
         }
 
@@ -59,11 +62,22 @@ namespace Calendo.GoogleCalendar
                 if (sLine != null)
                     tasks += sLine;
             }
-            deleteGcalTasks(getTasksDetails(tasks), auth);
             return tasks;
         }
         public static String Import()
         {
+            string auth = Authorize();
+            List<Entry> taskList = getTaskDetails(getTaskResponse(auth));
+            storage.Load();
+            storage.Entries.Clear();
+            storage.Save();
+            storage.Load();
+            foreach (Entry task in taskList)
+            {
+                storage.Entries.Add(task);
+                storage.Save();
+            }
+            storage.Load();
             return "";     
         }
 
@@ -167,6 +181,7 @@ namespace Calendo.GoogleCalendar
 		
 		private static void deleteGcalTasks(List<String> taskIds, String auth)
         {
+            MessageBox.Show("loser");
             String taskListId = getTaskListId(auth);
             storage.Load();
             foreach (String taskId in taskIds)
@@ -182,7 +197,7 @@ namespace Calendo.GoogleCalendar
             //MessageBox.Show("delete loop over");
         }
 		
-		private static List<String> getTasksDetails(string tasks)
+		private static List<String> getTasksIds(string tasks)
 		{
             JSON<TaskResponse> jtest = new JSON<TaskResponse>();
             TaskResponse values = jtest.Deserialize(tasks);
@@ -196,5 +211,19 @@ namespace Calendo.GoogleCalendar
             return taskList;
         }
 
+        private static List<Entry> getTaskDetails(String tasks)
+        {
+            JSON<TaskResponse> jtest = new JSON<TaskResponse>();
+            TaskResponse values = jtest.Deserialize(tasks);
+            List<Entry> taskList = new List<Entry>();
+            for (int c = 0; c < values.items.Count; c++)
+            {
+                //taskListId += Console.WriteLine(values.items[c].id);
+                Entry entry = new Entry();
+                entry.Description = values.items[c].title;
+                taskList.Add(entry);
+            }
+            return taskList;
+        }
     }
 }
