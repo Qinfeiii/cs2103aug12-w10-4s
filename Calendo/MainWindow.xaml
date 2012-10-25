@@ -12,6 +12,7 @@
         <Converters:EntryToDateTimeVisibilityConverter x:Key="DateTimeVisibilityConverter" />
         <Converters:EntryToBrushConverter x:Key="EntryToBrushConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <Converters:StringArrayToStringConverter x:Key="StringArrayToStringConverter" />
     </Window.Resources>
 
     <Window.CommandBindings>
@@ -322,6 +323,10 @@
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Grid HorizontalAlignment="Stretch">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
                                             <ColumnDefinition Width="*" />
@@ -332,6 +337,19 @@
                                             <TextBlock Style="{StaticResource ListBoxItemSubtleTextStyle}" Margin="5,4"
                                                    FontSize="13" Text="{Binding Description}" TextWrapping="Wrap" />
                                         </WrapPanel>
+                                        <Grid Grid.Row="1" Grid.ColumnSpan="2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <TextBlock Grid.Column="0" Style="{StaticResource ListBoxItemSubtleTextStyle}" Margin="0,4"
+                                                   FontSize="11" Text="aliases:" />
+                                            <WrapPanel Grid.Column="1">
+                                                <TextBlock Style="{StaticResource ListBoxItemSubtleTextStyle}" Margin="5,4"
+                                                   FontSize="11" Text="{Binding Aliases, Converter={StaticResource StringArrayToStringConverter}}" />
+                                            </WrapPanel>
+                                        </Grid>
                                     </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>

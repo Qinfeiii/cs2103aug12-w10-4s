@@ -12,20 +12,34 @@ namespace Calendo.AutoSuggest
 
         private List<AutoSuggestEntry> MasterList;
 
-        public AutoSuggest()
+        public AutoSuggest(Dictionary<string, string[]> aliasDictionary)
         {
+            string[] addAliases;
+            string[] changeAliases;
+            string[] removeAliases;
+            string[] undoAliases;
+            string[] redoAliases;
+            string[] syncAliases;
+
+            aliasDictionary.TryGetValue("add", out addAliases);
+            aliasDictionary.TryGetValue("change", out changeAliases);
+            aliasDictionary.TryGetValue("remove", out removeAliases);
+            aliasDictionary.TryGetValue("undo", out undoAliases);
+            aliasDictionary.TryGetValue("redo", out redoAliases);
+            aliasDictionary.TryGetValue("sync", out syncAliases);
+
             MasterList = new List<AutoSuggestEntry>
                                  {
-                                     new AutoSuggestEntry("/add", "add a new item", EntryType.MASTER),
-                                     new AutoSuggestEntry("/change", "edit an item", EntryType.MASTER),
-                                     new AutoSuggestEntry("/remove", "remove an item", EntryType.MASTER),
-                                     new AutoSuggestEntry("/undo", "undo the last action", EntryType.MASTER),
-                                     new AutoSuggestEntry("/redo", "revert an undone action", EntryType.MASTER),
-                                     new AutoSuggestEntry("/sync", "synchronize with Google Calendar", EntryType.MASTER),
+                                     new AutoSuggestEntry("/add", "add a new item", EntryType.MASTER, addAliases),
+                                     new AutoSuggestEntry("/change", "edit an item", EntryType.MASTER, changeAliases),
+                                     new AutoSuggestEntry("/remove", "remove an item", EntryType.MASTER, removeAliases),
+                                     new AutoSuggestEntry("/undo", "undo the last action", EntryType.MASTER, undoAliases),
+                                     new AutoSuggestEntry("/redo", "revert an undone action", EntryType.MASTER, redoAliases),
+                                     new AutoSuggestEntry("/sync", "synchronize with Google Calendar", EntryType.MASTER, syncAliases),
                                      
-                                     new AutoSuggestEntry("/add", "[description] /date [DD/MM] /time [HH:MM]", EntryType.DETAIL),
-                                     new AutoSuggestEntry("/change", "[number] [description]", EntryType.DETAIL),
-                                     new AutoSuggestEntry("/remove", "[number]", EntryType.DETAIL)
+                                     new AutoSuggestEntry("/add", "[description] /date [DD/MM] /time [HH:MM]", EntryType.DETAIL, null),
+                                     new AutoSuggestEntry("/change", "[number] [description]", EntryType.DETAIL, null),
+                                     new AutoSuggestEntry("/remove", "[number]", EntryType.DETAIL, null)
                                  };
             SuggestionList = new List<AutoSuggestEntry>();
         }
