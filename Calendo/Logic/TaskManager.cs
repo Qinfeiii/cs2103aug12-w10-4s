@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using Calendo.Data;
 using Calendo.Diagnostics;
 
@@ -330,14 +331,48 @@ namespace Calendo.Logic
             UpdateSubscribers();
         }
 
-        public void Sync()
-        {
-            GoogleCalendar.GoogleCalendar.Sync();
-        }
-
+        /// <summary>
+        /// Export from Google Calendar
+        /// </summary>
         public void Export()
         {
-            GoogleCalendar.GoogleCalendar.Import();
+            // Authorization must occur on same thread as main application
+            GoogleCalendar.GoogleCalendar.Authorize();
+
+            // Multithread so UI will not be frozen by slow web requests
+            Thread threadInstance = new Thread(new ThreadStart(GCalExport));
+            threadInstance.Start();
+        }
+
+        /// <summary>
+        /// Wrapper method for multithreading export
+        /// </summary>
+        private void GCalExport()
+        {
+            GoogleCalendar.GoogleCalendar gcal = new GoogleCalendar.GoogleCalendar();
+            gcal.Sync();
+        }
+
+        /// <summary>
+        /// Import from Google Calendar
+        /// </summary>
+        public void Import()
+        {
+            // Authorization must occur on same thread as main application
+            GoogleCalendar.GoogleCalendar.Authorize();
+
+            // Multithread so UI will not be frozen by slow web requests
+            Thread threadInstance = new Thread(new ThreadStart(GCalImport));
+            threadInstance.Start();
+        }
+
+        /// <summary>
+        /// Wrapper method for multithreading export
+        /// </summary>
+        private void GCalImport()
+        {
+            GoogleCalendar.GoogleCalendar gcal = new GoogleCalendar.GoogleCalendar();
+            gcal.Import();
         }
 
         /// <summary>

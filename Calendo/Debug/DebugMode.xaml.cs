@@ -107,8 +107,8 @@ namespace Calendo
 
         private void button4_Click(object sender, RoutedEventArgs e)
         {
-            //MessageBox.Show("This button is not in use");
-            MessageBox.Show(GoogleCalendar.GoogleCalendar.Import());
+            MessageBox.Show("This button is not in use");
+            //MessageBox.Show(GoogleCalendar.GoogleCalendar.Import());
         }
 
         private void button5_Click(object sender, RoutedEventArgs e)
