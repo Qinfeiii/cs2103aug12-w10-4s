@@ -255,8 +255,11 @@ namespace Calendo
                                  }
                              });
 
+            CommandProcessor.IndexMap = new Dictionary<int, int>();
             foreach (Entry currentEntry in entries)
             {
+                int originalIndex = CommandProcessor.TaskList.IndexOf(currentEntry) + 1;
+                CommandProcessor.IndexMap.Add(count, originalIndex);
                 itemDictionary.Add(count, currentEntry);
                 count++;
             }

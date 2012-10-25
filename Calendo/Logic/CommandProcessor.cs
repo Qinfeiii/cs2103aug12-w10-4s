@@ -61,6 +61,9 @@ namespace Calendo.Logic
         }
         public List<Calendo.Data.Entry> TaskList { get { return taskManager.Entries; } }
 
+        // Used to map the UI index (Key) to the actual index in the task list (Value).
+        public Dictionary<int, int> IndexMap { get; set; } 
+
         #region execution
         private void HandleCommand()
         {
@@ -112,10 +115,12 @@ namespace Calendo.Logic
                 // Command without parameter
                 return;
             }
-            int index = 0;
+            int inputValue = 0;
+            int index;
             try
             {
-                index = Convert.ToInt32(commandText);
+                inputValue = Convert.ToInt32(commandText);
+                IndexMap.TryGetValue(inputValue, out index);
             }
             catch
             {
@@ -134,9 +139,11 @@ namespace Calendo.Logic
             }
             string[] commandTextPieces = commandText.Split();
             int taskNumberToChange = 0;
+            int inputValue;
             try
             {
-                taskNumberToChange = Convert.ToInt32(commandTextPieces.First());
+                inputValue = Convert.ToInt32(commandTextPieces.First());
+                IndexMap.TryGetValue(inputValue, out taskNumberToChange);
             }
             catch
             {
