@@ -10,6 +10,7 @@ using Calendo.AutoSuggest;
 using Calendo.Logic;
 using Calendo.Data;
 using System.Windows.Interop;
+using EntryType = Calendo.Data.EntryType;
 
 namespace Calendo
 {
@@ -141,6 +142,7 @@ namespace Calendo
                     CommandProcessor.ExecuteCommand(inputString);
                     CommandBar.Clear();
                     UpdateItemsList();
+                    FilterListContents();
                 }
             }
             else if (e.Key == Key.Escape)
@@ -182,7 +184,6 @@ namespace Calendo
         {
             TaskList.Focus();
             AutoSuggestBorder.Visibility = Visibility.Collapsed;
-            ControlBar.Visibility = Visibility.Collapsed;
         }
 
         private void UpdateItemsList()
@@ -190,7 +191,71 @@ namespace Calendo
             Dictionary<int, Entry> itemDictionary = new Dictionary<int, Entry>();
 
             int count = 1;
-            foreach (Entry currentEntry in CommandProcessor.TaskList)
+
+            List<Entry> entries = new List<Entry>(CommandProcessor.TaskList);
+            entries.Sort(delegate(Entry first, Entry second)
+                             {
+                                 // We want items sorted by Overdue -> Active -> Floating
+                                 bool isFirstOverdue = UiTaskHelper.IsTaskOverdue(first);
+                                 bool isSecondOverdue = UiTaskHelper.IsTaskOverdue(second);
+
+                                 bool isFirstActive = UiTaskHelper.IsTaskOngoing(first);
+                                 bool isSecondActive = UiTaskHelper.IsTaskOngoing(second);
+
+                                 bool isFirstFloating = UiTaskHelper.IsTaskFloating(first);
+                                 bool isSecondFloating = UiTaskHelper.IsTaskFloating(second);
+
+                                 // If both are floating, this is irrelevant.
+                                 if (isFirstFloating && isSecondFloating)
+                                 {
+                                     return 0;
+                                 }
+                                 else if (isFirstOverdue && isSecondOverdue || isFirstActive && isSecondActive)
+                                 {
+                                     return UiTaskHelper.CompareByDate(first, second);
+                                 }
+                                 else if (isFirstOverdue)
+                                 {
+                                     // The first task is overdue, but the second isn't.
+                                     return -1;
+                                 }
+                                 else if (isSecondOverdue)
+                                 {
+                                     // The second task is overdue, but the first isn't.
+                                     return 1;
+                                 }
+                                 // Neither is overdue.
+                                 else if (isFirstActive)
+                                 {
+                                     // The first task is active and the second isn't.
+                                     // Second is either floating or inactive. Regardless,
+                                     return -1;
+                                 }
+                                 else if (isSecondActive)
+                                 {
+                                     // The second task is active and the first isn't.
+                                     // First is either floating or inactive.
+                                     return 1;
+                                 }
+                                 // Neither is active.
+                                 else if (!isFirstFloating && !isSecondFloating)
+                                 {
+                                     // Neither are floating.
+                                     return UiTaskHelper.CompareByDate(first, second);
+                                 }
+                                 else if (isFirstFloating)
+                                 {
+                                     // First is floating, second isn't.
+                                     return 1;
+                                 }
+                                 else
+                                 {
+                                     // Second is floating, first isn't.
+                                     return -1;
+                                 }
+                             });
+
+            foreach (Entry currentEntry in entries)
             {
                 itemDictionary.Add(count, currentEntry);
                 count++;
@@ -233,12 +298,7 @@ namespace Calendo
         {
             AutoSuggestViewModel.SetSuggestions(CommandBar.Text);
 
-            AutoSuggestBorder.Visibility = CommandBar.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
-            if (CommandBar.Text.Length > 0 && CommandBar.Text[0] != '/')
-            {
-                // Not a command (search mode)
-                AutoSuggestBorder.Visibility = Visibility.Collapsed;
-            }
+            AutoSuggestBorder.Visibility = AutoSuggestViewModel.SuggestionList.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void SettingsButtonClick(object sender, RoutedEventArgs e)
@@ -277,10 +337,16 @@ namespace Calendo
 
         private void GridMouseDown(object sender, MouseButtonEventArgs e)
         {
-            FocusOnTaskList();
+            // Disabled as behavior conflicts with several controls
+            //FocusOnTaskList();
         }
 
         private void DeleteHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            DeleteSelectedTask();
+        }
+
+        private void DeleteSelectedTask()
         {
             string command = "/remove";
             ExecuteCommandOnSelectedTask(command);
@@ -312,21 +378,26 @@ namespace Calendo
             }
         }
 
-        private void TaskListSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (TaskList.SelectedIndex != -1)
-            {
-                ControlBar.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                ControlBar.Visibility = Visibility.Collapsed;
-            }
-        }
-
         private void ChangeButtonClick(object sender, RoutedEventArgs e)
         {
+            SelectTaskFromCommandButton(sender);
             ChangeSelectedTask();
+        }
+
+        private void SelectTaskFromCommandButton(object sender)
+        {
+// Find the Grid that this button was in.
+            Button senderButton = sender as Button;
+            FrameworkElement currentItem = senderButton.Parent as FrameworkElement;
+            Grid relevantItem = null;
+            while (relevantItem == null)
+            {
+                currentItem = currentItem.Parent as FrameworkElement;
+                relevantItem = currentItem as Grid;
+            }
+
+            KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>) relevantItem.DataContext;
+            TaskList.SelectedIndex = selectedPair.Key - 1;
         }
 
         private void ResizeStart(object sender, MouseEventArgs e)
@@ -432,6 +503,12 @@ namespace Calendo
             {
                 Height = resizeY;
             }
+        }
+
+        private void DeleteButtonClick(object sender, RoutedEventArgs e)
+        {
+            SelectTaskFromCommandButton(sender);
+            DeleteSelectedTask();
         }
     }
 }

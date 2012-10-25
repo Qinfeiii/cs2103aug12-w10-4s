@@ -10,7 +10,7 @@ namespace Calendo.AutoSuggest
 
         public List<AutoSuggestEntry> SuggestionList { get; set; }
 
-        private List<AutoSuggestEntry> MasterList; 
+        private List<AutoSuggestEntry> MasterList;
 
         public AutoSuggest()
         {
@@ -40,7 +40,7 @@ namespace Calendo.AutoSuggest
 
             if (isInputValid && input.First() == COMMAND_INDICATOR)
             {
-                if(inputWords.Length == 1)
+                if (inputWords.Length == 1)
                 {
                     // Only a command has been entered.
                     SuggestionList = new List<AutoSuggestEntry>(MasterList.Where(o => o.Type == EntryType.MASTER && o.Command.Contains(inputCommand)));
