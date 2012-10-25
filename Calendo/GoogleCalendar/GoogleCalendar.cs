@@ -89,8 +89,8 @@ namespace Calendo.GoogleCalendar
                     taskListDetails += sLine;
             }
 
-            JSON<TI> jtest = new JSON<TI>();
-            TI values = jtest.Deserialize(taskListDetails);
+            JSON<TaskResponse> jtest = new JSON<TaskResponse>();
+            TaskResponse values = jtest.Deserialize(taskListDetails);
             String taskListId = "";
             for (int c = 0; c < values.items.Count; c++)
             {
@@ -142,7 +142,7 @@ namespace Calendo.GoogleCalendar
                 ASCIIEncoding encoding = new ASCIIEncoding();
 
                 responseText = "";
-                JSON<TI> jtest = new JSON<TI>();
+                JSON<TaskResponse> jtest = new JSON<TaskResponse>();
                 string postData = "{\"title\": \"" + task.Description + "\",\"due\": \"" + jtest.DateToJSON(task.StartTime) + "\"}";
 
                 byte[] data = encoding.GetBytes(postData);
