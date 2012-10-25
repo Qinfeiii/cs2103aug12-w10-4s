@@ -13,6 +13,7 @@ using System.Windows.Shapes;
 using Calendo.Data;
 using Calendo.Logic;
 using Calendo.GoogleCalendar;
+using Calendo.Diagnostics;
 
 namespace Calendo
 {
@@ -25,13 +26,22 @@ namespace Calendo
         // Used for exploratory testing for TaskManager, SettingsManager, CommandProcessor
         TaskManager tm = TaskManager.Instance;
         CommandProcessor cp = new CommandProcessor();
-        private delegate void subscribermethod();
+        private delegate void SMethod();
         public DebugMode()
         {
             InitializeComponent();
 
-            subscribermethod d = new subscribermethod(this.SubscriberMethod);
-            tm.Subscribers.Add(d);
+            // TM delegate
+            SMethod delegateMethod = new SMethod(this.SubscriberMethod);
+            tm.Subscribers.Add(delegateMethod);
+
+            // Debug delegate
+            DebugTool.Subscribers.Add(new DebugTool.DelegateAlert(this.Alert));
+        }
+
+        private void Alert(string message)
+        {
+            this.StatusLabel.Content = message;
         }
 
         private void textBox1_TextChanged(object sender, TextChangedEventArgs e)
