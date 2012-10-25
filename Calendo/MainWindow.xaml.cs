@@ -40,9 +40,10 @@ namespace Calendo
             RedoCommand.InputGestures.Add(new KeyGesture(Key.Y, ModifierKeys.Control));
             DelCommand.InputGestures.Add(new KeyGesture(Key.Delete));
 
-            AutoSuggestViewModel = new AutoSuggest.AutoSuggest();
-            DataContext = AutoSuggestViewModel;
             CommandProcessor = new CommandProcessor();
+
+            AutoSuggestViewModel = new AutoSuggest.AutoSuggest(CommandProcessor.GetInputCommandList());
+            DataContext = AutoSuggestViewModel;
             UpdateItemsList();
         }
 
