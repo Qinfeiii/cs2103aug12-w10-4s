@@ -14,6 +14,37 @@ namespace Calendo.Diagnostics
         private static bool _Enable = true;
         private static bool loaded = false;
 
+        public delegate void DelegateAlert(string message);
+        private static List<Delegate> subscriberList = new List<Delegate>();
+
+        /// <summary>
+        /// List of subscribers to invoke alert methods
+        /// </summary>
+        public static List<Delegate> Subscribers
+        {
+            get
+            {
+                return subscriberList;
+            }
+            set
+            {
+                subscriberList = value;
+            }
+        }
+
+        /// <summary>
+        /// Call each subscriber alert methods
+        /// </summary>
+        private static void UpdateSubscribers(string message)
+        {
+            foreach (Delegate d in Subscribers)
+            {
+                DelegateAlert dAlert = d as DelegateAlert;
+                dAlert(message);
+            }
+        }
+
+
         /// <summary>
         /// Get or set debug enable switch
         /// </summary>
@@ -65,6 +96,7 @@ namespace Calendo.Diagnostics
             if (DebugTool.Enable)
             {
                 MessageBox.Show(message);
+                UpdateSubscribers(message);
             }
         }
 
