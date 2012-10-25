@@ -195,7 +195,7 @@ namespace Calendo.Logic
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_REDO);
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_SYNC);
 
-            taskManager = new TaskManager();
+            taskManager = TaskManager.Instance;
         }
 
         // Public method called by UI to execute user-input command
