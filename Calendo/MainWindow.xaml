@@ -265,7 +265,8 @@
                     <ListBox Name="TaskList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,4,12,12"
                              HorizontalContentAlignment="Stretch" Style="{StaticResource TransparentWithBorder}"
                              FocusVisualStyle="{x:Null}"
-                             ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListItemStyle}">
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListItemStyle}"
+                             ItemsSource="{Binding TaskList}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid HorizontalAlignment="Stretch">
