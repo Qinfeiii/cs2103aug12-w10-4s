@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using Calendo.Data;
 using Calendo.Diagnostics;
 
@@ -9,18 +10,59 @@ namespace Calendo.Logic
 
     public class TaskManager
     {
-        private StateStorage<List<Entry>> storage;
         private const int FLAG_DESCRIPTION = 1;
         private const int FLAG_STARTTIME = 2;
         private const int FLAG_ENDTIME = 4;
         private const string ERROR_ENTRYNOTFOUND = "Entry not found";
         private const string ERROR_INVALIDDATETIME = "Specified Date or Time is invalid";
         private const string STORAGE_PATH = "archive.txt";
+        private static TaskManager currentInstance = new TaskManager();
+        private StateStorage<List<Entry>> storage;
+        private List<Delegate> subscribers = new List<Delegate>();
 
-        public TaskManager()
+        public delegate void UpdateHandler();
+
+        /// <summary>
+        /// Creates a new instance of TaskManager
+        /// </summary>
+        private TaskManager()
         {
             storage = new StateStorage<List<Entry>>(STORAGE_PATH);
             storage.Load();
+            UpdateSubscribers();
+        }
+
+        /// <summary>
+        /// Gets the current instance of TaskManager
+        /// </summary>
+        public static TaskManager Instance
+        {
+            get
+            {
+                return currentInstance;
+            }
+        }
+
+
+        
+        /// <summary>
+        /// Adds a handler to the list of subscribers
+        /// </summary>
+        /// <param name="updateHandler">Update Handler</param>
+        public void AddSubscriber(Delegate updateHandler)
+        {
+            subscribers.Add(updateHandler);
+        }
+
+        /// <summary>
+        /// Invoke subscriber update methods
+        /// </summary>
+        private void UpdateSubscribers()
+        {
+            foreach (Delegate handler in subscribers)
+            {
+                handler.DynamicInvoke();
+            }
         }
 
         /// <summary>
@@ -48,26 +90,11 @@ namespace Calendo.Logic
         /// <param name="time">Start Time</param>
         public void Add(string description, string date, string time)
         {
-
-            TaskTime endTime = new TaskTime();
-            date = DefaultString(date);
-            if (date.Contains("-"))
-            {
-                // Date is of format [Start Date]-[End Date]
-                string[] dateFrag = date.Split(new char[] { '-' }, 2);
-                if (dateFrag.Length > 1)
-                {
-                    date = dateFrag[0];
-                    string endDate = dateFrag[1];
-                    endTime = this.ConvertTime(endDate, "");
-                }
-            }
-            TaskTime startTime = this.ConvertTime(date, time);
-            this.Add(description, startTime, endTime);
+            this.Add(description, date, time, "", "");
         }
 
         /// <summary>
-        /// Add a timed task
+        /// Add a task
         /// </summary>
         /// <param name="description">Task Description</param>
         /// <param name="startDate">Start Date</param>
@@ -93,7 +120,7 @@ namespace Calendo.Logic
         }
 
         /// <summary>
-        /// Add a timed task
+        /// Add a task
         /// </summary>
         /// <param name="description">Task Description</param>
         /// <param name="startDate">Start Date</param>
@@ -113,13 +140,14 @@ namespace Calendo.Logic
         }
 
         /// <summary>
-        /// Add a task
+        /// Add an entry to task list
         /// </summary>
         /// <param name="entry"></param>
         private void Add(Entry entry)
         {
             storage.Entries.Add(entry);
             storage.Save();
+            UpdateSubscribers();
         }
 
         /// <summary>
@@ -168,12 +196,7 @@ namespace Calendo.Logic
         /// <param name="description">Description</param>
         public void Change(int id, string description)
         {
-            Entry entry = this.Get(id);
-            if (entry != null)
-            {
-                entry.Description = description;
-                storage.Save();
-            }
+            this.Change(id, description, "", "", "", "");
         }
 
         /// <summary>
@@ -238,6 +261,7 @@ namespace Calendo.Logic
                 }
                 entry.Type = GetTaskType(new TaskTime(entry.StartTime, entry.StartTimeFormat), new TaskTime(entry.EndTime, entry.EndTimeFormat));
                 storage.Save();
+                UpdateSubscribers();
             }
             else
             {
@@ -267,6 +291,7 @@ namespace Calendo.Logic
             {
                 storage.Entries.Remove(entry);
                 storage.Save();
+                UpdateSubscribers();
             }
             else
             {
@@ -297,6 +322,7 @@ namespace Calendo.Logic
         public void Undo()
         {
             storage.Undo();
+            UpdateSubscribers();
         }
 
         /// <summary>
@@ -305,16 +331,51 @@ namespace Calendo.Logic
         public void Redo()
         {
             storage.Redo();
+            UpdateSubscribers();
         }
 
-        public void Sync()
+        /// <summary>
+        /// Export from Google Calendar
+        /// </summary>
+        public void Export()
         {
-            GoogleCalendar.GoogleCalendar.Import();
+            // Authorization must occur on same thread as main application
+            GoogleCalendar.GoogleCalendar.Authorize();
+
+            // Multithread so UI will not be frozen by slow web requests
+            Thread threadInstance = new Thread(new ThreadStart(GCalExport));
+            threadInstance.Start();
         }
 
+        /// <summary>
+        /// Wrapper method for multithreading export
+        /// </summary>
+        private void GCalExport()
+        {
+            GoogleCalendar.GoogleCalendar gcal = new GoogleCalendar.GoogleCalendar();
+            gcal.Sync();
+        }
+
+        /// <summary>
+        /// Import from Google Calendar
+        /// </summary>
         public void Import()
         {
-            // STUB
+            // Authorization must occur on same thread as main application
+            GoogleCalendar.GoogleCalendar.Authorize();
+
+            // Multithread so UI will not be frozen by slow web requests
+            Thread threadInstance = new Thread(new ThreadStart(GCalImport));
+            threadInstance.Start();
+        }
+
+        /// <summary>
+        /// Wrapper method for multithreading export
+        /// </summary>
+        private void GCalImport()
+        {
+            GoogleCalendar.GoogleCalendar gcal = new GoogleCalendar.GoogleCalendar();
+            gcal.Import();
         }
 
         /// <summary>
@@ -323,6 +384,7 @@ namespace Calendo.Logic
         public void Save()
         {
             storage.Save();
+            UpdateSubscribers();
         }
 
         /// <summary>
@@ -330,6 +392,7 @@ namespace Calendo.Logic
         /// </summary>
         public void Load()
         {
+            // Note: Loading does not require updating subscribers
             storage.Load();
         }
         

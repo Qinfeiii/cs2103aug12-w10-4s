@@ -9,11 +9,12 @@ using System.Diagnostics;
 
 namespace Calendo.Data
 {
+    [Serializable]
     [XmlRoot("Data")]
     public class State<T> where T : new()
     {
         private T baseValue;
-        private Stack<T> redoStack;
+        private static Stack<T> redoStack = new Stack<T>();
 
         /// <summary>
         /// Create a State object to represent object states
@@ -21,7 +22,6 @@ namespace Calendo.Data
         public State()
         {
             baseValue = new T();
-            redoStack = new Stack<T>();
             States = new List<T>();
         }
 
@@ -135,11 +135,10 @@ namespace Calendo.Data
         }
     }
 
-    public class StateStorage<T> where T : new()
+    public class StateStorage<T> : Storage<T> where T : new()
     {
         private Storage<State<T>> dataStorage;
         private State<T> currentState;
-        private XmlSerializer serializer;
 
         /// <summary>
         /// Creates a Storage object
@@ -165,13 +164,12 @@ namespace Calendo.Data
         private void Initialize()
         {
             currentState = new State<T>();
-            serializer = new XmlSerializer(currentState.GetType());
         }
 
         /// <summary>
         /// Data stored in storage
         /// </summary>
-        public T Entries
+        public override T Entries
         {
             get { return dataStorage.Entries.Value; }
             set { dataStorage.Entries.Value = value; }
@@ -181,7 +179,7 @@ namespace Calendo.Data
         /// Saves the data
         /// </summary>
         /// <returns>Returns true if file has been changed</returns>
-        public bool Save()
+        public override bool Save()
         {
             dataStorage.Entries.AddState();
             currentState = dataStorage.Entries;
@@ -192,7 +190,7 @@ namespace Calendo.Data
         /// Loads the data
         /// </summary>
         /// <returns>Returns true if the file has been read</returns>
-        public bool Load()
+        public override bool Load()
         {
             bool loadResult = dataStorage.Load();
             currentState = dataStorage.Entries;

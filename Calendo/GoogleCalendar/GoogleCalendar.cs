@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Collections.Generic;
+using System.Web;
 using System.Text;
 using System.IO;
 using System.Diagnostics;
@@ -11,28 +12,49 @@ using Google.Apis.Authentication.OAuth2.DotNetOpenAuth;
 using Google.Apis.Tasks.v1;
 using Google.Apis.Tasks.v1.Data;
 using Google.Apis.Util;
+using Calendo.Logic;
 using Calendo.Data;
+using System.Windows.Forms;
 
 namespace Calendo.GoogleCalendar
 {
     class GoogleCalendar
     {
-
-        public static bool Sync(List<Entry> entries)
+        //private static string STORAGE_PATH = "archive.txt";
+        private TaskManager storage = TaskManager.Instance;
+       private static string auth = "";
+       // private static String taskListId = getTaskListId(auth);
+    
+        // Reserved for duplex sync
+        public string Sync()
         {
+            Export();
+            //Import();
+            /*return "";
+            storage.Load();
             string auth = Authorize();
-            //postTasks(tasks, auth);
-            return false;
+            List<String> tasks = getTasksIds(getTaskResponse(auth));
+            postTasks(storage.Entries, auth);
+            deleteGcalTasks(tasks, auth);*/
+            return "";
         }
-        public static string Import()
+
+        public void Export()
         {
-            string auth = Authorize();
             if (auth == "")
             {
-                return "";
+                MessageBox.Show("Authorization code not provided!");
+                return;
             }
+            storage.Load();
+            postTasks(storage.Entries, auth);
+        }
+
+        private string getTaskResponse(string auth)
+        {
             string sURL;
-            sURL = "https://www.googleapis.com/tasks/v1/lists/MTU4OTEwNzMxMTYxNzgzMjEwNDc6MDow/tasks?access_token=" + auth;
+            string taskListId = getTaskListId(auth);
+            sURL = "https://www.googleapis.com/tasks/v1/lists/" + taskListId + "/tasks?access_token=" + auth;
 
             WebRequest wrGETURL;
             wrGETURL = WebRequest.Create(sURL);
@@ -51,15 +73,69 @@ namespace Calendo.GoogleCalendar
                 i++;
                 sLine = objReader.ReadLine();
                 if (sLine != null)
-                    tasks += i + ": " + sLine;
+                    tasks += sLine;
             }
             return tasks;
         }
-        private static string Authorize()
+
+        public string Import()
+        {
+            if (auth == "")
+            {
+                MessageBox.Show("Authorization code not provided!");
+                return "";
+            }
+            List<Entry> taskList = getTaskDetails(getTaskResponse(auth));
+            storage.Load();
+            storage.Entries.Clear();
+
+            foreach (Entry task in taskList)
+            {
+                storage.Entries.Add(task);
+            }
+            storage.Save();
+            return "";     
+        }
+
+        private string getTaskListId(String auth)
+        {
+            string sURL;
+            sURL = " https://www.googleapis.com/tasks/v1/users/@me/lists?access_token=" + auth;
+            WebRequest wrGETURL;
+            wrGETURL = WebRequest.Create(sURL);
+
+            Stream objStream;
+            objStream = wrGETURL.GetResponse().GetResponseStream();
+
+            StreamReader objReader = new StreamReader(objStream);
+            string sLine = "", taskListDetails = "";
+            int i = 0;
+
+            while (sLine != null)
+            {
+                i++;
+                sLine = objReader.ReadLine();
+                if (sLine != null)
+                    taskListDetails += sLine;
+            }
+
+            JSON<TaskResponse> jtest = new JSON<TaskResponse>();
+            TaskResponse values = jtest.Deserialize(taskListDetails);
+            String taskListId = "";
+            for (int c = 0; c < values.items.Count; c++)
+            {
+                //taskListId += Console.WriteLine(values.items[c].id);
+                taskListId += values.items[c].id;
+            }
+            return taskListId;
+        }
+
+        // Used by Task Manager to call authorization (because must be on same thread)
+        public static string Authorize()
         {
             var provider = new NativeApplicationClient(GoogleAuthenticationServer.Description);
             provider.ClientIdentifier = "770362652845-cb7ki86iesscd3f54vs8nd063epao8v3.apps.googleusercontent.com";
-            string auth = GetAuthentication(provider);
+            auth = GetAuthentication(provider);
             return auth;
         }
 
@@ -83,27 +159,84 @@ namespace Calendo.GoogleCalendar
             return authCode;
         }
 
-        private static void postTasks(Entry tasks, string auth)
+        private string postTasks(List<Entry> tasks, string auth)
         {
-            HttpWebRequest httpWReq =
-            (HttpWebRequest)WebRequest.Create("https://www.googleapis.com/tasks/v1/lists/MTU4OTEwNzMxMTYxNzgzMjEwNDc6MDow/tasks?access_token=" + auth);
+            var responseText = "";
 
-            ASCIIEncoding encoding = new ASCIIEncoding();
-            //string postData = "{ kind: tasks#task,";
-            string postData = "\"title\": lol_its_task";
-            //postData += "status: completed}";
-
-            byte[] data = encoding.GetBytes(postData);
-
-            httpWReq.Method = "POST";
-            //httpWReq.ContentType = "application/x-www-form-urlencoded";
-            httpWReq.ContentLength = data.Length;
-
-            using (Stream newStream = httpWReq.GetRequestStream())
+            foreach (Entry task in tasks)
             {
-                newStream.Write(data, 0, data.Length);
+                //MessageBox.Show(task.Description);
+                String taskListId = getTaskListId(auth);
+                HttpWebRequest httpWReq =
+                    (HttpWebRequest)WebRequest.Create("https://www.googleapis.com/tasks/v1/lists/" + taskListId + "/tasks?key=AIzaSyDQPMYzYwXWh4JUZX16RnV2DNJddg_5INo&access_token=" + auth);
+
+                httpWReq.ContentType = "application/json";
+                ASCIIEncoding encoding = new ASCIIEncoding();
+
+                responseText = "";
+                JSON<TaskResponse> jtest = new JSON<TaskResponse>();
+                string postData = "{\"title\": \"" + task.Description + "\",\"due\": \"" + jtest.DateToJSON(task.StartTime) + "\"}";
+
+                byte[] data = encoding.GetBytes(postData);
+
+                httpWReq.Method = "POST";
+                httpWReq.ContentLength = data.Length;
+
+                using (Stream newStream = httpWReq.GetRequestStream())
+                {
+                    newStream.Write(data, 0, data.Length);
+                }
+
+                var httpResponse = (HttpWebResponse)httpWReq.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    responseText += streamReader.ReadToEnd();
+                }
+            }
+
+        return responseText;
+		}
+		
+		private void deleteGcalTasks(List<String> taskIds, string auth)
+        {
+            string taskListId = getTaskListId(auth);
+            storage.Load();
+            foreach (string taskId in taskIds)
+            {
+                HttpWebRequest httpWReq =
+(HttpWebRequest)WebRequest.Create("https://www.googleapis.com/tasks/v1/lists/" + taskListId + "/tasks/" + taskId + "?key=AIzaSyDQPMYzYwXWh4JUZX16RnV2DNJddg_5INo&access_token=" + auth);
+
+                ASCIIEncoding encoding = new ASCIIEncoding();
+                httpWReq.Method = "DELETE";
+                HttpWebResponse response = (HttpWebResponse)httpWReq.GetResponse();
             }
         }
+		
+		private List<String> getTasksIds(string tasks)
+		{
+            JSON<TaskResponse> jtest = new JSON<TaskResponse>();
+            TaskResponse values = jtest.Deserialize(tasks);
+            List<String> taskList = new List<string>();
+            for (int c = 0; c < values.items.Count; c++)
+            {
+                if (values.items[c].title!="")
+                    taskList.Add(values.items[c].id);
+            }
+            return taskList;
+        }
 
+        private List<Entry> getTaskDetails(string tasks)
+        {
+            JSON<TaskResponse> jtest = new JSON<TaskResponse>();
+            TaskResponse values = jtest.Deserialize(tasks);
+            List<Entry> taskList = new List<Entry>();
+            for (int c = 0; c < values.items.Count; c++)
+            {
+                Entry entry = new Entry();
+                entry.Description = values.items[c].title;
+                taskList.Add(entry);
+            }
+            return taskList;
+        }
     }
 }

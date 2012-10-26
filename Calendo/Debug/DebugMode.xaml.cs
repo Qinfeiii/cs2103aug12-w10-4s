@@ -13,6 +13,7 @@ using System.Windows.Shapes;
 using Calendo.Data;
 using Calendo.Logic;
 using Calendo.GoogleCalendar;
+using Calendo.Diagnostics;
 
 namespace Calendo
 {
@@ -23,11 +24,23 @@ namespace Calendo
     {
         // NOTE: This is a testing class with a GUI interface
         // Used for exploratory testing for TaskManager, SettingsManager, CommandProcessor
-        TaskManager tm = new TaskManager();
+        TaskManager tm = TaskManager.Instance;
         CommandProcessor cp = new CommandProcessor();
         public DebugMode()
         {
             InitializeComponent();
+
+            // TM delegate
+            TaskManager.UpdateHandler delegateMethod = new TaskManager.UpdateHandler(this.SubscriberMethod);
+            tm.AddSubscriber(delegateMethod);
+
+            // Debug delegate
+            DebugTool.Subscribers.Add(new DebugTool.NotifyHandler(this.Alert));
+        }
+
+        private void Alert(string message)
+        {
+            this.StatusLabel.Content = message;
         }
 
         private void textBox1_TextChanged(object sender, TextChangedEventArgs e)
@@ -93,8 +106,8 @@ namespace Calendo
 
         private void button4_Click(object sender, RoutedEventArgs e)
         {
-            //MessageBox.Show("This button is not in use");
-            MessageBox.Show(GoogleCalendar.GoogleCalendar.Import());
+            MessageBox.Show("This button is not in use");
+            //MessageBox.Show(GoogleCalendar.GoogleCalendar.Import());
         }
 
         private void button5_Click(object sender, RoutedEventArgs e)
@@ -209,6 +222,12 @@ namespace Calendo
 
         private void listBox1_GotFocus(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void SubscriberMethod()
+        {
+            this.textBox1.Text = "The list has been updated";
+            this.UpdateList();
         }
     }
 }
