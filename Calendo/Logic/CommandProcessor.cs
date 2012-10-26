@@ -67,6 +67,11 @@ namespace Calendo.Logic
         private void HandleCommand()
         {
             // TaskManager.ExecuteCommand(commandType, commandDate, commandTime, commandText);
+            if (commandType == null)
+            {
+                // Non-matching command
+                return;
+            }
             switch (commandType.ToLower())
             {
                 case COMMAND_TYPE_SEARCH:
