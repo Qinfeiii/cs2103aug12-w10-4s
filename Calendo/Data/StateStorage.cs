@@ -14,7 +14,7 @@ namespace Calendo.Data
     public class State<T> where T : new()
     {
         private T baseValue;
-        private Stack<T> redoStack;
+        private static Stack<T> redoStack = new Stack<T>();
 
         /// <summary>
         /// Create a State object to represent object states
@@ -22,7 +22,6 @@ namespace Calendo.Data
         public State()
         {
             baseValue = new T();
-            redoStack = new Stack<T>();
             States = new List<T>();
         }
 
