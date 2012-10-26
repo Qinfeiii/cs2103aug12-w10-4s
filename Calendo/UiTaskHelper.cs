@@ -82,6 +82,11 @@ namespace Calendo
             return firstCompareSecond;
         }
 
+        public static int CompareByDescription(Entry first, Entry second)
+        {
+            return first.Description.CompareTo(second.Description);
+        }
+
         public static bool IsTaskFloating(Entry task)
         {
             return task.Type == EntryType.FLOATING;
