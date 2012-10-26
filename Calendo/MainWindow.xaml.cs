@@ -31,10 +31,13 @@ namespace Calendo
         public static RoutedCommand RedoCommand = new RoutedCommand();
         public static RoutedCommand DelCommand = new RoutedCommand();
 
+        private delegate void UpdateDelegate();
+
         public MainWindow()
         {
             InitializeComponent();
             this.SourceInitialized += new EventHandler(FormSourceInitialized);
+            UpdateDelegate updateDelegate = new UpdateDelegate(UpdateItemsList);
 
             UndoCommand.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
             RedoCommand.InputGestures.Add(new KeyGesture(Key.Y, ModifierKeys.Control));
