@@ -183,6 +183,7 @@ namespace Calendo.Data
         {
             dataStorage.Entries.AddState();
             currentState = dataStorage.Entries;
+            
             return dataStorage.Save();
         }
 
