@@ -12,21 +12,58 @@ namespace Calendo.AutoSuggest
 
         private List<AutoSuggestEntry> MasterList;
 
-        public AutoSuggest()
+        public AutoSuggest(Dictionary<string, string[]> aliasDictionary)
         {
-            MasterList = new List<AutoSuggestEntry>
-                                 {
-                                     new AutoSuggestEntry("/add", "add a new item", EntryType.MASTER),
-                                     new AutoSuggestEntry("/change", "edit an item", EntryType.MASTER),
-                                     new AutoSuggestEntry("/remove", "remove an item", EntryType.MASTER),
-                                     new AutoSuggestEntry("/undo", "undo the last action", EntryType.MASTER),
-                                     new AutoSuggestEntry("/redo", "revert an undone action", EntryType.MASTER),
-                                     new AutoSuggestEntry("/sync", "synchronize with Google Calendar", EntryType.MASTER),
-                                     
-                                     new AutoSuggestEntry("/add", "[description] /date [DD/MM] /time [HH:MM]", EntryType.DETAIL),
-                                     new AutoSuggestEntry("/change", "[number] [description]", EntryType.DETAIL),
-                                     new AutoSuggestEntry("/remove", "[number]", EntryType.DETAIL)
-                                 };
+            IEnumerable<string> commandTypes = aliasDictionary.Keys.AsEnumerable<string>();
+            MasterList = new List<AutoSuggestEntry>();
+
+            foreach (string currentCommand in commandTypes)
+            {
+                string commandDescription = "no description";
+                string commandInstruction = null;
+                string[] commandAliases;
+
+                aliasDictionary.TryGetValue(currentCommand, out commandAliases);
+
+                switch (currentCommand)
+                {
+                    case "add":
+                        commandDescription = "add a new item";
+                        commandInstruction = "[description] /date [DD/MM] /time [HH:MM]";
+                        break;
+                    case "change":
+                        commandDescription = "edit an item";
+                        commandInstruction = "[number] [description]";
+                        break;
+                    case "remove":
+                        commandDescription = "remove an item";
+                        commandInstruction = "[number]";
+                        break;
+                    case "undo":
+                        commandDescription = "undo the last action";
+                        break;
+                    case "redo":
+                        commandDescription = "revert an undone action";
+                        break;
+                    case "sync":
+                        commandDescription = "synchronize with Google Calendar";
+                        break;
+                }
+
+                AutoSuggestEntry mainEntry = new AutoSuggestEntry("/" + currentCommand, commandDescription, EntryType.MASTER, commandAliases);
+                MasterList.Add(mainEntry);
+
+                AutoSuggestEntry detailEntry;
+                if (commandInstruction != null)
+                {
+                    foreach (string alias in commandAliases)
+                    {
+                        detailEntry = new AutoSuggestEntry(alias, commandInstruction, EntryType.DETAIL, null);
+                        MasterList.Add(detailEntry);
+                    }
+                }
+            }
+
             SuggestionList = new List<AutoSuggestEntry>();
         }
 
@@ -43,12 +80,33 @@ namespace Calendo.AutoSuggest
                 if (inputWords.Length == 1)
                 {
                     // Only a command has been entered.
-                    SuggestionList = new List<AutoSuggestEntry>(MasterList.Where(o => o.Type == EntryType.MASTER && o.Command.Contains(inputCommand)));
+                    IEnumerable<AutoSuggestEntry> commandMatches = MasterList.Where(
+                        delegate(AutoSuggestEntry entry)
+                        {
+                            bool isEntryMaster = entry.IsMaster;
+                            bool isCommandMatch = entry.Command.Contains(inputCommand);
+                            bool isAliasesMatch = false;
+
+                            if (entry.Aliases != null)
+                            {
+                                foreach (string alias in entry.Aliases)
+                                {
+                                    if (isAliasesMatch = alias.StartsWith(inputCommand))
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+
+                            return entry.IsMaster && (isCommandMatch || isAliasesMatch);
+                        });
+
+                    SuggestionList = new List<AutoSuggestEntry>(commandMatches);
                 }
                 else if (inputWords.Length > 1)
                 {
                     // Command has been entered. Show parameter suggestions.
-                    SuggestionList = new List<AutoSuggestEntry>(MasterList.Where(o => o.Type == EntryType.DETAIL && o.Command.Contains(inputCommand)));
+                    SuggestionList = new List<AutoSuggestEntry>(MasterList.Where(o => o.Type == EntryType.DETAIL && o.Command.Equals(inputCommand)));
                 }
             }
 

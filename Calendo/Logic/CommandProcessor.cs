@@ -63,6 +63,9 @@ namespace Calendo.Logic
         }
         public List<Calendo.Data.Entry> TaskList { get { return taskManager.Entries; } }
 
+        // Used to map the UI index (Key) to the actual index in the task list (Value).
+        public Dictionary<int, int> IndexMap { get; set; } 
+
         #region execution
         private void HandleCommand()
         {
@@ -127,10 +130,12 @@ namespace Calendo.Logic
                 // Command without parameter
                 return;
             }
-            int index = 0;
+            int inputValue = 0;
+            int index;
             try
             {
-                index = Convert.ToInt32(commandText);
+                inputValue = Convert.ToInt32(commandText);
+                IndexMap.TryGetValue(inputValue, out index);
             }
             catch
             {
@@ -149,9 +154,11 @@ namespace Calendo.Logic
             }
             string[] commandTextPieces = commandText.Split();
             int taskNumberToChange = 0;
+            int inputValue;
             try
             {
-                taskNumberToChange = Convert.ToInt32(commandTextPieces.First());
+                inputValue = Convert.ToInt32(commandTextPieces.First());
+                IndexMap.TryGetValue(inputValue, out taskNumberToChange);
             }
             catch
             {
@@ -191,11 +198,11 @@ namespace Calendo.Logic
         public CommandProcessor()
         {
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE = new Dictionary<string, string[]>();
-            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_SEARCH, INPUT_COMMANDS_SEARCH);
+         //   DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_SEARCH, INPUT_COMMANDS_SEARCH);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_ADD, INPUT_COMMANDS_ADD);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_REMOVE, INPUT_COMMANDS_REMOVE);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
-            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
+         //   DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_SYNC, INPUT_COMMANDS_SYNC);
