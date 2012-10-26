@@ -26,17 +26,16 @@ namespace Calendo
         // Used for exploratory testing for TaskManager, SettingsManager, CommandProcessor
         TaskManager tm = TaskManager.Instance;
         CommandProcessor cp = new CommandProcessor();
-        private delegate void SMethod();
         public DebugMode()
         {
             InitializeComponent();
 
             // TM delegate
-            SMethod delegateMethod = new SMethod(this.SubscriberMethod);
-            tm.Subscribers.Add(delegateMethod);
+            TaskManager.UpdateHandler delegateMethod = new TaskManager.UpdateHandler(this.SubscriberMethod);
+            tm.AddSubscriber(delegateMethod);
 
             // Debug delegate
-            DebugTool.Subscribers.Add(new DebugTool.DelegateAlert(this.Alert));
+            DebugTool.Subscribers.Add(new DebugTool.NotifyHandler(this.Alert));
         }
 
         private void Alert(string message)

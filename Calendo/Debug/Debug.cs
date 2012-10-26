@@ -14,7 +14,7 @@ namespace Calendo.Diagnostics
         private static bool _Enable = true;
         private static bool loaded = false;
 
-        public delegate void DelegateAlert(string message);
+        public delegate void NotifyHandler(string message);
         private static List<Delegate> subscriberList = new List<Delegate>();
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Calendo.Diagnostics
         {
             foreach (Delegate d in Subscribers)
             {
-                DelegateAlert dAlert = d as DelegateAlert;
+                NotifyHandler dAlert = d as NotifyHandler;
                 dAlert(message);
             }
         }

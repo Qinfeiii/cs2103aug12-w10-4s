@@ -10,14 +10,21 @@ namespace Calendo.Logic
 
     public class TaskManager
     {
-        private StateStorage<List<Entry>> storage;
         private const int FLAG_DESCRIPTION = 1;
         private const int FLAG_STARTTIME = 2;
         private const int FLAG_ENDTIME = 4;
         private const string ERROR_ENTRYNOTFOUND = "Entry not found";
         private const string ERROR_INVALIDDATETIME = "Specified Date or Time is invalid";
         private const string STORAGE_PATH = "archive.txt";
+        private static TaskManager currentInstance = new TaskManager();
+        private StateStorage<List<Entry>> storage;
+        private List<Delegate> subscribers = new List<Delegate>();
 
+        public delegate void UpdateHandler();
+
+        /// <summary>
+        /// Creates a new instance of TaskManager
+        /// </summary>
         private TaskManager()
         {
             storage = new StateStorage<List<Entry>>(STORAGE_PATH);
@@ -25,7 +32,9 @@ namespace Calendo.Logic
             UpdateSubscribers();
         }
 
-        private static TaskManager currentInstance = new TaskManager();
+        /// <summary>
+        /// Gets the current instance of TaskManager
+        /// </summary>
         public static TaskManager Instance
         {
             get
@@ -34,31 +43,25 @@ namespace Calendo.Logic
             }
         }
 
-        private List<Delegate> subscriberList = new List<Delegate>();
 
+        
         /// <summary>
-        /// List of subscribers to invoke update methods
+        /// Adds a handler to the list of subscribers
         /// </summary>
-        public List<Delegate> Subscribers
+        /// <param name="updateHandler">Update Handler</param>
+        public void AddSubscriber(Delegate updateHandler)
         {
-            get
-            {
-                return subscriberList;
-            }
-            set
-            {
-                subscriberList = value;
-            }
+            subscribers.Add(updateHandler);
         }
 
         /// <summary>
-        /// Call each subscriber update methods
+        /// Invoke subscriber update methods
         /// </summary>
         private void UpdateSubscribers()
         {
-            foreach (Delegate d in Subscribers)
+            foreach (Delegate handler in subscribers)
             {
-                d.DynamicInvoke();
+                handler.DynamicInvoke();
             }
         }
 
