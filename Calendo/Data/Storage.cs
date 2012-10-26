@@ -27,7 +27,7 @@ namespace Calendo.Data
         /// Gets or sets the value represented by the object
         /// </summary>
         [XmlElement("Entry")]
-        public T Value
+        public virtual T Value
         {
             get;
             set;
@@ -77,9 +77,20 @@ namespace Calendo.Data
         }
 
         /// <summary>
+        /// Sets the XML Serializer used
+        /// </summary>
+        protected XmlSerializer Serializer
+        {
+            set
+            {
+                serializer = value;
+            }
+        }
+
+        /// <summary>
         /// Data stored in storage
         /// </summary>
-        public T Entries
+        public virtual T Entries
         {
             get { return dataWrapper.Value; }
             set { dataWrapper.Value = value; }
@@ -89,7 +100,7 @@ namespace Calendo.Data
         /// Saves the data
         /// </summary>
         /// <returns>Returns true if file has been changed</returns>
-        public bool Save()
+        public virtual bool Save()
         {
             Stream fileStream = null;
             try
@@ -119,7 +130,7 @@ namespace Calendo.Data
         /// Loads the data
         /// </summary>
         /// <returns>Returns true if the file has been read</returns>
-        public bool Load()
+        public virtual bool Load()
         {
             Stream fileStream = null;
             try

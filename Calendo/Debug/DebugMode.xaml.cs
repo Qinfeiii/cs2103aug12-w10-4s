@@ -23,11 +23,15 @@ namespace Calendo
     {
         // NOTE: This is a testing class with a GUI interface
         // Used for exploratory testing for TaskManager, SettingsManager, CommandProcessor
-        TaskManager tm = new TaskManager();
+        TaskManager tm = TaskManager.Instance;
         CommandProcessor cp = new CommandProcessor();
+        private delegate void subscribermethod();
         public DebugMode()
         {
             InitializeComponent();
+
+            subscribermethod d = new subscribermethod(this.SubscriberMethod);
+            tm.Subscribers.Add(d);
         }
 
         private void textBox1_TextChanged(object sender, TextChangedEventArgs e)
@@ -209,6 +213,12 @@ namespace Calendo
 
         private void listBox1_GotFocus(object sender, RoutedEventArgs e)
         {
+        }
+
+        private void SubscriberMethod()
+        {
+            this.textBox1.Text = "The list has been updated";
+            this.UpdateList();
         }
     }
 }
