@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Calendo.AutoSuggest
 {
-    class AutoSuggest : INotifyPropertyChanged
+    class AutoSuggest
     {
         public const char COMMAND_INDICATOR = '/';
 
@@ -108,20 +108,6 @@ namespace Calendo.AutoSuggest
                     // Command has been entered. Show parameter suggestions.
                     SuggestionList = new List<AutoSuggestEntry>(MasterList.Where(o => o.Type == EntryType.DETAIL && o.Command.Equals(inputCommand)));
                 }
-            }
-
-            OnPropertyChanged("SuggestionList");
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChangedEventArgs args = new PropertyChangedEventArgs(propertyName);
-            PropertyChangedEventHandler changed = PropertyChanged;
-            if (changed != null)
-            {
-                changed(this, args);
             }
         }
     }
