@@ -14,8 +14,8 @@ namespace Calendo
         private AutoSuggest.AutoSuggest AutoSuggestSystem { get; set; }
         private CommandProcessor CommandProcessor { get; set; }
 
-        public List<AutoSuggestEntry> SuggestionList { get; set; }
-        public Dictionary<int, Entry> TaskList { get; set; }
+        public List<AutoSuggestEntry> SuggestionList { get { return AutoSuggestSystem.SuggestionList; } }
+        public Dictionary<int, Entry> TaskList { get; set;  }
 
         private delegate void UpdateDelegate();
 
@@ -37,7 +37,6 @@ namespace Calendo
         public void SetSuggestions(string input)
         {
             AutoSuggestSystem.SetSuggestions(input);
-            SuggestionList = AutoSuggestSystem.SuggestionList;
             OnPropertyChanged("SuggestionList");
         }
 
