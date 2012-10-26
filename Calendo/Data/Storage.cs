@@ -73,7 +73,8 @@ namespace Calendo.Data
         private void Initialize()
         {
             dataWrapper = new Data<T>();
-            serializer = new XmlSerializer(dataWrapper.GetType());
+            // Initialize XMLserializer to use the Data<T> type template
+            serializer = XmlSerializer.FromTypes(new[] { typeof(Data<T>) })[0];
         }
 
         /// <summary>
