@@ -11,17 +11,22 @@ namespace Calendo
         public static bool IsTaskOverdue(Entry currentEntry)
         {
             bool isOverdue = false;
+            DateTime relevantTime;
 
             if (currentEntry.Type == EntryType.TIMED)
             {
-                isOverdue = currentEntry.EndTime.CompareTo(DateTime.Now) < 0;
+                relevantTime = currentEntry.EndTime;
             }
             else if (currentEntry.Type == EntryType.DEADLINE)
             {
-                isOverdue = currentEntry.StartTime.CompareTo(DateTime.Now) < 0;
+                relevantTime = currentEntry.StartTime;
             }
-
-            // Floating tasks can't be overdue.
+            else
+            {
+                // Floating tasks can't be overdue.
+                return false;
+            }
+            isOverdue = relevantTime.CompareTo(DateTime.Now) < 0;
             return isOverdue;
         }
 
