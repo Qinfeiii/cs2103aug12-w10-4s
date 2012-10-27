@@ -6,22 +6,27 @@ using Calendo.Data;
 
 namespace Calendo
 {
-    class UiTaskHelper
+    public class UiTaskHelper
     {
         public static bool IsTaskOverdue(Entry currentEntry)
         {
             bool isOverdue = false;
+            DateTime relevantTime;
 
             if (currentEntry.Type == EntryType.TIMED)
             {
-                isOverdue = currentEntry.EndTime.CompareTo(DateTime.Now) < 0;
+                relevantTime = currentEntry.EndTime;
             }
             else if (currentEntry.Type == EntryType.DEADLINE)
             {
-                isOverdue = currentEntry.StartTime.CompareTo(DateTime.Now) < 0;
+                relevantTime = currentEntry.StartTime;
             }
-
-            // Floating tasks can't be overdue.
+            else
+            {
+                // Floating tasks can't be overdue.
+                return false;
+            }
+            isOverdue = relevantTime.CompareTo(DateTime.Now) < 0;
             return isOverdue;
         }
 
@@ -30,12 +35,18 @@ namespace Calendo
             bool isOngoing = false;
 
             TimeSpan nowAndTaskStartDifference = currentEntry.StartTime.Subtract(DateTime.Now);
-            bool isTaskStarting = 0 < nowAndTaskStartDifference.TotalHours && nowAndTaskStartDifference.TotalHours < 24;
+
+            bool isTaskDifferencePositive = 0 <= nowAndTaskStartDifference.TotalHours;
+            bool isTaskADayAway = nowAndTaskStartDifference.TotalHours < 24;
+
+            bool isTaskStarting = isTaskDifferencePositive && isTaskADayAway;
 
             if (currentEntry.Type == EntryType.TIMED)
             {
-                bool isNowBetweenStartAndEnd = currentEntry.StartTime.CompareTo(DateTime.Now) < 0 &&
-                                               DateTime.Now.CompareTo(currentEntry.EndTime) < 0;
+                bool isStartBeforeNow = currentEntry.StartTime.CompareTo(DateTime.Now) < 0;
+                bool isEndAfterNow = DateTime.Now.CompareTo(currentEntry.EndTime) < 0;
+
+                bool isNowBetweenStartAndEnd = isStartBeforeNow && isEndAfterNow;
                 isOngoing = isTaskStarting || isNowBetweenStartAndEnd;
             }
             else if (currentEntry.Type == EntryType.DEADLINE)
@@ -80,6 +91,11 @@ namespace Calendo
 
             int firstCompareSecond = firstRelevantTime.CompareTo(secondRelevantTime);
             return firstCompareSecond;
+        }
+
+        public static int CompareByDescription(Entry first, Entry second)
+        {
+            return first.Description.CompareTo(second.Description);
         }
 
         public static bool IsTaskFloating(Entry task)

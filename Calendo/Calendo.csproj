@@ -101,6 +101,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\StringArrayToStringConverter.cs" />
+    <Compile Include="UiViewModel.cs" />
     <Compile Include="UiTaskHelper.cs" />
     <Page Include="Debug\DebugMode.xaml">
       <SubType>Designer</SubType>
