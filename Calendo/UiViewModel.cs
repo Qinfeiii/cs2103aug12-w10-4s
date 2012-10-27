@@ -24,7 +24,7 @@ namespace Calendo
             CommandProcessor = new CommandProcessor();
             AutoSuggestSystem = new AutoSuggest.AutoSuggest(CommandProcessor.GetInputCommandList());
             UpdateDelegate updateDelegate = new UpdateDelegate(UpdateItemsList);
-            TaskManager.Instance.Subscribers.Add(updateDelegate);
+            TaskManager.Instance.AddSubscriber(updateDelegate);
             UpdateItemsList();
         }
 
