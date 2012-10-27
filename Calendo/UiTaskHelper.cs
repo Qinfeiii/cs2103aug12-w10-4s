@@ -35,12 +35,18 @@ namespace Calendo
             bool isOngoing = false;
 
             TimeSpan nowAndTaskStartDifference = currentEntry.StartTime.Subtract(DateTime.Now);
-            bool isTaskStarting = 0 < nowAndTaskStartDifference.TotalHours && nowAndTaskStartDifference.TotalHours < 24;
+
+            bool isTaskDifferencePositive = 0 < nowAndTaskStartDifference.TotalHours;
+            bool isTaskADayAway = nowAndTaskStartDifference.TotalHours < 24;
+
+            bool isTaskStarting = isTaskDifferencePositive && isTaskADayAway;
 
             if (currentEntry.Type == EntryType.TIMED)
             {
-                bool isNowBetweenStartAndEnd = currentEntry.StartTime.CompareTo(DateTime.Now) < 0 &&
-                                               DateTime.Now.CompareTo(currentEntry.EndTime) < 0;
+                bool isStartBeforeNow = currentEntry.StartTime.CompareTo(DateTime.Now) < 0;
+                bool isEndAfterNow = DateTime.Now.CompareTo(currentEntry.EndTime) < 0;
+
+                bool isNowBetweenStartAndEnd = isStartBeforeNow && isEndAfterNow;
                 isOngoing = isTaskStarting || isNowBetweenStartAndEnd;
             }
             else if (currentEntry.Type == EntryType.DEADLINE)
