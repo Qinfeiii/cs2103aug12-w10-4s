@@ -6,7 +6,7 @@ using Calendo.Data;
 
 namespace Calendo
 {
-    class UiTaskHelper
+    public class UiTaskHelper
     {
         public static bool IsTaskOverdue(Entry currentEntry)
         {
@@ -36,7 +36,7 @@ namespace Calendo
 
             TimeSpan nowAndTaskStartDifference = currentEntry.StartTime.Subtract(DateTime.Now);
 
-            bool isTaskDifferencePositive = 0 < nowAndTaskStartDifference.TotalHours;
+            bool isTaskDifferencePositive = 0 <= nowAndTaskStartDifference.TotalHours;
             bool isTaskADayAway = nowAndTaskStartDifference.TotalHours < 24;
 
             bool isTaskStarting = isTaskDifferencePositive && isTaskADayAway;
