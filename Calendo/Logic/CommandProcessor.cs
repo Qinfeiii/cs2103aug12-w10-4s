@@ -7,7 +7,7 @@ namespace Calendo.Logic
 {
     //TODO: Refactor by abstraction
     //TODO: LOTS of re-factoring required
-    class CommandProcessor
+    public class CommandProcessor
     {
         #region constants
         // This is the list of "actual" command types identified by the program

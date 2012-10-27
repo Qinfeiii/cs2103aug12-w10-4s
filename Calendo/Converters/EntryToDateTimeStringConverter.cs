@@ -5,7 +5,7 @@ using Calendo.Data;
 
 namespace Calendo.Converters
 {
-    class EntryToDateTimeStringConverter : IValueConverter
+    public class EntryToDateTimeStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
