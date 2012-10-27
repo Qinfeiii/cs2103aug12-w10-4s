@@ -72,43 +72,69 @@ namespace Calendo.AutoSuggest
             SuggestionList.Clear();
             bool isInputValid = input.Length > 0;
 
+            if (isInputValid)
+            {
+                GenerateSuggestionsFromInput(input);
+            }
+        }
+
+        private void GenerateSuggestionsFromInput(string input)
+        {
             string[] inputWords = input.Split();
             string inputCommand = inputWords[0];
 
-            if (isInputValid && input.First() == COMMAND_INDICATOR)
+            bool isInputCommand = input.First() == COMMAND_INDICATOR;
+
+            if (isInputCommand)
             {
                 if (inputWords.Length == 1)
                 {
-                    // Only a command has been entered.
-                    IEnumerable<AutoSuggestEntry> commandMatches = MasterList.Where(
-                        delegate(AutoSuggestEntry entry)
-                        {
-                            bool isEntryMaster = entry.IsMaster;
-                            bool isCommandMatch = entry.Command.Contains(inputCommand);
-                            bool isAliasesMatch = false;
-
-                            if (entry.Aliases != null)
-                            {
-                                foreach (string alias in entry.Aliases)
-                                {
-                                    if (isAliasesMatch = alias.StartsWith(inputCommand))
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-
-                            return entry.IsMaster && (isCommandMatch || isAliasesMatch);
-                        });
-
-                    SuggestionList = new List<AutoSuggestEntry>(commandMatches);
+                    MatchInputToCommandSuggestion(inputCommand);
                 }
                 else if (inputWords.Length > 1)
                 {
-                    // Command has been entered. Show parameter suggestions.
-                    SuggestionList = new List<AutoSuggestEntry>(MasterList.Where(o => o.Type == EntryType.DETAIL && o.Command.Equals(inputCommand)));
+                    MatchInputToInstruction(inputCommand);
                 }
             }
+        }
+
+        private void MatchInputToInstruction(string inputCommand)
+        {
+            // Full command has been entered. Show parameter suggestions.
+            SuggestionList = new List<AutoSuggestEntry>(MasterList.Where(o => o.Type == EntryType.DETAIL && o.Command.Equals(inputCommand)));
+        }
+
+        private void MatchInputToCommandSuggestion(string inputCommand)
+        {
+            // User is entering a command.
+            IEnumerable<AutoSuggestEntry> commandMatches = MasterList.Where(
+                delegate(AutoSuggestEntry entry)
+                {
+                    bool isEntryMaster = entry.IsMaster;
+                    bool isCommandMatch = entry.Command.Contains(inputCommand);
+                    bool isAliasesMatch = CheckAliasesForCommand(inputCommand, entry);
+
+                    return entry.IsMaster && (isCommandMatch || isAliasesMatch);
+                });
+
+            SuggestionList = new List<AutoSuggestEntry>(commandMatches);
+        }
+
+        private bool CheckAliasesForCommand(string inputCommand, AutoSuggestEntry entry)
+        {
+            if (entry.Aliases == null)
+            {
+                return false;
+            }
+
+            foreach (string currentAlias in entry.Aliases)
+            {
+                if (currentAlias.StartsWith(inputCommand))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
