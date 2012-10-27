@@ -15,6 +15,10 @@ namespace Calendo.Diagnostics
         private static bool _Enable = true;
         private static bool loaded = false;
 
+        /// <summary>
+        /// Notify handler for DebugTool notifications
+        /// </summary>
+        /// <param name="message"></param>
         public delegate void NotifyHandler(string message);
         private static List<Delegate> subscriberList = new List<Delegate>();
 

@@ -20,6 +20,9 @@ namespace Calendo.Logic
         private StateStorage<List<Entry>> storage;
         private List<Delegate> subscribers = new List<Delegate>();
 
+        /// <summary>
+        /// Update Handler for TaskManager subscriber
+        /// </summary>
         public delegate void UpdateHandler();
 
         /// <summary>
@@ -42,8 +45,6 @@ namespace Calendo.Logic
                 return currentInstance;
             }
         }
-
-
         
         /// <summary>
         /// Adds a handler to the list of subscribers
@@ -158,7 +159,7 @@ namespace Calendo.Logic
         /// <returns></returns>
         private EntryType GetTaskType(TaskTime startTime, TaskTime endTime)
         {
-            if (startTime != null && endTime != null && startTime.Format != TimeFormat.NONE && endTime.Format != TimeFormat.NONE)
+            if (!HasNoTimeFormat(startTime) && !HasNoTimeFormat(endTime))
             {
                 if (startTime.Time > endTime.Time)
                 {
@@ -169,10 +170,10 @@ namespace Calendo.Logic
                     return EntryType.FLOATING;
                 }
             }
-            // Start and end times are valid
-            if (startTime == null || startTime.Format == TimeFormat.NONE)
+            // Start time none, but end time set
+            if (HasNoTimeFormat(startTime))
             {
-                if (endTime != null)
+                if (!HasNoTimeFormat(endTime))
                 {
                     // Mark end time as not valid
                     endTime.Format = TimeFormat.NONE;
@@ -180,13 +181,23 @@ namespace Calendo.Logic
                 // No start or end time
                 return EntryType.FLOATING;
             }
-            if (startTime.Format != TimeFormat.NONE && (endTime == null || endTime.Format == TimeFormat.NONE))
+            // Has Start time, but no end time
+            if (!HasNoTimeFormat(startTime) && HasNoTimeFormat(endTime))
             {
-                // Only start time is used
                 return EntryType.DEADLINE;
             }
             // Both Start and End time are used
             return EntryType.TIMED;
+        }
+
+        /// <summary>
+        /// Determine if provided TaskTime has a time format
+        /// </summary>
+        /// <param name="taskTime">TaskTime object</param>
+        /// <returns>True if no time format</returns>
+        private bool HasNoTimeFormat(TaskTime taskTime)
+        {
+            return (taskTime == null) || (taskTime.Format == TimeFormat.NONE);
         }
 
         /// <summary>
@@ -217,17 +228,34 @@ namespace Calendo.Logic
                 // Description changed
                 flag |= FLAG_DESCRIPTION;
             }
-            if (!startDateTime.HasError && (startDate + startTime) != "")
+            if (!startDateTime.HasError && HasText(startDate, startTime))
             {
                 // Start Date changed
                 flag |= FLAG_STARTTIME;
             }
-            if (!endDateTime.HasError && (endDate + endTime) != "")
+            if (!endDateTime.HasError && HasText(endDate, endTime))
             {
                 // End Date changed
                 flag |= FLAG_ENDTIME;
             }
             this.Change(id, flag, description, startDateTime, endDateTime);
+        }
+
+        /// <summary>
+        /// Checks if there is a non-empty string amongst list of provided strings
+        /// </summary>
+        /// <param name="strings">Strings to check</param>
+        /// <returns>Returns true if there is at least one non-empty string</returns>
+        private bool HasText(params string[] strings)
+        {
+            foreach (string value in strings)
+            {
+                if (value.Trim() != "")
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>

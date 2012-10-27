@@ -243,7 +243,7 @@ namespace Calendo.Data
         }
 
         /// <summary>
-        /// Remove all state information
+        /// Reset number of undos to zero
         /// </summary>
         public void Clear()
         {

@@ -9,20 +9,36 @@ namespace Calendo.Logic
     [Serializable]
     public class KeyPair<K, V>
     {
+        /// <summary>
+        /// Creates a new serializable KeyPair class
+        /// </summary>
         public KeyPair()
         {
         }
+
+        /// <summary>
+        /// Creates a new serializable KeyPair class
+        /// </summary>
+        /// <param name="Key">Key represented by KeyPair</param>
+        /// <param name="Value">Value represented by KeyPair</param>
         public KeyPair(K Key, V Value)
         {
             this.Key = Key;
             this.Value = Value;
         }
+
+        /// <summary>
+        /// Key represented by KeyPair
+        /// </summary>
         public K Key
         {
             get;
             set;
         }
-
+        
+        /// <summary>
+        /// Value represented by KeyPair
+        /// </summary>
         public V Value
         {
             get;

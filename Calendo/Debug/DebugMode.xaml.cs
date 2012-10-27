@@ -76,15 +76,13 @@ namespace Calendo
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            // Bypass CP (warning: This is not sync with CP - so CP will use outdated list)
-            tm.Add(this.textBox1.Text);
+            tm.Add(this.textBox1.Text, "", "", "", "");
             this.textBox1.Text = "";
             UpdateList();
         }
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
-            // Bypass CP (warning: This is not sync with CP - so CP will use outdated list)
             if (this.listBox1.Items.Count > 0 && this.listBox1.SelectedIndex >= 0)
             {
                 tm.Remove(tm.Entries[this.listBox1.SelectedIndex].ID);
@@ -94,7 +92,6 @@ namespace Calendo
 
         private void button3_Click(object sender, RoutedEventArgs e)
         {
-            // Bypass CP (warning: This is not sync with CP - so CP will use outdated list)
             tm.Undo();
             UpdateList();
         }
