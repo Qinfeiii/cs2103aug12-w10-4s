@@ -9,11 +9,11 @@ namespace UiUnitTests
     public class UiTaskHelperTests
     {
         [TestMethod]
-        public void OverdueTest_DeadlineTaskOverdue()
+        public void OverdueTest_DeadlineTaskOverdue_JustNow()
         {
             Entry testData = new Entry();
             testData.Type = EntryType.DEADLINE;
-            testData.StartTime = new DateTime(1990, 10, 20);
+            testData.StartTime = DateTime.Now.Subtract(TimeSpan.FromSeconds(1));
 
             bool expected = true;
             bool actual = UiTaskHelper.IsTaskOverdue(testData);
@@ -21,11 +21,11 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void OverdueTest_DeadlineTaskNotOverdue()
+        public void OverdueTest_DeadlineTaskNotOverdue_VerySoon()
         {
             Entry testData = new Entry();
             testData.Type = EntryType.DEADLINE;
-            testData.StartTime = DateTime.Now.AddDays(5);
+            testData.StartTime = DateTime.Now.AddSeconds(1);
 
             bool expected = false;
             bool actual = UiTaskHelper.IsTaskOverdue(testData);
@@ -33,11 +33,11 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void OverdueTest_TimedTaskOverdue()
+        public void OverdueTest_TimedTaskOverdue_JustNow()
         {
             Entry testData = new Entry();
             testData.Type = EntryType.TIMED;
-            testData.EndTime = new DateTime(1990, 10, 20);
+            testData.EndTime = DateTime.Now.Subtract(TimeSpan.FromSeconds(1));
 
             bool expected = true;
             bool actual = UiTaskHelper.IsTaskOverdue(testData);
@@ -45,11 +45,11 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void OverdueTest_TimedTaskNotOverdue()
+        public void OverdueTest_TimedTaskNotOverdue_VerySoon()
         {
             Entry testData = new Entry();
             testData.Type = EntryType.TIMED;
-            testData.EndTime = DateTime.Now.AddDays(5);
+            testData.EndTime = DateTime.Now.AddSeconds(1);
 
             bool expected = false;
             bool actual = UiTaskHelper.IsTaskOverdue(testData);
@@ -72,7 +72,7 @@ namespace UiUnitTests
         {
             Entry testData = new Entry();
             testData.Type = EntryType.DEADLINE;
-            testData.StartTime = DateTime.Now;
+            testData.StartTime = DateTime.Now.AddSeconds(1); // Done to account for slowness in execution.
 
             bool expected = true;
             bool actual = UiTaskHelper.IsTaskOngoing(testData);
@@ -97,6 +97,18 @@ namespace UiUnitTests
             Entry testData = new Entry();
             testData.Type = EntryType.DEADLINE;
             testData.StartTime = DateTime.Now.AddHours(24);
+
+            bool expected = false;
+            bool actual = UiTaskHelper.IsTaskOngoing(testData);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void OngoingTest_DeadlineTaskNotOngoing_Past()
+        {
+            Entry testData = new Entry();
+            testData.Type = EntryType.DEADLINE;
+            testData.StartTime = DateTime.Now.Subtract(TimeSpan.FromSeconds(1));
 
             bool expected = false;
             bool actual = UiTaskHelper.IsTaskOngoing(testData);
