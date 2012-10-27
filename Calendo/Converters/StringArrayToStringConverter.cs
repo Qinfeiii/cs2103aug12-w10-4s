@@ -5,7 +5,7 @@ using System.Windows.Data;
 
 namespace Calendo.Converters
 {
-    class StringArrayToStringConverter : IValueConverter
+    public class StringArrayToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

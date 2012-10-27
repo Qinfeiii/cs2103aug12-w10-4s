@@ -15,7 +15,7 @@ namespace Calendo.AutoSuggest
         DETAIL
     }
 
-    class AutoSuggestEntry
+    public class AutoSuggestEntry
     {
         public string Command { get; set; }
         public string Description { get; set; }

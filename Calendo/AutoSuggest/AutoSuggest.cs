@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Calendo.AutoSuggest
 {
-    class AutoSuggest
+    public class AutoSuggest
     {
         public const char COMMAND_INDICATOR = '/';
 
@@ -19,52 +19,57 @@ namespace Calendo.AutoSuggest
 
             foreach (string currentCommand in commandTypes)
             {
-                string commandDescription = "no description";
-                string commandInstruction = null;
-                string[] commandAliases;
-
-                aliasDictionary.TryGetValue(currentCommand, out commandAliases);
-
-                switch (currentCommand)
-                {
-                    case "add":
-                        commandDescription = "add a new item";
-                        commandInstruction = "[description] /date [DD/MM] /time [HH:MM]";
-                        break;
-                    case "change":
-                        commandDescription = "edit an item";
-                        commandInstruction = "[number] [description]";
-                        break;
-                    case "remove":
-                        commandDescription = "remove an item";
-                        commandInstruction = "[number]";
-                        break;
-                    case "undo":
-                        commandDescription = "undo the last action";
-                        break;
-                    case "redo":
-                        commandDescription = "revert an undone action";
-                        break;
-                    case "sync":
-                        commandDescription = "synchronize with Google Calendar";
-                        break;
-                }
-
-                AutoSuggestEntry mainEntry = new AutoSuggestEntry("/" + currentCommand, commandDescription, EntryType.MASTER, commandAliases);
-                MasterList.Add(mainEntry);
-
-                AutoSuggestEntry detailEntry;
-                if (commandInstruction != null)
-                {
-                    foreach (string alias in commandAliases)
-                    {
-                        detailEntry = new AutoSuggestEntry(alias, commandInstruction, EntryType.DETAIL, null);
-                        MasterList.Add(detailEntry);
-                    }
-                }
+                AddEntryFromString(aliasDictionary, currentCommand);
             }
 
             SuggestionList = new List<AutoSuggestEntry>();
+        }
+
+        private void AddEntryFromString(Dictionary<string, string[]> aliasDictionary, string currentCommand)
+        {
+            string commandDescription = "no description";
+            string commandInstruction = null;
+            string[] commandAliases;
+
+            aliasDictionary.TryGetValue(currentCommand, out commandAliases);
+
+            switch (currentCommand)
+            {
+                case "add":
+                    commandDescription = "add a new item";
+                    commandInstruction = "[description] /date [DD/MM] /time [HH:MM]";
+                    break;
+                case "change":
+                    commandDescription = "edit an item";
+                    commandInstruction = "[number] [description]";
+                    break;
+                case "remove":
+                    commandDescription = "remove an item";
+                    commandInstruction = "[number]";
+                    break;
+                case "undo":
+                    commandDescription = "undo the last action";
+                    break;
+                case "redo":
+                    commandDescription = "revert an undone action";
+                    break;
+                case "sync":
+                    commandDescription = "synchronize with Google Calendar";
+                    break;
+            }
+
+            AutoSuggestEntry mainEntry = new AutoSuggestEntry("/" + currentCommand, commandDescription, EntryType.MASTER, commandAliases);
+            MasterList.Add(mainEntry);
+
+            AutoSuggestEntry detailEntry;
+            if (commandInstruction != null)
+            {
+                foreach (string alias in commandAliases)
+                {
+                    detailEntry = new AutoSuggestEntry(alias, commandInstruction, EntryType.DETAIL, null);
+                    MasterList.Add(detailEntry);
+                }
+            }
         }
 
         public void SetSuggestions(string input)
@@ -120,7 +125,7 @@ namespace Calendo.AutoSuggest
             SuggestionList = new List<AutoSuggestEntry>(commandMatches);
         }
 
-        private bool CheckAliasesForCommand(string inputCommand, AutoSuggestEntry entry)
+        public bool CheckAliasesForCommand(string inputCommand, AutoSuggestEntry entry)
         {
             if (entry.Aliases == null)
             {
