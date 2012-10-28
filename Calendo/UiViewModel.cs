@@ -12,7 +12,17 @@ namespace Calendo
         private CommandProcessor CommandProcessor { get; set; }
 
         public List<AutoSuggestEntry> SuggestionList { get { return AutoSuggestSystem.SuggestionList; } }
-        public Dictionary<int, Entry> TaskList { get; set;  }
+        public Dictionary<int, Entry> TaskList { get; set; }
+
+        public int AutoSuggestRow
+        {
+            get
+            {
+                bool isOnlyOneSuggestion = SuggestionList.Count == 1;
+                bool isSuggestionDetail = !SuggestionList[0].IsMaster;
+                return isOnlyOneSuggestion && isSuggestionDetail ? 2 : 3;
+            }
+        }
 
         private delegate void UpdateDelegate();
 
@@ -35,6 +45,7 @@ namespace Calendo
         {
             AutoSuggestSystem.SetSuggestions(input);
             OnPropertyChanged("SuggestionList");
+            OnPropertyChanged("AutoSuggestRow");
         }
 
         private void UpdateItemsList()

@@ -273,7 +273,7 @@ namespace Calendo
         {
             int selectedIndex = GetSelectedIndex();
 
-            if(selectedIndex != -1)
+            if (selectedIndex != -1)
             {
                 ViewModel.ExecuteCommand(command + " " + selectedIndex);
             }
@@ -297,7 +297,7 @@ namespace Calendo
             int selectedIndex = -1;
             if (selectedItem != null)
             {
-                KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>) selectedItem;
+                KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>)selectedItem;
                 selectedIndex = selectedPair.Key;
             }
             return selectedIndex;
