@@ -338,7 +338,7 @@
                                             <TextBlock Style="{StaticResource ListBoxItemSubtleTextStyle}" Margin="5,4"
                                                    FontSize="13" Text="{Binding Description}" TextWrapping="Wrap" />
                                         </WrapPanel>
-                                        <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{Binding IsMaster, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{Binding HasAliases, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
