@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using Calendo.Data;
 using Calendo.Diagnostics;
 
@@ -9,55 +10,59 @@ namespace Calendo.Logic
 
     public class TaskManager
     {
-        private StateStorage<List<Entry>> storage;
         private const int FLAG_DESCRIPTION = 1;
         private const int FLAG_STARTTIME = 2;
         private const int FLAG_ENDTIME = 4;
         private const string ERROR_ENTRYNOTFOUND = "Entry not found";
         private const string ERROR_INVALIDDATETIME = "Specified Date or Time is invalid";
         private const string STORAGE_PATH = "archive.txt";
+        private static TaskManager CurrentInstance = new TaskManager();
+        private StateStorage<List<Entry>> storage;
+        private List<Delegate> subscribers = new List<Delegate>();
 
+        /// <summary>
+        /// Update Handler for TaskManager subscriber
+        /// </summary>
+        public delegate void UpdateHandler();
+
+        /// <summary>
+        /// Creates a new instance of TaskManager
+        /// </summary>
         private TaskManager()
         {
-            storage = new StateStorage<List<Entry>>(STORAGE_PATH);
-            storage.Load();
-            UpdateSubscribers();
+            this.storage = new StateStorage<List<Entry>>(STORAGE_PATH);
+            this.storage.Load();
+            this.UpdateSubscribers();
         }
 
-        private static TaskManager currentInstance = new TaskManager();
+        /// <summary>
+        /// Gets the current instance of TaskManager
+        /// </summary>
         public static TaskManager Instance
         {
             get
             {
-                return currentInstance;
+                return CurrentInstance;
             }
         }
-
-        private List<Delegate> subscriberList = new List<Delegate>();
-
+        
         /// <summary>
-        /// List of subscribers to invoke update methods
+        /// Adds a handler to the list of subscribers
         /// </summary>
-        public List<Delegate> Subscribers
+        /// <param name="updateHandler">Update Handler</param>
+        public void AddSubscriber(Delegate updateHandler)
         {
-            get
-            {
-                return subscriberList;
-            }
-            set
-            {
-                subscriberList = value;
-            }
+            this.subscribers.Add(updateHandler);
         }
 
         /// <summary>
-        /// Call each subscriber update methods
+        /// Invoke subscriber update methods
         /// </summary>
         private void UpdateSubscribers()
         {
-            foreach (Delegate d in Subscribers)
+            foreach (Delegate handler in subscribers)
             {
-                d.DynamicInvoke();
+                handler.DynamicInvoke();
             }
         }
 
@@ -75,7 +80,7 @@ namespace Calendo.Logic
         /// <param name="description">Task Description</param>
         public void Add(string description)
         {
-            Add(description, new TaskTime(), new TaskTime());
+            this.Add(description, new TaskTime(), new TaskTime());
         }
 
         /// <summary>
@@ -99,7 +104,7 @@ namespace Calendo.Logic
         /// <param name="endTime">End Time</param>
         public void Add(string description, string startDate, string startTime, string endDate, string endTime)
         {
-            startDate = DefaultString(startDate);
+            startDate = SanitizeString(startDate);
             if (startDate.Contains("-") && endDate == "")
             {
                 // Date is of format [Start Date]-[End Date]
@@ -132,7 +137,7 @@ namespace Calendo.Logic
             entry.StartTimeFormat = startTime.Format;
             entry.EndTime = endTime.Time;
             entry.EndTimeFormat = endTime.Format;
-            Add(entry);
+            this.Add(entry);
         }
 
         /// <summary>
@@ -141,9 +146,8 @@ namespace Calendo.Logic
         /// <param name="entry"></param>
         private void Add(Entry entry)
         {
-            storage.Entries.Add(entry);
-            storage.Save();
-            UpdateSubscribers();
+            this.storage.Entries.Add(entry);
+            this.Save();
         }
 
         /// <summary>
@@ -154,35 +158,49 @@ namespace Calendo.Logic
         /// <returns></returns>
         private EntryType GetTaskType(TaskTime startTime, TaskTime endTime)
         {
-            if (startTime != null && endTime != null && startTime.Format != TimeFormat.NONE && endTime.Format != TimeFormat.NONE)
+            bool isStartFormatNone = HasNoTimeFormat(startTime);
+            bool isEndFormatNone = HasNoTimeFormat(endTime);
+
+            if (!isStartFormatNone && !isEndFormatNone)
             {
                 if (startTime.Time > endTime.Time)
                 {
-                    // End is before start, mark both as invalid
+                    // End is before start, mark as invalid
                     startTime.Format = TimeFormat.NONE;
                     endTime.Format = TimeFormat.NONE;
                     DebugTool.Alert("End date cannot be before start date.");
                     return EntryType.FLOATING;
                 }
             }
-            // Start and end times are valid
-            if (startTime == null || startTime.Format == TimeFormat.NONE)
+            // Start time none, but end time set, mark as invalid
+            if (isStartFormatNone)
             {
-                if (endTime != null)
+                if (!HasNoTimeFormat(endTime))
                 {
                     // Mark end time as not valid
                     endTime.Format = TimeFormat.NONE;
                 }
-                // No start or end time
                 return EntryType.FLOATING;
             }
-            if (startTime.Format != TimeFormat.NONE && (endTime == null || endTime.Format == TimeFormat.NONE))
+
+            // Has Start time, but no end time
+            if (!isStartFormatNone && isEndFormatNone)
             {
-                // Only start time is used
                 return EntryType.DEADLINE;
             }
+
             // Both Start and End time are used
             return EntryType.TIMED;
+        }
+
+        /// <summary>
+        /// Determine if provided TaskTime has a time format
+        /// </summary>
+        /// <param name="taskTime">TaskTime object</param>
+        /// <returns>True if no time format</returns>
+        private bool HasNoTimeFormat(TaskTime taskTime)
+        {
+            return (taskTime == null) || (taskTime.Format == TimeFormat.NONE);
         }
 
         /// <summary>
@@ -213,17 +231,34 @@ namespace Calendo.Logic
                 // Description changed
                 flag |= FLAG_DESCRIPTION;
             }
-            if (!startDateTime.HasError && (startDate + startTime) != "")
+            if (!startDateTime.HasError && HasText(startDate, startTime))
             {
                 // Start Date changed
                 flag |= FLAG_STARTTIME;
             }
-            if (!endDateTime.HasError && (endDate + endTime) != "")
+            if (!endDateTime.HasError && HasText(endDate, endTime))
             {
                 // End Date changed
                 flag |= FLAG_ENDTIME;
             }
             this.Change(id, flag, description, startDateTime, endDateTime);
+        }
+
+        /// <summary>
+        /// Checks if there is a non-empty string amongst list of provided strings
+        /// </summary>
+        /// <param name="strings">Strings to check</param>
+        /// <returns>Returns true if there is at least one non-empty string</returns>
+        private bool HasText(params string[] strings)
+        {
+            foreach (string value in strings)
+            {
+                if (value != null && value.Trim() != "")
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -241,23 +276,24 @@ namespace Calendo.Logic
             Entry entry = this.Get(id);
             if (entry != null)
             {
-                if (FlagContains(flag, FLAG_DESCRIPTION))
+                if (this.FlagContains(flag, FLAG_DESCRIPTION))
                 {
                     entry.Description = description;
                 }
-                if (FlagContains(flag, FLAG_STARTTIME))
+                if (this.FlagContains(flag, FLAG_STARTTIME))
                 {
                     entry.StartTime = startTime.Time;
                     entry.StartTimeFormat = startTime.Format;
                 }
-                if (FlagContains(flag, FLAG_ENDTIME))
+                if (this.FlagContains(flag, FLAG_ENDTIME))
                 {
                     entry.EndTime = endTime.Time;
                     entry.EndTimeFormat = endTime.Format;
                 }
-                entry.Type = GetTaskType(new TaskTime(entry.StartTime, entry.StartTimeFormat), new TaskTime(entry.EndTime, entry.EndTimeFormat));
-                storage.Save();
-                UpdateSubscribers();
+                TaskTime startTaskTime = new TaskTime(entry.StartTime, entry.StartTimeFormat);
+                TaskTime endTaskTime = new TaskTime(entry.EndTime, entry.EndTimeFormat);
+                entry.Type = this.GetTaskType(startTaskTime, endTaskTime);
+                this.Save();
             }
             else
             {
@@ -285,9 +321,8 @@ namespace Calendo.Logic
             Entry entry = this.Get(id);
             if (entry != null)
             {
-                storage.Entries.Remove(entry);
-                storage.Save();
-                UpdateSubscribers();
+                this.storage.Entries.Remove(entry);
+                this.Save();
             }
             else
             {
@@ -298,7 +333,7 @@ namespace Calendo.Logic
         /// <summary>
         /// Get a task by ID
         /// </summary>
-        /// <param name="id">Task ID</param>
+        /// <param name="id">Task ID, 1-based</param>
         /// <returns>Returns Entry object matching the ID, null if not found</returns>
         public Entry Get(int id)
         {
@@ -317,8 +352,8 @@ namespace Calendo.Logic
         /// </summary>
         public void Undo()
         {
-            storage.Undo();
-            UpdateSubscribers();
+            this.storage.Undo();
+            this.UpdateSubscribers();
         }
 
         /// <summary>
@@ -326,18 +361,56 @@ namespace Calendo.Logic
         /// </summary>
         public void Redo()
         {
-            storage.Redo();
-            UpdateSubscribers();
+            this.storage.Redo();
+            this.UpdateSubscribers();
         }
 
-        public void Sync()
-        {
-            GoogleCalendar.GoogleCalendar.Sync();
-        }
-
+        /// <summary>
+        /// Export from Google Calendar
+        /// </summary>
         public void Export()
         {
-            GoogleCalendar.GoogleCalendar.Import();
+            // Authorization must occur on same thread as main application
+            GoogleCalendar.GoogleCalendar.Authorize();
+            this.RunThread(new ThreadStart(ThreadedExport));
+        }
+
+        /// <summary>
+        /// Import from Google Calendar
+        /// </summary>
+        public void Import()
+        {
+            // Authorization must occur on same thread as main application
+            GoogleCalendar.GoogleCalendar.Authorize();
+            this.RunThread(new ThreadStart(ThreadedImport));
+        }
+
+        /// <summary>
+        /// Wrapper method for multithreading export
+        /// </summary>
+        private void ThreadedExport()
+        {
+            GoogleCalendar.GoogleCalendar gcal = new GoogleCalendar.GoogleCalendar();
+            gcal.Export();
+        }
+
+        /// <summary>
+        /// Wrapper method for multithreading import
+        /// </summary>
+        private void ThreadedImport()
+        {
+            GoogleCalendar.GoogleCalendar gcal = new GoogleCalendar.GoogleCalendar();
+            gcal.Import();
+        }
+
+        /// <summary>
+        /// Performs the operation in a separate thread
+        /// </summary>
+        /// <param name="method"></param>
+        private void RunThread(ThreadStart method)
+        {
+            Thread threadInstance = new Thread(method);
+            threadInstance.Start();
         }
 
         /// <summary>
@@ -345,8 +418,8 @@ namespace Calendo.Logic
         /// </summary>
         public void Save()
         {
-            storage.Save();
-            UpdateSubscribers();
+            this.storage.Save();
+            this.UpdateSubscribers();
         }
 
         /// <summary>
@@ -354,8 +427,8 @@ namespace Calendo.Logic
         /// </summary>
         public void Load()
         {
-            // Note: Loading does not require updating subscribers
-            storage.Load();
+            // Loading does not notify subscribers (otherwise it triggers infinite loop if they load on update)
+            this.storage.Load();
         }
         
         /// <summary>
@@ -363,7 +436,7 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="str">String to be converted</param>
         /// <returns>If input string was null, return an empty string. Otherwise return the original string.</returns>
-        private string DefaultString(string str)
+        private string SanitizeString(string str)
         {
             if (str == null)
             {

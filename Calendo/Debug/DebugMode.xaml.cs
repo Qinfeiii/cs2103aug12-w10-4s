@@ -13,6 +13,7 @@ using System.Windows.Shapes;
 using Calendo.Data;
 using Calendo.Logic;
 using Calendo.GoogleCalendar;
+using Calendo.Diagnostics;
 
 namespace Calendo
 {
@@ -25,13 +26,22 @@ namespace Calendo
         // Used for exploratory testing for TaskManager, SettingsManager, CommandProcessor
         TaskManager tm = TaskManager.Instance;
         CommandProcessor cp = new CommandProcessor();
-        private delegate void subscribermethod();
         public DebugMode()
         {
             InitializeComponent();
 
-            subscribermethod d = new subscribermethod(this.SubscriberMethod);
-            tm.Subscribers.Add(d);
+            // TM delegate
+            TaskManager.UpdateHandler delegateMethod = new TaskManager.UpdateHandler(this.SubscriberMethod);
+            tm.AddSubscriber(delegateMethod);
+
+            // Debug delegate
+            DebugTool.AddSubscriber(new DebugTool.NotifyHandler(this.Alert));
+
+        }
+
+        private void Alert(string message)
+        {
+            this.StatusLabel.Content = message;
         }
 
         private void textBox1_TextChanged(object sender, TextChangedEventArgs e)
@@ -44,13 +54,17 @@ namespace Calendo
         {
             //this.listBox1.Items.Clear();
             entryDictionary = new Dictionary<int, Entry>();
+            Dictionary<int, int> indexMap = new Dictionary<int, int>();
+
             tm.Load(); // prevent concurrency issues
             for (int i = 0; i < tm.Entries.Count; i++)
             {
                 //this.listBox1.Items.Add("[" + tm.Entries[i].ID.ToString() + "] " + tm.Entries[i].Description);
                 entryDictionary.Add(i, tm.Entries[i]);
+                indexMap.Add(i, i);
             }
             this.listBox1.ItemsSource = entryDictionary;
+            cp.IndexMap = indexMap;
         }
 
         private void textBox1_KeyUp(object sender, KeyEventArgs e)
@@ -67,15 +81,13 @@ namespace Calendo
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            // Bypass CP (warning: This is not sync with CP - so CP will use outdated list)
-            tm.Add(this.textBox1.Text);
+            tm.Add(this.textBox1.Text, "", "", "", "");
             this.textBox1.Text = "";
             UpdateList();
         }
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
-            // Bypass CP (warning: This is not sync with CP - so CP will use outdated list)
             if (this.listBox1.Items.Count > 0 && this.listBox1.SelectedIndex >= 0)
             {
                 tm.Remove(tm.Entries[this.listBox1.SelectedIndex].ID);
@@ -85,7 +97,6 @@ namespace Calendo
 
         private void button3_Click(object sender, RoutedEventArgs e)
         {
-            // Bypass CP (warning: This is not sync with CP - so CP will use outdated list)
             tm.Undo();
             UpdateList();
         }
@@ -97,8 +108,8 @@ namespace Calendo
 
         private void button4_Click(object sender, RoutedEventArgs e)
         {
-            //MessageBox.Show("This button is not in use");
-            MessageBox.Show(GoogleCalendar.GoogleCalendar.Import());
+            MessageBox.Show("This button is not in use");
+            //MessageBox.Show(GoogleCalendar.GoogleCalendar.Import());
         }
 
         private void button5_Click(object sender, RoutedEventArgs e)

@@ -19,6 +19,7 @@ namespace Calendo.Logic
         private const string COMMAND_TYPE_UNDO = "undo";
         private const string COMMAND_TYPE_REDO = "redo";
         private const string COMMAND_TYPE_SYNC = "sync";
+        private const string COMMAND_TYPE_IMPORT = "import";
 
         // This is the list of user-inputs the program can handle and process as a "proper" command
         //TODO: Ideally, NOCOMMAND should be search in autosuggest mode,
@@ -30,7 +31,8 @@ namespace Calendo.Logic
         private string[] INPUT_COMMANDS_LIST = { "/list", "/ls", "/show" };
         private string[] INPUT_COMMANDS_UNDO = { "/undo" };
         private string[] INPUT_COMMANDS_REDO = { "/redo" };
-        private string[] INPUT_COMMANDS_SYNC = { "/sync" };
+        private string[] INPUT_COMMANDS_SYNC = { "/sync", "/export" };
+        private string[] INPUT_COMMANDS_IMPORT = { "/import" };
         private string INPUT_COMMAND_EMPTY = "/";
 
         // If only one date-time is given, it is defined as the start, not the end
@@ -68,6 +70,11 @@ namespace Calendo.Logic
         private void HandleCommand()
         {
             // TaskManager.ExecuteCommand(commandType, commandDate, commandTime, commandText);
+            if (commandType == null)
+            {
+                // Non-matching command
+                return;
+            }
             switch (commandType.ToLower())
             {
                 case COMMAND_TYPE_SEARCH:
@@ -94,6 +101,9 @@ namespace Calendo.Logic
                 case COMMAND_TYPE_SYNC:
                     ExecuteSync();
                     break;
+                case COMMAND_TYPE_IMPORT:
+                    ExecuteImport();
+                    break;
                 default:
                     break;
             }
@@ -105,7 +115,12 @@ namespace Calendo.Logic
 
         private void ExecuteSync()
         {
-            taskManager.Sync();
+            taskManager.Export();
+        }
+
+        private void ExecuteImport()
+        {
+            taskManager.Import();
         }
 
         private void ExecuteRemove()
@@ -191,6 +206,7 @@ namespace Calendo.Logic
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_SYNC, INPUT_COMMANDS_SYNC);
+            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_IMPORT, INPUT_COMMANDS_IMPORT);
 
             VALID_INPUT_COMMAND_LIST = new List<string>();
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_SEARCH);
@@ -201,6 +217,7 @@ namespace Calendo.Logic
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_UNDO);
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_REDO);
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_SYNC);
+            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_IMPORT);
 
             taskManager = TaskManager.Instance;
         }
