@@ -10,9 +10,45 @@ namespace Calendo.Diagnostics
     public class DebugTool
     {
         private const string LOG_FILEPATH = "log.txt";
+        private const string LOG_FORMAT = "{0:G}: {1} {2}";
         private const string CONFIG_FILEPATH = "debugcfg.txt";
         private static bool _Enable = true;
         private static bool loaded = false;
+
+        /// <summary>
+        /// Notify handler for DebugTool notifications
+        /// </summary>
+        /// <param name="message"></param>
+        public delegate void NotifyHandler(string message);
+        private static List<Delegate> subscriberList = new List<Delegate>();
+
+        /// <summary>
+        /// List of subscribers to invoke alert methods
+        /// </summary>
+        public static List<Delegate> Subscribers
+        {
+            get
+            {
+                return subscriberList;
+            }
+            set
+            {
+                subscriberList = value;
+            }
+        }
+
+        /// <summary>
+        /// Call each subscriber alert methods
+        /// </summary>
+        private static void UpdateSubscribers(string message)
+        {
+            foreach (Delegate d in Subscribers)
+            {
+                NotifyHandler dAlert = d as NotifyHandler;
+                dAlert(message);
+            }
+        }
+
 
         /// <summary>
         /// Get or set debug enable switch
@@ -43,6 +79,8 @@ namespace Calendo.Diagnostics
                 sr.Close();
                 fileStream.Close();
                 loaded = true;
+
+                WriteLog("Debug file loaded, debugging state = " + Enable.ToString(), "[Init] ");
             }
             catch (Exception e)
             {
@@ -65,25 +103,34 @@ namespace Calendo.Diagnostics
             if (DebugTool.Enable)
             {
                 MessageBox.Show(message);
+                UpdateSubscribers(message);
             }
+            WriteLog(message);
         }
 
         /// <summary>
         /// Writes a log message
         /// </summary>
         /// <param name="message">Message string</param>
-        public static void Log(string message)
+        public static void WriteLog(string message, string type = "[Info] ")
         {
             if (!loaded)
             {
                 LoadConfig();
             }
-            if (DebugTool.Enable)
-            {
-                StreamWriter file = new StreamWriter(LOG_FILEPATH);
-                file.WriteLine(message);
-                file.Close();
-            }
+            string timeStamp = DateTime.Now.ToString();
+            string prefix = type;
+            StreamWriter file = System.IO.File.AppendText(LOG_FILEPATH);
+            file.WriteLine(string.Format(LOG_FORMAT, timeStamp, prefix, message));
+            file.Close();
+        }
+
+        /// <summary>
+        /// Erase the log contents
+        /// </summary>
+        public static void ClearLog()
+        {
+            System.IO.File.WriteAllText(LOG_FILEPATH, "");
         }
     }
 }

@@ -5,7 +5,7 @@ using Calendo.Data;
 
 namespace Calendo.Converters
 {
-    class EntryToDateTimeStringConverter : IValueConverter
+    public class EntryToDateTimeStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -21,9 +21,31 @@ namespace Calendo.Converters
                     case TimeFormat.TIME:
                         return returnDate.ToString("HH:mm");
                     case TimeFormat.DATETIME:
-                        return returnDate.ToString("dd/MM/yyyy HH:mm");
+                        if (returnDate.Date == DateTime.Today)
+                        {
+                            return "Today " + returnDate.ToString("HH:mm");
+                        }
+                        else if (returnDate.Date == DateTime.Today.AddDays(1))
+                        {
+                            return "Tomorrow " + returnDate.ToString("HH:mm");
+                        }
+                        else
+                        {
+                            return returnDate.ToString("dd/MM/yyyy HH:mm");
+                        }
                     case TimeFormat.DATE:
-                        return returnDate.ToString("dd/MM/yyyy");
+                        if (returnDate.Date == DateTime.Today)
+                        {
+                            return "Today";
+                        }
+                        else if (returnDate.Date == DateTime.Today.AddDays(1))
+                        {
+                            return "Tomorrow";
+                        }
+                        else
+                        {
+                            return returnDate.ToString("dd/MM/yyyy");
+                        }
                 }
             }
             return "";

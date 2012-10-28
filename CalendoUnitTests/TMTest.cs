@@ -8,16 +8,16 @@ namespace CalendoUnitTests
     [TestClass]
     public class TMTest
     {
+        TaskManager tm = TaskManager.Instance;
+
         [TestMethod]
         public void TMCreate()
         {
-            TaskManager tm = new TaskManager();
             tm.Add("Test1");
         }
         [TestMethod]
         public void TMAdd()
         {
-            TaskManager tm = new TaskManager();
             // Prevent past tests from affecting this test
             tm.Entries.Clear();
 
@@ -109,7 +109,6 @@ namespace CalendoUnitTests
         [TestMethod]
         public void TMAddInvalid()
         {
-            TaskManager tm = new TaskManager();
             // Prevent past tests from affecting this test
             tm.Entries.Clear();
 
@@ -137,7 +136,6 @@ namespace CalendoUnitTests
         [TestMethod]
         public void TMChange()
         {
-            TaskManager tm = new TaskManager();
             // Prevent past tests from affecting this test
             tm.Entries.Clear();
             tm.Add("Test Timed", "1/12", "14:00", "31/1", "3:02PM");
@@ -171,7 +169,6 @@ namespace CalendoUnitTests
         [TestMethod]
         public void TMRemove()
         {
-            TaskManager tm = new TaskManager();
             // Prevent past tests from affecting this test
             tm.Entries.Clear();
             tm.Add("Test Floating 1");
@@ -192,7 +189,7 @@ namespace CalendoUnitTests
         [TestMethod]
         public void TMUndoRedo()
         {
-            TaskManager tm = new TaskManager();
+            
             // Prevent past tests from affecting this test
             tm.Entries.Clear();
             tm.Add("Test Floating 1");

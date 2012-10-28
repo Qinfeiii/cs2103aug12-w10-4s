@@ -15,17 +15,20 @@ namespace Calendo.AutoSuggest
         DETAIL
     }
 
-    class AutoSuggestEntry
+    public class AutoSuggestEntry
     {
         public string Command { get; set; }
         public string Description { get; set; }
         public EntryType Type { get; set; }
+        public string[] Aliases { get; set; }
+        public bool IsMaster { get { return Type == EntryType.MASTER; } }
 
-        public AutoSuggestEntry(string command, string description, EntryType type)
+        public AutoSuggestEntry(string command, string description, EntryType type, string[] aliases)
         {
             Command = command;
             Description = description;
             Type = type;
+            Aliases = aliases;
         }
     }
 }

@@ -100,6 +100,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\StringArrayToStringConverter.cs" />
+    <Compile Include="UiViewModel.cs" />
+    <Compile Include="UiTaskHelper.cs" />
     <Page Include="Debug\DebugMode.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -126,7 +129,6 @@
       <DependentUpon>TestShadow.xaml</DependentUpon>
     </Compile>
     <Compile Include="FormMaximize.cs" />
-    <Compile Include="GoogleCalendar\Class2.cs" />
     <Compile Include="GoogleCalendar\Task.cs" />
     <Compile Include="Logic\CommandProcessor.cs" />
     <Compile Include="Converters\EntryToBrushConverter.cs" />
@@ -219,7 +221,9 @@
     <Resource Include="Images\restoreHover.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Debug\info.png" />
+    <Resource Include="Images\delete.png" />
+    <Resource Include="Images\done.png" />
+    <Resource Include="Images\edit.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

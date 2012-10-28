@@ -6,7 +6,7 @@ using Calendo.Data;
 
 namespace Calendo.Converters
 {
-    class EntryToDateTimeVisibilityConverter : IValueConverter
+    public class EntryToDateTimeVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

@@ -13,6 +13,7 @@ using System.Windows.Shapes;
 using Calendo.Data;
 using Calendo.Logic;
 using Calendo.GoogleCalendar;
+using Calendo.Diagnostics;
 
 namespace Calendo
 {
@@ -23,11 +24,23 @@ namespace Calendo
     {
         // NOTE: This is a testing class with a GUI interface
         // Used for exploratory testing for TaskManager, SettingsManager, CommandProcessor
-        TaskManager tm = new TaskManager();
+        TaskManager tm = TaskManager.Instance;
         CommandProcessor cp = new CommandProcessor();
         public DebugMode()
         {
             InitializeComponent();
+
+            // TM delegate
+            TaskManager.UpdateHandler delegateMethod = new TaskManager.UpdateHandler(this.SubscriberMethod);
+            tm.AddSubscriber(delegateMethod);
+
+            // Debug delegate
+            DebugTool.Subscribers.Add(new DebugTool.NotifyHandler(this.Alert));
+        }
+
+        private void Alert(string message)
+        {
+            this.StatusLabel.Content = message;
         }
 
         private void textBox1_TextChanged(object sender, TextChangedEventArgs e)
@@ -40,7 +53,7 @@ namespace Calendo
         {
             //this.listBox1.Items.Clear();
             entryDictionary = new Dictionary<int, Entry>();
-
+            tm.Load(); // prevent concurrency issues
             for (int i = 0; i < tm.Entries.Count; i++)
             {
                 //this.listBox1.Items.Add("[" + tm.Entries[i].ID.ToString() + "] " + tm.Entries[i].Description);
@@ -63,15 +76,13 @@ namespace Calendo
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {
-            // Bypass CP (warning: This is not sync with CP - so CP will use outdated list)
-            tm.Add(this.textBox1.Text);
+            tm.Add(this.textBox1.Text, "", "", "", "");
             this.textBox1.Text = "";
             UpdateList();
         }
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
-            // Bypass CP (warning: This is not sync with CP - so CP will use outdated list)
             if (this.listBox1.Items.Count > 0 && this.listBox1.SelectedIndex >= 0)
             {
                 tm.Remove(tm.Entries[this.listBox1.SelectedIndex].ID);
@@ -81,7 +92,6 @@ namespace Calendo
 
         private void button3_Click(object sender, RoutedEventArgs e)
         {
-            // Bypass CP (warning: This is not sync with CP - so CP will use outdated list)
             tm.Undo();
             UpdateList();
         }
@@ -93,8 +103,8 @@ namespace Calendo
 
         private void button4_Click(object sender, RoutedEventArgs e)
         {
-            //MessageBox.Show("This button is not in use");
-            MessageBox.Show(GoogleCalendar.GoogleCalendar.Import());
+            MessageBox.Show("This button is not in use");
+            //MessageBox.Show(GoogleCalendar.GoogleCalendar.Import());
         }
 
         private void button5_Click(object sender, RoutedEventArgs e)
@@ -107,7 +117,8 @@ namespace Calendo
 
         private void buttonclose_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            //this.Close();
+            ((ListBoxItem)this.listBox1.Items[0]).Focus();
         }
 
         private void buttonnew_Click(object sender, RoutedEventArgs e)
@@ -133,7 +144,6 @@ namespace Calendo
         private void buttonInput_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
-            Type t = btn.DataContext.GetType();
             KeyValuePair<int, Entry> dContext = (KeyValuePair<int, Entry>)btn.DataContext;
 
             Entry currentEntry = dContext.Value;
@@ -141,5 +151,80 @@ namespace Calendo
             MessageBox.Show(jsonParse.Serialize(currentEntry));
         }
 
+        // Used to prevent list update conflicts when items are dynamically changed
+        private bool isUpdating = false;
+
+        private void TextBox_KeyUp_1(object sender, KeyEventArgs e)
+        {
+            TextBox currentTextbox = sender as TextBox;
+            KeyValuePair<int, Entry> dContext = (KeyValuePair<int, Entry>)currentTextbox.DataContext;
+            if (e.Key == Key.Return)
+            {
+                // Request change command if needed
+                if (currentTextbox.Text != dContext.Value.Description)
+                {
+                    string command = "/change " + (dContext.Key + 1).ToString() + " " + currentTextbox.Text;
+                    isUpdating = true;
+                    cp.ExecuteCommand(command);
+                    UpdateList();
+                    this.listBox1.SelectedIndex = dContext.Key;
+                    currentTextbox.Text = dContext.Value.Description;
+                }
+                currentTextbox.IsReadOnly = true;
+            }
+        }
+
+        private void TextBox_MouseDoubleClick_1(object sender, MouseButtonEventArgs e)
+        {
+            TextBox currentTextbox = sender as TextBox;
+            currentTextbox.IsReadOnly = false;
+            currentTextbox.Focusable = true;
+            currentTextbox.Focus();
+            e.Handled = true; // Required, so that focus do not go back to list item
+        }
+
+        private void TextBox_LostKeyboardFocus_1(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            TextBox currentTextbox = sender as TextBox;
+            if (!currentTextbox.IsReadOnly && !isUpdating)
+            {
+                // Request change command if needed
+                KeyValuePair<int, Entry> dContext = (KeyValuePair<int, Entry>)currentTextbox.DataContext;
+                if (currentTextbox.Text != dContext.Value.Description)
+                {
+                    // Show command in textbox
+                    //this.textBox1.Text = "/change " + (dContext.Key + 1).ToString() + " " + currentTextbox.Text;
+                    //currentTextbox.Text = dContext.Value.Description;
+                    string command = "/change " + (dContext.Key + 1).ToString() + " " + currentTextbox.Text;
+                    cp.ExecuteCommand(command);
+                    UpdateList();
+                    this.listBox1.SelectedIndex = dContext.Key;
+                    currentTextbox.Text = dContext.Value.Description;
+                }
+            }
+            isUpdating = false;
+            currentTextbox.IsReadOnly = true;
+            currentTextbox.Focusable = false;
+        }
+
+        private void TextBox_PreviewMouseDown_1(object sender, MouseButtonEventArgs e)
+        {
+            TextBox currentTextbox = sender as TextBox;
+            KeyValuePair<int, Entry> dContext = (KeyValuePair<int, Entry>)currentTextbox.DataContext;
+            if (currentTextbox.IsReadOnly)
+            {
+                currentTextbox.Focusable = false; // So that can select list item
+            }
+        }
+
+        private void listBox1_GotFocus(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void SubscriberMethod()
+        {
+            this.textBox1.Text = "The list has been updated";
+            this.UpdateList();
+        }
     }
 }

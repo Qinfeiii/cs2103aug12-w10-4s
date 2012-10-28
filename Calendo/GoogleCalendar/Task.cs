@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Calendo.GoogleCalendar
 {
-    public class TI
+    public class TaskResponse
     {
         public string kind
         {
@@ -17,14 +17,14 @@ namespace Calendo.GoogleCalendar
             get;
             set;
         }
-        public List<TE> items
+        public List<TaskEntry> items
         {
             get;
             set;
         }
 
     }
-    public class TE
+    public class TaskEntry
     {
         public string kind
         {
@@ -47,6 +47,12 @@ namespace Calendo.GoogleCalendar
             set;
         }
         public string selfLink
+        {
+            get;
+            set;
+        }
+
+        public string due
         {
             get;
             set;

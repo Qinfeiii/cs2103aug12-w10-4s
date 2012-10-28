@@ -10,6 +10,7 @@ using Calendo.AutoSuggest;
 using Calendo.Logic;
 using Calendo.Data;
 using System.Windows.Interop;
+using EntryType = Calendo.Data.EntryType;
 
 namespace Calendo
 {
@@ -18,8 +19,7 @@ namespace Calendo
     /// </summary>
     public partial class MainWindow : Window
     {
-        private AutoSuggest.AutoSuggest AutoSuggestViewModel;
-        private CommandProcessor CommandProcessor;
+        private UiViewModel ViewModel;
 
         private const double CURSOR_OFFSET = 10;
         private double resizeX = 0;
@@ -30,19 +30,18 @@ namespace Calendo
         public static RoutedCommand RedoCommand = new RoutedCommand();
         public static RoutedCommand DelCommand = new RoutedCommand();
 
+
         public MainWindow()
         {
             InitializeComponent();
             this.SourceInitialized += new EventHandler(FormSourceInitialized);
+            ViewModel = new UiViewModel();
 
             UndoCommand.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
             RedoCommand.InputGestures.Add(new KeyGesture(Key.Y, ModifierKeys.Control));
             DelCommand.InputGestures.Add(new KeyGesture(Key.Delete));
 
-            AutoSuggestViewModel = new AutoSuggest.AutoSuggest();
-            DataContext = AutoSuggestViewModel;
-            CommandProcessor = new CommandProcessor();
-            UpdateItemsList();
+            DataContext = ViewModel;
         }
 
         // Fixes for maximize
@@ -138,9 +137,9 @@ namespace Calendo
                 string inputString = CommandBar.Text;
                 if (inputString.Length > 0)
                 {
-                    CommandProcessor.ExecuteCommand(inputString);
+                    ViewModel.ExecuteCommand(inputString);
                     CommandBar.Clear();
-                    UpdateItemsList();
+                    FilterListContents();
                 }
             }
             else if (e.Key == Key.Escape)
@@ -182,21 +181,6 @@ namespace Calendo
         {
             TaskList.Focus();
             AutoSuggestBorder.Visibility = Visibility.Collapsed;
-            ControlBar.Visibility = Visibility.Collapsed;
-        }
-
-        private void UpdateItemsList()
-        {
-            Dictionary<int, Entry> itemDictionary = new Dictionary<int, Entry>();
-
-            int count = 1;
-            foreach (Entry currentEntry in CommandProcessor.TaskList)
-            {
-                itemDictionary.Add(count, currentEntry);
-                count++;
-            }
-
-            TaskList.ItemsSource = itemDictionary;
         }
 
         private void AutoSuggestListKeyDown(object sender, KeyEventArgs e)
@@ -231,14 +215,9 @@ namespace Calendo
 
         private void CommandBarTextChanged(object sender, TextChangedEventArgs e)
         {
-            AutoSuggestViewModel.SetSuggestions(CommandBar.Text);
+            ViewModel.SetSuggestions(CommandBar.Text);
 
-            AutoSuggestBorder.Visibility = CommandBar.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
-            if (CommandBar.Text.Length > 0 && CommandBar.Text[0] != '/')
-            {
-                // Not a command (search mode)
-                AutoSuggestBorder.Visibility = Visibility.Collapsed;
-            }
+            AutoSuggestBorder.Visibility = ViewModel.SuggestionList.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
         }
 
         private void SettingsButtonClick(object sender, RoutedEventArgs e)
@@ -265,22 +244,26 @@ namespace Calendo
 
         private void UndoHandler(object sender, ExecutedRoutedEventArgs e)
         {
-            CommandProcessor.ExecuteCommand("/undo");
-            UpdateItemsList();
+            ViewModel.ExecuteCommand("/undo");
         }
 
         private void RedoHandler(object sender, ExecutedRoutedEventArgs e)
         {
-            CommandProcessor.ExecuteCommand("/redo");
-            UpdateItemsList();
+            ViewModel.ExecuteCommand("/redo");
         }
 
         private void GridMouseDown(object sender, MouseButtonEventArgs e)
         {
-            FocusOnTaskList();
+            // Disabled as behavior conflicts with several controls
+            //FocusOnTaskList();
         }
 
         private void DeleteHandler(object sender, ExecutedRoutedEventArgs e)
+        {
+            DeleteSelectedTask();
+        }
+
+        private void DeleteSelectedTask()
         {
             string command = "/remove";
             ExecuteCommandOnSelectedTask(command);
@@ -312,21 +295,26 @@ namespace Calendo
             }
         }
 
-        private void TaskListSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (TaskList.SelectedIndex != -1)
-            {
-                ControlBar.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                ControlBar.Visibility = Visibility.Collapsed;
-            }
-        }
-
         private void ChangeButtonClick(object sender, RoutedEventArgs e)
         {
+            SelectTaskFromCommandButton(sender);
             ChangeSelectedTask();
+        }
+
+        private void SelectTaskFromCommandButton(object sender)
+        {
+// Find the Grid that this button was in.
+            Button senderButton = sender as Button;
+            FrameworkElement currentItem = senderButton.Parent as FrameworkElement;
+            Grid relevantItem = null;
+            while (relevantItem == null)
+            {
+                currentItem = currentItem.Parent as FrameworkElement;
+                relevantItem = currentItem as Grid;
+            }
+
+            KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>) relevantItem.DataContext;
+            TaskList.SelectedIndex = selectedPair.Key - 1;
         }
 
         private void ResizeStart(object sender, MouseEventArgs e)
@@ -432,6 +420,12 @@ namespace Calendo
             {
                 Height = resizeY;
             }
+        }
+
+        private void DeleteButtonClick(object sender, RoutedEventArgs e)
+        {
+            SelectTaskFromCommandButton(sender);
+            DeleteSelectedTask();
         }
     }
 }
