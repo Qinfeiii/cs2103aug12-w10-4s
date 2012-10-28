@@ -174,7 +174,7 @@ namespace Calendo.GoogleCalendar
                 responseText = "";
                 JSON<TaskResponse> jtest = new JSON<TaskResponse>();
                 string postData = "{\"title\": \"" + task.Description + "\"";
-               // if(task.Type!= new EntryType(FLOATING))
+                if(task.Type!= 0)
                     postData+=",\"due\": \"" + jtest.DateToJSON(task.StartTime) + "\"";
                 postData+="}";
 
