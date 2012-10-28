@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
 using Calendo.Data;
@@ -23,7 +20,7 @@ namespace Calendo
         {
             CommandProcessor = new CommandProcessor();
             AutoSuggestSystem = new AutoSuggest.AutoSuggest(CommandProcessor.GetInputCommandList());
-            UpdateDelegate updateDelegate = new UpdateDelegate(UpdateItemsList);
+            UpdateDelegate updateDelegate = UpdateItemsList;
             TaskManager.Instance.Subscribers.Add(updateDelegate);
             UpdateItemsList();
         }
