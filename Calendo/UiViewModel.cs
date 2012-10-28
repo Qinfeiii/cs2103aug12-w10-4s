@@ -19,7 +19,7 @@ namespace Calendo
             get
             {
                 bool isOnlyOneSuggestion = SuggestionList.Count == 1;
-                bool isSuggestionDetail = !SuggestionList[0].IsMaster;
+                bool isSuggestionDetail = (SuggestionList.Count > 0) && !SuggestionList[0].IsMaster;
                 return isOnlyOneSuggestion && isSuggestionDetail ? 2 : 3;
             }
         }
@@ -30,8 +30,8 @@ namespace Calendo
         {
             CommandProcessor = new CommandProcessor();
             AutoSuggestSystem = new AutoSuggest.AutoSuggest(CommandProcessor.GetInputCommandList());
-            UpdateDelegate updateDelegate = UpdateItemsList;
-            TaskManager.Instance.Subscribers.Add(updateDelegate);
+            TaskManager.UpdateHandler updateHandler = UpdateItemsList;
+            TaskManager.Instance.AddSubscriber(updateHandler);
             UpdateItemsList();
         }
 
