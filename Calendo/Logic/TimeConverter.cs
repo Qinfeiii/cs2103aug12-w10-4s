@@ -36,6 +36,7 @@ namespace Calendo.Logic
             set;
         }
     }
+
     public class TimeConverter
     {
         private const string ERROR_INVALIDDATETIME = "Specified Date or Time is invalid";

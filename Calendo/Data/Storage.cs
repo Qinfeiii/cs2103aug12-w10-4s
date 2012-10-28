@@ -45,7 +45,7 @@ namespace Calendo.Data
         private const string ERROR_INCOMPATIBLE = "Data file is unreadable";
 
         private string dataFilePath;
-        private Data<T> dataWrapper;
+        private object dataObject;
         private XmlSerializer serializer;
 
         /// <summary>
@@ -72,8 +72,16 @@ namespace Calendo.Data
         /// </summary>
         private void Initialize()
         {
-            dataWrapper = new Data<T>();
-            serializer = new XmlSerializer(dataWrapper.GetType());
+            dataObject = new Data<T>();
+            try
+            {
+                // Initialize XMLserializer to use the Data<T> type template
+                serializer = XmlSerializer.FromTypes(new[] { typeof(Data<T>) })[0];
+            }
+            catch (Exception e)
+            {
+                Debug.Assert(serializer != null, "Object is not serializable!", e.InnerException.Message);
+            }
         }
 
         /// <summary>
@@ -84,16 +92,41 @@ namespace Calendo.Data
             set
             {
                 serializer = value;
+                UseWrapper = false;
             }
         }
+
+        protected bool UseWrapper = true;
 
         /// <summary>
         /// Data stored in storage
         /// </summary>
         public virtual T Entries
         {
-            get { return dataWrapper.Value; }
-            set { dataWrapper.Value = value; }
+            get {
+                if (UseWrapper)
+                {
+                    Data<T> dataWrapper = dataObject as Data<T>;
+                    return dataWrapper.Value;
+                }
+                else
+                {
+                    T dataWrapper = (T)dataObject;
+                    return dataWrapper;
+                }
+            }
+            set {
+                if (UseWrapper)
+                {
+                    Data<T> dataWrapper = dataObject as Data<T>;
+                    dataWrapper.Value = value;
+                }
+                else
+                {
+                    T dataWrapper = (T)dataObject;
+                    dataWrapper = value;
+                }
+            }
         }
 
         /// <summary>
@@ -108,7 +141,7 @@ namespace Calendo.Data
                 fileStream = new FileStream(dataFilePath, FileMode.Create);
                 XmlSerializerNamespaces xmlNamespace = new XmlSerializerNamespaces();
                 xmlNamespace.Add("", ""); // omit XML namespaces
-                serializer.Serialize(fileStream, dataWrapper, xmlNamespace);
+                serializer.Serialize(fileStream, dataObject, xmlNamespace);
                 fileStream.Close();
                 return true;
             }
@@ -138,7 +171,7 @@ namespace Calendo.Data
                 fileStream = new FileStream(dataFilePath, FileMode.OpenOrCreate);
                 if (fileStream.Length != 0)
                 {
-                    dataWrapper = (Data<T>)serializer.Deserialize(fileStream);
+                    dataObject = (Data<T>)serializer.Deserialize(fileStream);
                 }
                 fileStream.Close();
                 return true;
@@ -147,7 +180,7 @@ namespace Calendo.Data
             {
                 // Invalid file, recreate empty state
                 DebugTool.Alert(ERROR_INCOMPATIBLE);
-                dataWrapper = new Data<T>();
+                dataObject = new Data<T>();
                 return false;
             }
             finally
