@@ -61,11 +61,11 @@ namespace Calendo.Data
         /// <returns>DateTime representing object, if invalid format returns current time</returns>
         public DateTime JSONToDate(string json)
         {
-            string[] datetimeParts = json.Split(new char[] { 'T', '.' }, 3);
-            string[] dateParts = datetimeParts[0].Split(new char[] { '-' });
-            string[] timeParts = datetimeParts[1].Split(new char[] { ':' });
             try
             {
+                string[] datetimeParts = json.Split(new char[] { 'T', '.' }, 3);
+                string[] dateParts = datetimeParts[0].Split(new char[] { '-' });
+                string[] timeParts = datetimeParts[1].Split(new char[] { ':' });
                 int year = int.Parse(dateParts[0]);
                 int month = int.Parse(dateParts[1]);
                 int day = int.Parse(dateParts[2]);

@@ -153,7 +153,7 @@ namespace Calendo.GoogleCalendar
 
             AskAuth a = new AskAuth();
             a.ShowDialog();
-            string authCode = a.authCode;
+            string authCode = a.AuthorizationCode;
 
             // Retrieve the access token by using the authorization code:
             return authCode;
