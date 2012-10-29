@@ -234,6 +234,8 @@ namespace Calendo.GoogleCalendar
             List<Entry> taskList = new List<Entry>();
             for (int c = 0; c < values.items.Count; c++)
             {
+                if (values.items[c].title == "")
+                    continue;
                 Entry entry = new Entry();
                 entry.Description = values.items[c].title;
                 if (values.items[c].due != null)
