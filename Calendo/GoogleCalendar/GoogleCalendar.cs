@@ -47,6 +47,7 @@ namespace Calendo.GoogleCalendar
                 return;
             }
             storage.Load();
+            //deleteGcalTasks( getTasksIds(getTaskResponse(auth)),auth);
             postTasks(storage.Entries, auth);
         }
 
@@ -174,7 +175,7 @@ namespace Calendo.GoogleCalendar
                 responseText = "";
                 JSON<TaskResponse> jtest = new JSON<TaskResponse>();
                 string postData = "{\"title\": \"" + task.Description + "\"";
-                if(task.Type!= 0)
+                if(task.Type!= EntryType.FLOATING)
                     postData+=",\"due\": \"" + jtest.DateToJSON(task.StartTime) + "\"";
                 postData+="}";
 
@@ -238,8 +239,11 @@ namespace Calendo.GoogleCalendar
                 if (values.items[c].due != null)
                 {
                     entry.StartTime = jtest.JSONToDate(values.items[c].due);
-                    entry.StartTimeFormat = 0;
+                    entry.StartTimeFormat = TimeFormat.DATETIME;
+                    entry.Type = EntryType.DEADLINE;
                 }
+                else
+                    entry.Type = EntryType.FLOATING;
                 taskList.Add(entry);
             }
             return taskList;
