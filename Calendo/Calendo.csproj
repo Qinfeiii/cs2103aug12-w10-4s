@@ -60,7 +60,7 @@
       <HintPath>GoogleCalendar\Lib\Google.Apis.Authentication.OAuth2.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis.Tasks.v1">
-      <HintPath>GoogleCalendar\Google.Apis.Tasks.v1.dll</HintPath>
+      <HintPath>GoogleCalendar\Services\TasksService\Google.Apis.Tasks.v1.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
