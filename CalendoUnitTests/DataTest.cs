@@ -1,7 +1,10 @@
-﻿using System;
+﻿//@author Nicholas
+using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Calendo.Logic;
 using Calendo.Data;
+using Calendo.GoogleCalendar;
 using System.IO;
 
 namespace CalendoUnitTests
