@@ -36,6 +36,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -54,10 +55,14 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AutoSuggestTest.cs" />
+    <Compile Include="CommandProcessorTest.cs" />
+    <Compile Include="ConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataTest.cs" />
     <Compile Include="TMTest.cs" />
     <Compile Include="SMTest.cs" />
+    <Compile Include="UiTaskHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Calendo\Calendo.csproj">
