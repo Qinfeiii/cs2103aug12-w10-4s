@@ -1,8 +1,9 @@
-﻿using System;
+﻿//@author Nicholas
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Calendo.Data
+namespace Calendo.Logic
 {
     /// <summary>
     /// Entry Type

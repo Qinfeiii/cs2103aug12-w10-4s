@@ -12,7 +12,6 @@ using Google.Apis.Tasks.v1;
 using Google.Apis.Tasks.v1.Data;
 using Google.Apis.Util;
 using Calendo.Logic;
-using Calendo.Data;
 using System.Windows.Forms;
 
 namespace Calendo.GoogleCalendar
@@ -121,10 +120,10 @@ namespace Calendo.GoogleCalendar
             JSON<TaskResponse> jtest = new JSON<TaskResponse>();
             TaskResponse values = jtest.Deserialize(taskListDetails);
             String taskListId = "";
-            for (int c = 0; c < values.items.Count; c++)
+            for (int c = 0; c < values.Items.Count; c++)
             {
                 //taskListId += Console.WriteLine(values.items[c].id);
-                taskListId += values.items[c].id;
+                taskListId += values.Items[c].Id;
             }
             return taskListId;
         }
@@ -216,10 +215,10 @@ namespace Calendo.GoogleCalendar
             JSON<TaskResponse> jtest = new JSON<TaskResponse>();
             TaskResponse values = jtest.Deserialize(tasks);
             List<String> taskList = new List<string>();
-            for (int c = 0; c < values.items.Count; c++)
+            for (int c = 0; c < values.Items.Count; c++)
             {
-                if (values.items[c].title!="")
-                    taskList.Add(values.items[c].id);
+                if (values.Items[c].Title!="")
+                    taskList.Add(values.Items[c].Id);
             }
             return taskList;
         }
@@ -229,10 +228,10 @@ namespace Calendo.GoogleCalendar
             JSON<TaskResponse> jtest = new JSON<TaskResponse>();
             TaskResponse values = jtest.Deserialize(tasks);
             List<Entry> taskList = new List<Entry>();
-            for (int c = 0; c < values.items.Count; c++)
+            for (int c = 0; c < values.Items.Count; c++)
             {
                 Entry entry = new Entry();
-                entry.Description = values.items[c].title;
+                entry.Description = values.Items[c].Title;
                 taskList.Add(entry);
             }
             return taskList;

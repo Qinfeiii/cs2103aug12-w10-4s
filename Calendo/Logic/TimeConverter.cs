@@ -1,4 +1,5 @@
-﻿using System;
+﻿//@author Nicholas
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Calendo.Data;
@@ -168,8 +169,8 @@ namespace Calendo.Logic
         /// <returns>Returns TaskTime object</returns>
         public TaskTime Convert(string date, string time)
         {
-            date = DefaultString(date);
-            time = DefaultString(time);
+            date = SanitizeString(date);
+            time = SanitizeString(time);
 
             bool isValidDate = true;
             bool isValidTime = true;
@@ -207,25 +208,25 @@ namespace Calendo.Logic
         /// <summary>
         /// Replace null strings with a default
         /// </summary>
-        /// <param name="str">Input string</param>
+        /// <param name="input">Input string</param>
         /// <returns>Returns string if not null, empty string if null</returns>
-        private string DefaultString(string str)
+        private string SanitizeString(string input)
         {
-            if (str == null)
+            if (input == null)
             {
                 return "";
             }
             else
             {
-                return str;
+                return input;
             }
         }
 
-        private string GetSubstring(string inputString, int start)
+        private string GetSubstring(string input, int start)
         {
-            if (inputString.Length >= start && start >= 0)
+            if (input.Length >= start && start >= 0)
             {
-                return inputString.Substring(start);
+                return input.Substring(start);
             }
             else
             {
@@ -365,7 +366,8 @@ namespace Calendo.Logic
             // Year (optional)
             if (dateFragment.Length > 2)
             {
-                year = this.ConvertValue(dateFragment[2], DateTime.Today.Year, 9999);
+                // Year must be 4 digits
+                year = this.ConvertValue(dateFragment[2], 1000, 9999);
                 isYearProvided = true;
             }
 
@@ -405,8 +407,9 @@ namespace Calendo.Logic
                     }
                     else
                     {
-                        hasError = true;
-                        isValidDate = false;
+                        // Due to requests, checking for dates in the past is disabled
+                        //hasError = true;
+                        //isValidDate = false;
                     }
                 }
             }

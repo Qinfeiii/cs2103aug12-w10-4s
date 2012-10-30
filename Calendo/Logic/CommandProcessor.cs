@@ -61,7 +61,7 @@ namespace Calendo.Logic
         public Dictionary<string, string[]> GetInputCommandList() {
             return DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE;
         }
-        public List<Calendo.Data.Entry> TaskList { get { return taskManager.Entries; } }
+        public List<Entry> TaskList { get { return taskManager.Entries; } }
 
         // Used to map the UI index (Key) to the actual index in the task list (Value).
         public Dictionary<int, int> IndexMap { get; set; } 

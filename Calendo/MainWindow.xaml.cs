@@ -8,9 +8,7 @@ using System.Diagnostics;
 using System.Windows.Shapes;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
-using Calendo.Data;
 using System.Windows.Interop;
-using EntryType = Calendo.Data.EntryType;
 
 namespace Calendo
 {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿//@author Nicholas
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
@@ -9,32 +10,6 @@ using Calendo.Diagnostics;
 namespace Calendo.Data
 {
     /// <summary>
-    /// Wrapper class for object used in serialization
-    /// </summary>
-    /// <typeparam name="T">Generic type to wrap</typeparam>
-    [Serializable]
-    [XmlRoot("Data")]
-    public class Data<T> where T : new()
-    {
-        /// <summary>
-        /// Creates a new Data object
-        /// </summary>
-        public Data() {
-            Value = new T();
-        }
-
-        /// <summary>
-        /// Gets or sets the value represented by the object
-        /// </summary>
-        [XmlElement("Entry")]
-        public virtual T Value
-        {
-            get;
-            set;
-        }
-    }
-
-    /// <summary>
     /// Saves objects into files.
     /// </summary>
     /// <typeparam name="T">Type stored by storage</typeparam>
@@ -43,6 +18,7 @@ namespace Calendo.Data
         private const string DEFAULT_FILE_PATH = "data.txt";
         private const string ERROR_UNWRITABLE = "Unable to write file";
         private const string ERROR_INCOMPATIBLE = "Data file is unreadable";
+        private const string ERROR_UNSERIALIZABLE = "Object is not serializable";
 
         private string dataFilePath;
         private object dataObject;
@@ -80,7 +56,7 @@ namespace Calendo.Data
             }
             catch (Exception e)
             {
-                Debug.Assert(serializer != null, "Object is not serializable!", e.InnerException.Message);
+                Debug.Assert(serializer != null, ERROR_UNSERIALIZABLE, e.InnerException.Message);
             }
         }
 
