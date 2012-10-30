@@ -89,6 +89,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\StringArrayToStringConverter.cs" />
+    <Compile Include="Data\Data.cs" />
+    <Compile Include="Data\State.cs" />
     <Compile Include="UiViewModel.cs" />
     <Compile Include="UiTaskHelper.cs" />
     <Page Include="Debug\DebugMode.xaml">
@@ -122,12 +124,12 @@
     <Compile Include="Converters\EntryToBrushConverter.cs" />
     <Compile Include="Converters\EntryToDateTimeStringConverter.cs" />
     <Compile Include="Converters\EntryToDateTimeVisibilityConverter.cs" />
-    <Compile Include="Data\JSON.cs" />
+    <Compile Include="GoogleCalendar\JSON.cs" />
     <Compile Include="Debug\Debug.cs" />
     <Compile Include="Debug\DebugMode.xaml.cs">
       <DependentUpon>DebugMode.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Data\Entry.cs" />
+    <Compile Include="Logic\Entry.cs" />
     <Compile Include="Data\Storage.cs" />
     <Compile Include="GoogleCalendar\AskAuth.xaml.cs">
       <DependentUpon>AskAuth.xaml</DependentUpon>

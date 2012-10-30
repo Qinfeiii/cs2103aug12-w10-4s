@@ -1,9 +1,10 @@
-﻿using System;
+﻿//@author Nicholas
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Web.Script.Serialization;
 
-namespace Calendo.Data
+namespace Calendo.GoogleCalendar
 {
     /// <summary>
     /// JavaScript Object Notation (JSON) Parser
@@ -12,6 +13,7 @@ namespace Calendo.Data
     public class JSON<T>
     {
         private JavaScriptSerializer jsSerializer;
+
         /// <summary>
         /// Create a new instance of the JSON parser
         /// </summary>
@@ -49,7 +51,6 @@ namespace Calendo.Data
         public string DateToJSON(DateTime date)
         {
             // NOTE: JSON do not have a standardized format. Google API uses RFC 3339.
-            // Format: [Date]T[Time].[Time zone], Time zone assumed to be UTC.
             DateTime utcDate = date.ToUniversalTime();
             return utcDate.ToString("yyyy-MM-dd") + "T" + utcDate.ToString("HH:mm:ss") + ".000Z";
         }
@@ -77,7 +78,8 @@ namespace Calendo.Data
             }
             catch
             {
-                return DateTime.UtcNow;
+                // Invalid format, return smallest date time
+                return new DateTime(0);
             }
         }
     }

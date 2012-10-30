@@ -1,4 +1,5 @@
-﻿using System;
+﻿//@author Nicholas
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -12,8 +13,35 @@ namespace Calendo.Diagnostics
         private const string LOG_FILEPATH = "log.txt";
         private const string LOG_FORMAT = "{0:G}: {1} {2}";
         private const string CONFIG_FILEPATH = "debugcfg.txt";
-        private static bool _Enable = true;
-        private static bool loaded = false;
+        private static bool IsEnable = true;
+        private static bool IsConfigLoaded = false;
+
+        private static bool IsHasNotification = false;
+        /// <summary>
+        /// Gets whether if there are notifications. Value will be changed to false after being accessed.
+        /// </summary>
+        public static bool HasNotification
+        {
+            get
+            {
+                bool pastValue = IsHasNotification;
+                IsHasNotification = false;
+                return pastValue;
+            }
+        }
+
+        private static string CurrentMessage = "";
+        /// <summary>
+        /// Gets the latest notification message
+        /// </summary>
+        public static string NotificationMessage
+        {
+            get
+            {
+                return CurrentMessage;
+            }
+        }
+        
 
         /// <summary>
         /// Notify handler for DebugTool notifications
@@ -36,6 +64,8 @@ namespace Calendo.Diagnostics
         /// </summary>
         private static void UpdateSubscribers(string message)
         {
+            CurrentMessage = message;
+            IsHasNotification = true;
             foreach (NotifyHandler notifyMethod in SubscriberList)
             {
                 notifyMethod(message);
@@ -47,8 +77,8 @@ namespace Calendo.Diagnostics
         /// Get or set debug enable switch
         /// </summary>
         public static bool Enable {
-            get { return _Enable; }
-            set { _Enable = value; }
+            get { return IsEnable; }
+            set { IsEnable = value; }
         }
 
         /// <summary>
@@ -71,7 +101,7 @@ namespace Calendo.Diagnostics
                 }
                 sr.Close();
                 fileStream.Close();
-                loaded = true;
+                IsConfigLoaded = true;
 
                 WriteLog("Debug file loaded, debugging state = " + Enable.ToString(), "[Init] ");
             }
@@ -89,7 +119,7 @@ namespace Calendo.Diagnostics
         /// <param name="message">Message to display</param>
         public static void Alert(string message)
         {
-            if (!loaded)
+            if (!IsConfigLoaded)
             {
                 LoadConfig();
             }
@@ -107,7 +137,7 @@ namespace Calendo.Diagnostics
         /// <param name="message">Message string</param>
         public static void WriteLog(string message, string type = "[Info] ")
         {
-            if (!loaded)
+            if (!IsConfigLoaded)
             {
                 LoadConfig();
             }
