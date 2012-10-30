@@ -45,6 +45,7 @@ namespace Calendo.Logic
             set;
         }
     }
+
     public class SettingsManager
     {
         private Storage<List<KeyPair<string, string>>> settingsStorage;
@@ -54,11 +55,11 @@ namespace Calendo.Logic
         /// Creates a new instance of SettingsManager
         /// </summary>
         public SettingsManager() {
-            settingsStorage = new Storage<List<KeyPair<string, string>>>("settings.txt");
-            settingsDictionary = new Dictionary<string, int>();
-            settingsStorage.Load();
+            this.settingsStorage = new Storage<List<KeyPair<string, string>>>("settings.txt");
+            this.settingsDictionary = new Dictionary<string, int>();
+            this.settingsStorage.Load();
             Debug.Assert(settingsStorage.Entries != null, "Settings entries cannot be null");
-            LoadList();
+            this.LoadList();
         }
 
         /// <summary>
@@ -66,12 +67,12 @@ namespace Calendo.Logic
         /// </summary>
         private void LoadList()
         {
-            List<KeyPair<string, string>> settingsList = settingsStorage.Entries;
+            List<KeyPair<string, string>> settingsList = this.settingsStorage.Entries;
             for (int i = 0; i < settingsList.Count; i++)
             {
                 if (settingsList[i].Key != null)
                 {
-                    settingsDictionary.Add(settingsList[i].Key, i);
+                    this.settingsDictionary.Add(settingsList[i].Key, i);
                 }
             }
         }
@@ -83,9 +84,10 @@ namespace Calendo.Logic
         /// <returns>Returns the value of the setting, null otherwise</returns>
         public string GetSetting(string settingName)
         {
-            if (settingsDictionary.ContainsKey(settingName))
+            if (this.settingsDictionary.ContainsKey(settingName))
             {
-                return settingsStorage.Entries[settingsDictionary[settingName]].Value;
+                int settingID = this.settingsDictionary[settingName];
+                return this.settingsStorage.Entries[settingID].Value;
             }
             else
             {
@@ -101,18 +103,20 @@ namespace Calendo.Logic
         /// <param name="settingValue">Value of the setting</param>
         public void SetSetting(string settingName, string settingValue)
         {
-            if (settingsDictionary.ContainsKey(settingName))
+            KeyPair<string, string> newSetting = new KeyPair<string, string>(settingName, settingValue);
+            if (this.settingsDictionary.ContainsKey(settingName))
             {
                 // Override existing setting
-                settingsStorage.Entries[settingsDictionary[settingName]] = new KeyPair<string, string>(settingName, settingValue);
+                int settingID = this.settingsDictionary[settingName];
+                this.settingsStorage.Entries[settingID] = newSetting;
             }
             else
             {
                 // No existing setting, add new one
-                settingsDictionary.Add(settingName, settingsStorage.Entries.Count);
-                settingsStorage.Entries.Add(new KeyPair<string, string>(settingName, settingValue));
+                this.settingsDictionary.Add(settingName, settingsStorage.Entries.Count);
+                this.settingsStorage.Entries.Add(newSetting);
             }
-            settingsStorage.Save();
+            this.settingsStorage.Save();
         }
 
         /// <summary>
@@ -120,10 +124,10 @@ namespace Calendo.Logic
         /// </summary>
         public void Clear()
         {
-            settingsStorage.Entries = new List<KeyPair<string, string>>();
-            settingsStorage.Save();
-            settingsStorage.Load();
-            LoadList();
+            this.settingsStorage.Entries = new List<KeyPair<string, string>>();
+            this.settingsStorage.Save();
+            this.settingsStorage.Load();
+            this.LoadList();
         }
     }
 }

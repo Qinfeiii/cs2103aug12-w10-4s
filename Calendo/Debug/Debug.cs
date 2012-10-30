@@ -20,21 +20,15 @@ namespace Calendo.Diagnostics
         /// </summary>
         /// <param name="message"></param>
         public delegate void NotifyHandler(string message);
-        private static List<Delegate> subscriberList = new List<Delegate>();
+        private static List<NotifyHandler> SubscriberList = new List<NotifyHandler>();
 
         /// <summary>
-        /// List of subscribers to invoke alert methods
+        /// Adds a subscriber
         /// </summary>
-        public static List<Delegate> Subscribers
+        /// <param name="method">Method to be invoked on notification</param>
+        public static void AddSubscriber(NotifyHandler method)
         {
-            get
-            {
-                return subscriberList;
-            }
-            set
-            {
-                subscriberList = value;
-            }
+            SubscriberList.Add(method);
         }
 
         /// <summary>
@@ -42,10 +36,9 @@ namespace Calendo.Diagnostics
         /// </summary>
         private static void UpdateSubscribers(string message)
         {
-            foreach (Delegate d in Subscribers)
+            foreach (NotifyHandler notifyMethod in SubscriberList)
             {
-                NotifyHandler dAlert = d as NotifyHandler;
-                dAlert(message);
+                notifyMethod(message);
             }
         }
 
@@ -121,7 +114,7 @@ namespace Calendo.Diagnostics
             string timeStamp = DateTime.Now.ToString();
             string prefix = type;
             StreamWriter file = System.IO.File.AppendText(LOG_FILEPATH);
-            file.WriteLine(string.Format(LOG_FORMAT, timeStamp, prefix, message));
+            file.WriteLine(String.Format(LOG_FORMAT, timeStamp, prefix, message));
             file.Close();
         }
 
