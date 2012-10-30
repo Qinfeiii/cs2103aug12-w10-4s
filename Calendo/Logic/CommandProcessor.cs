@@ -22,8 +22,6 @@ namespace Calendo.Logic
         private const string COMMAND_TYPE_IMPORT = "import";
 
         // This is the list of user-inputs the program can handle and process as a "proper" command
-        //TODO: Ideally, NOCOMMAND should be search in autosuggest mode,
-        //      and when the user presses enter, treat it as ADD
         private string[] INPUT_COMMANDS_SEARCH = { "/search", "/find" };
         private string[] INPUT_COMMANDS_ADD = { "/add", "/a" };
         private string[] INPUT_COMMANDS_REMOVE = { "/remove", "/delete", "/rm", "/del" };
@@ -326,7 +324,7 @@ namespace Calendo.Logic
             string dateWord = null;
 
             // Process the presence of the given date input handle
-            int dateIndex = inputStringWords.FindIndex(x => dateInputHandles.Contains(x));
+            int dateIndex = inputStringWords.FindIndex(x => dateInputHandles.Contains(x.ToLower()));
             if (IsInvalidIndex(dateIndex))
                 return null;
 
