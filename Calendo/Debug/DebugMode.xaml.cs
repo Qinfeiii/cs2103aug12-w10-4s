@@ -61,7 +61,7 @@ namespace Calendo
             {
                 //this.listBox1.Items.Add("[" + tm.Entries[i].ID.ToString() + "] " + tm.Entries[i].Description);
                 entryDictionary.Add(i, tm.Entries[i]);
-                indexMap.Add(i, i);
+                indexMap.Add(i + 1, i + 1);
             }
             this.listBox1.ItemsSource = entryDictionary;
             cp.IndexMap = indexMap;
