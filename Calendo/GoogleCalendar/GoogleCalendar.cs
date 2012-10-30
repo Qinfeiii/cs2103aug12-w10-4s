@@ -5,7 +5,6 @@ using System.Web;
 using System.Text;
 using System.IO;
 using System.Diagnostics;
-using DotNetOpenAuth.OAuth2;
 using Google.Apis.Authentication;
 using Google.Apis.Authentication.OAuth2;
 using Google.Apis.Authentication.OAuth2.DotNetOpenAuth;
@@ -153,7 +152,7 @@ namespace Calendo.GoogleCalendar
 
             AskAuth a = new AskAuth();
             a.ShowDialog();
-            string authCode = a.authCode;
+            string authCode = a.AuthorizationCode;
 
             // Retrieve the access token by using the authorization code:
             return authCode;

@@ -37,11 +37,11 @@ namespace Calendo.AutoSuggest
             {
                 case "add":
                     commandDescription = "add a new item";
-                    commandInstruction = "[description] /date [DD/MM] /time [HH:MM]";
+                    commandInstruction = "[description] /date [DD/MM] /time [HH:MM] /enddate [DD/MM] /endtime [HH:MM]";
                     break;
                 case "change":
                     commandDescription = "edit an item";
-                    commandInstruction = "[number] [description]";
+                    commandInstruction = "[number] [description] /date [DD/MM] /time [HH:MM] /enddate [DD/MM] /endtime [HH:MM]";
                     break;
                 case "remove":
                     commandDescription = "remove an item";

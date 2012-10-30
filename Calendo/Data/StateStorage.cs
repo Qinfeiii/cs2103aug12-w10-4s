@@ -13,16 +13,15 @@ namespace Calendo.Data
     [XmlRoot("Data")]
     public class State<T> where T : new()
     {
-        private T baseValue;
-        private static Stack<T> redoStack = new Stack<T>();
+        private static Stack<T> RedoStack = new Stack<T>();
 
         /// <summary>
         /// Create a State object to represent object states
         /// </summary>
         public State()
         {
-            baseValue = new T();
-            States = new List<T>();
+            this.Value = new T();
+            this.States = new List<T>();
         }
 
         /// <summary>
@@ -30,8 +29,8 @@ namespace Calendo.Data
         /// </summary>
         public T Value
         {
-            get { return baseValue; }
-            set { baseValue = value; }
+            get;
+            set;
         }
 
         /// <summary>
@@ -49,12 +48,12 @@ namespace Calendo.Data
         /// </summary>
         public void AddState()
         {
-            if (States.Count == 0)
+            if (this.States.Count == 0)
             {
-                States.Add(new T());
+                this.States.Add(new T());
             }
-            States.Add(PerformClone(baseValue));
-            redoStack.Clear();
+            this.States.Add(PerformClone(Value));
+            RedoStack.Clear();
         }
 
         /// <summary>
@@ -63,12 +62,12 @@ namespace Calendo.Data
         /// <returns>Return true if state is changed</returns>
         public bool Undo()
         {
-            if (States.Count > 1)
+            if (this.States.Count > 1)
             {
                 // First state does not count
-                redoStack.Push(States[States.Count - 1]);
-                States.RemoveAt(States.Count - 1);
-                baseValue = PerformClone(States[States.Count - 1]);
+                RedoStack.Push(this.States[States.Count - 1]);
+                this.States.RemoveAt(this.States.Count - 1);
+                this.Value = PerformClone(this.States[States.Count - 1]);
                 return true;
             }
             else
@@ -85,7 +84,7 @@ namespace Calendo.Data
             get
             {
                 // First state does not count
-                return (States.Count > 1);
+                return (this.States.Count > 1);
             }
         }
 
@@ -95,10 +94,10 @@ namespace Calendo.Data
         /// <returns>Return true if state is changed</returns>
         public bool Redo()
         {
-            if (redoStack.Count > 0)
+            if (RedoStack.Count > 0)
             {
-                baseValue = PerformClone(redoStack.Pop());
-                States.Add(baseValue);
+                this.Value = PerformClone(RedoStack.Pop());
+                this.States.Add(Value);
                 return true;
             }
             else
@@ -114,7 +113,7 @@ namespace Calendo.Data
         {
             get
             {
-                return (redoStack.Count > 0);
+                return (RedoStack.Count > 0);
             }
         }
 
@@ -145,7 +144,8 @@ namespace Calendo.Data
         /// </summary>
         public StateStorage()
         {
-            dataStorage = new Storage<State<T>>();
+            this.dataStorage = new Storage<State<T>>();
+            this.Initialize();
         }
 
         /// <summary>
@@ -154,8 +154,8 @@ namespace Calendo.Data
         /// <param name="filePath">File path to data file</param>
         public StateStorage(string filePath)
         {
-            dataStorage = new Storage<State<T>>(filePath);
-            Initialize();
+            this.dataStorage = new Storage<State<T>>(filePath);
+            this.Initialize();
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Calendo.Data
         /// </summary>
         private void Initialize()
         {
-            currentState = new State<T>();
+            this.currentState = new State<T>();
         }
 
         /// <summary>
@@ -171,8 +171,8 @@ namespace Calendo.Data
         /// </summary>
         public override T Entries
         {
-            get { return dataStorage.Entries.Value; }
-            set { dataStorage.Entries.Value = value; }
+            get { return this.dataStorage.Entries.Value; }
+            set { this.dataStorage.Entries.Value = value; }
         }
 
         /// <summary>
@@ -181,10 +181,9 @@ namespace Calendo.Data
         /// <returns>Returns true if file has been changed</returns>
         public override bool Save()
         {
-            dataStorage.Entries.AddState();
-            currentState = dataStorage.Entries;
-            
-            return dataStorage.Save();
+            this.dataStorage.Entries.AddState();
+            this.currentState = this.dataStorage.Entries;
+            return this.dataStorage.Save();
         }
 
         /// <summary>
@@ -193,8 +192,8 @@ namespace Calendo.Data
         /// <returns>Returns true if the file has been read</returns>
         public override bool Load()
         {
-            bool loadResult = dataStorage.Load();
-            currentState = dataStorage.Entries;
+            bool loadResult = this.dataStorage.Load();
+            this.currentState = this.dataStorage.Entries;
             return loadResult;
         }
 
@@ -205,7 +204,7 @@ namespace Calendo.Data
         {
             get
             {
-                return (currentState.HasUndo);
+                return (this.currentState.HasUndo);
             }
         }
 
@@ -216,7 +215,7 @@ namespace Calendo.Data
         public bool Undo()
         {
             bool undoResult = currentState.Undo();
-            dataStorage.Save();
+            this.dataStorage.Save();
             return undoResult;
         }
 
@@ -227,7 +226,7 @@ namespace Calendo.Data
         {
             get
             {
-                return (currentState.HasRedo);
+                return (this.currentState.HasRedo);
             }
         }
 
@@ -237,8 +236,8 @@ namespace Calendo.Data
         /// <returns>Returns true if a state is reverted, false if no action taken</returns>
         public bool Redo()
         {
-            bool redoResult = currentState.Redo();
-            dataStorage.Save();
+            bool redoResult = this.currentState.Redo();
+            this.dataStorage.Save();
             return redoResult;
         }
 
@@ -247,9 +246,9 @@ namespace Calendo.Data
         /// </summary>
         public void Clear()
         {
-            dataStorage.Entries.States.Clear();
-            dataStorage.Save();
-            dataStorage.Load();
+            this.dataStorage.Entries.States.Clear();
+            this.dataStorage.Save();
+            this.dataStorage.Load();
         }
     }
 }

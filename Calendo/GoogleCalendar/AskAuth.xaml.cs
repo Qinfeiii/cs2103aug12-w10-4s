@@ -22,7 +22,17 @@ namespace Calendo.GoogleCalendar
         {
             InitializeComponent();
         }
-        public string authCode = "";
+        
+        private string authCode = "";
+
+        /// <summary>
+        /// Get the authorization code
+        /// </summary>
+        public string AuthorizationCode
+        {
+            get { return authCode; }
+        }
+
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             authCode = this.textBox1.Text;
