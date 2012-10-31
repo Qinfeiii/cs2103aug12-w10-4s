@@ -52,6 +52,9 @@
   <PropertyGroup>
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Calendo.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DotNetOpenAuth">
       <HintPath>GoogleCalendar\Lib\DotNetOpenAuth.dll</HintPath>
