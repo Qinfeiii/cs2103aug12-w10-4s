@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
-using Calendo.Data;
 using System.ComponentModel;
 
 namespace Calendo
@@ -23,8 +22,6 @@ namespace Calendo
                 return isOnlyOneSuggestion && isSuggestionDetail ? 2 : 3;
             }
         }
-
-        private delegate void UpdateDelegate();
 
         public UiViewModel()
         {
