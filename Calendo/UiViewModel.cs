@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿//@author Jerome
+using System.Collections.Generic;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
 using System.ComponentModel;
