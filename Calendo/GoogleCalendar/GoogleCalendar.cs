@@ -42,7 +42,7 @@ namespace Calendo.GoogleCalendar
         public void Export()
         {
             storage.Load();
-            //deleteGcalTasks( getTasksIds(getTaskResponse(auth)),auth);
+            deleteGcalTasks( getTasksIds(getTaskResponse(auth)),auth);
             postTasks(storage.Entries, auth);
         }
 
