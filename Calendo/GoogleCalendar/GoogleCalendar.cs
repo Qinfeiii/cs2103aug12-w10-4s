@@ -5,7 +5,6 @@ using System.Web;
 using System.Text;
 using System.IO;
 using System.Diagnostics;
-using DotNetOpenAuth.OAuth2;
 using Google.Apis.Authentication;
 using Google.Apis.Authentication.OAuth2;
 using Google.Apis.Authentication.OAuth2.DotNetOpenAuth;
@@ -13,7 +12,6 @@ using Google.Apis.Tasks.v1;
 using Google.Apis.Tasks.v1.Data;
 using Google.Apis.Util;
 using Calendo.Logic;
-using Calendo.Data;
 using System.Windows.Forms;
 
 namespace Calendo.GoogleCalendar
@@ -113,9 +111,9 @@ namespace Calendo.GoogleCalendar
             JSON<TaskResponse> jtest = new JSON<TaskResponse>();
             TaskResponse values = jtest.Deserialize(taskListDetails);
             String taskListId = "";
-            for (int c = 0; c < values.items.Count; c++)
+            for (int c = 0; c < values.Items.Count; c++)
             {
-                taskListId += values.items[c].id;
+                taskListId += values.Items[c].Id;
             }
             return taskListId;
         }
@@ -143,7 +141,7 @@ namespace Calendo.GoogleCalendar
 
             AskAuth a = new AskAuth();
             a.ShowDialog();
-            string authCode = a.authCode;
+            string authCode = a.AuthorizationCode;
 
             if (authCode == "")
             {
@@ -214,10 +212,10 @@ namespace Calendo.GoogleCalendar
             JSON<TaskResponse> jtest = new JSON<TaskResponse>();
             TaskResponse values = jtest.Deserialize(tasks);
             List<String> taskList = new List<string>();
-            for (int c = 0; c < values.items.Count; c++)
+            for (int c = 0; c < values.Items.Count; c++)
             {
-                if (values.items[c].title!="")
-                    taskList.Add(values.items[c].id);
+                if (values.Items[c].Title!="")
+                    taskList.Add(values.Items[c].Id);
             }
             return taskList;
         }
@@ -227,15 +225,15 @@ namespace Calendo.GoogleCalendar
             JSON<TaskResponse> jtest = new JSON<TaskResponse>();
             TaskResponse values = jtest.Deserialize(tasks);
             List<Entry> taskList = new List<Entry>();
-            for (int c = 0; c < values.items.Count; c++)
+            for (int c = 0; c < values.Items.Count; c++)
             {
-                if (values.items[c].title == "")
+                if (values.Items[c].Title == "")
                     continue;
                 Entry entry = new Entry();
-                entry.Description = values.items[c].title;
-                if (values.items[c].due != null)
+                entry.Description = values.Items[c].Title;
+                if (values.Items[c].due != null)
                 {
-                    entry.StartTime = jtest.JSONToDate(values.items[c].due);
+                    entry.StartTime = jtest.JSONToDate(values.Items[c].due);
                     entry.StartTimeFormat = TimeFormat.DATETIME;
                     entry.Type = EntryType.DEADLINE;
                 }

@@ -160,6 +160,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
@@ -261,8 +262,50 @@
                                  KeyUp="CommandBarKeyUp" TextChanged="CommandBarTextChanged" />
                     </Grid>
 
+                    <!--Auto Suggest-->
+                    <Border Name="AutoSuggestBorder" Grid.Row="{Binding AutoSuggestRow}" Style="{StaticResource AutoCompleteBoxStyle}"
+                            Margin="12,-4,12,0" Visibility="Collapsed" Panel.ZIndex="1">
+                        <ListBox Name="AutoSuggestList" ItemsSource="{Binding SuggestionList}"
+                                 KeyDown="AutoSuggestListKeyDown" KeyUp="AutoSuggestListKeyUp" MouseUp="AutoSuggestListMouseUp"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListItemStyle}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Style="{StaticResource NormalTextStyle}" Margin="0,4" FontSize="13"
+                                                   Text="{Binding Command}" />
+                                        <WrapPanel Grid.Column="1">
+                                            <TextBlock Style="{StaticResource ListBoxItemSubtleTextStyle}" Margin="5,4"
+                                                   FontSize="13" Text="{Binding Description}" TextWrapping="Wrap" />
+                                        </WrapPanel>
+                                        <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{Binding HasAliases, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0" Style="{StaticResource ListBoxItemSubtleTextStyle}"
+                                                   FontSize="11" Text="aliases:" />
+                                            <WrapPanel Grid.Column="1">
+                                                <TextBlock Style="{StaticResource ListBoxItemSubtleTextStyle}" Margin="5,0"
+                                                   FontSize="11" Text="{Binding Aliases, Converter={StaticResource StringArrayToStringConverter}}" />
+                                            </WrapPanel>
+                                        </Grid>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Border>
+
                     <!--Task List-->
-                    <ListBox Name="TaskList" Grid.Row="2" VerticalAlignment="Stretch" Margin="12,4,12,12"
+                    <ListBox Name="TaskList" Grid.Row="3" VerticalAlignment="Stretch" Margin="12,4,12,12"
                              HorizontalContentAlignment="Stretch" Style="{StaticResource TransparentWithBorder}"
                              FocusVisualStyle="{x:Null}"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListItemStyle}"
@@ -314,48 +357,6 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-
-                    <!--Auto Suggest-->
-                    <Border Name="AutoSuggestBorder" Grid.Row="2" Style="{StaticResource AutoCompleteBoxStyle}"
-                            Margin="12,-4,12,0" Visibility="Collapsed" Panel.ZIndex="1">
-                        <ListBox Name="AutoSuggestList" ItemsSource="{Binding SuggestionList}"
-                                 KeyDown="AutoSuggestListKeyDown" KeyUp="AutoSuggestListKeyUp" MouseUp="AutoSuggestListMouseUp"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListItemStyle}">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid HorizontalAlignment="Stretch">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Style="{StaticResource NormalTextStyle}" Margin="0,4" FontSize="13"
-                                                   Text="{Binding Command}" />
-                                        <WrapPanel Grid.Column="1">
-                                            <TextBlock Style="{StaticResource ListBoxItemSubtleTextStyle}" Margin="5,4"
-                                                   FontSize="13" Text="{Binding Description}" TextWrapping="Wrap" />
-                                        </WrapPanel>
-                                        <Grid Grid.Row="1" Grid.ColumnSpan="2" Visibility="{Binding IsMaster, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            
-                                            <TextBlock Grid.Column="0" Style="{StaticResource ListBoxItemSubtleTextStyle}"
-                                                   FontSize="11" Text="aliases:" />
-                                            <WrapPanel Grid.Column="1">
-                                                <TextBlock Style="{StaticResource ListBoxItemSubtleTextStyle}" Margin="5,0"
-                                                   FontSize="11" Text="{Binding Aliases, Converter={StaticResource StringArrayToStringConverter}}" />
-                                            </WrapPanel>
-                                        </Grid>
-                                    </Grid>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </Border>
                 </Grid>
 
                 <Rectangle x:Name="ResizeTopLeft" Grid.Row="0" Grid.Column="0" Width="{StaticResource BorderWidth}"
@@ -379,15 +380,15 @@
                            Cursor="SizeWE" MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd" MouseMove="Resize"
                            Fill="{StaticResource BorderColourBrush}" />
 
-                <Rectangle x:Name="ResizeBottomLeft" Grid.Row="2" Grid.Column="0" Width="{StaticResource BorderWidth}"
+                <Rectangle x:Name="ResizeBottomLeft" Grid.Row="4" Grid.Column="0" Width="{StaticResource BorderWidth}"
                            Height="{StaticResource BorderWidth}" Cursor="SizeNESW" MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
                            MouseMove="Resize" Fill="{StaticResource BorderColourBrush}" />
 
-                <Rectangle x:Name="ResizeBottomMiddle" Grid.Row="2" Grid.Column="1"
+                <Rectangle x:Name="ResizeBottomMiddle" Grid.Row="4" Grid.Column="1"
                            Height="{StaticResource BorderWidth}" Cursor="SizeNS" MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
                            MouseMove="Resize" Fill="{StaticResource BorderColourBrush}" />
 
-                <Rectangle x:Name="ResizeBottomRight" Grid.Row="2" Grid.Column="2" Width="{StaticResource BorderWidth}"
+                <Rectangle x:Name="ResizeBottomRight" Grid.Row="4" Grid.Column="2" Width="{StaticResource BorderWidth}"
                            Height="{StaticResource BorderWidth}" Cursor="SizeNWSE" MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
                            MouseMove="Resize" Fill="{StaticResource BorderColourBrush}" />
             </Grid>

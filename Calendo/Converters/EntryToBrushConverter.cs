@@ -1,8 +1,9 @@
+//@author Jerome
 using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
-using Calendo.Data;
+using Calendo.Logic;
 
 namespace Calendo.Converters
 {

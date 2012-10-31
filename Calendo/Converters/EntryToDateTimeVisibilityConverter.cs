@@ -1,8 +1,9 @@
-﻿using System;
+﻿//@author Jerome
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
-using Calendo.Data;
+using Calendo.Logic;
 
 namespace Calendo.Converters
 {

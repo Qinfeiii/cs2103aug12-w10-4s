@@ -1,4 +1,5 @@
-﻿using System;
+﻿//@author Nicholas
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,17 +8,17 @@ namespace Calendo.GoogleCalendar
 {
     public class TaskResponse
     {
-        public string kind
+        public string Kind
         {
             get;
             set;
         }
-        public string etag
+        public string Etag
         {
             get;
             set;
         }
-        public List<TaskEntry> items
+        public List<TaskEntry> Items
         {
             get;
             set;
@@ -26,27 +27,27 @@ namespace Calendo.GoogleCalendar
     }
     public class TaskEntry
     {
-        public string kind
+        public string Kind
         {
             get;
             set;
         }
-        public string id
+        public string Id
         {
             get;
             set;
         }
-        public string title
+        public string Title
         {
             get;
             set;
         }
-        public string updated
+        public string Updated
         {
             get;
             set;
         }
-        public string selfLink
+        public string SelfLink
         {
             get;
             set;

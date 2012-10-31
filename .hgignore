@@ -5,3 +5,4 @@ Thumbs.db
 _ReSharper.Calendo/
 .DotSettings.user
 TestResults/*
+/_ReSharper.*

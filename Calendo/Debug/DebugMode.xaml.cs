@@ -35,7 +35,8 @@ namespace Calendo
             tm.AddSubscriber(delegateMethod);
 
             // Debug delegate
-            DebugTool.Subscribers.Add(new DebugTool.NotifyHandler(this.Alert));
+            DebugTool.AddSubscriber(new DebugTool.NotifyHandler(this.Alert));
+
         }
 
         private void Alert(string message)
@@ -53,13 +54,17 @@ namespace Calendo
         {
             //this.listBox1.Items.Clear();
             entryDictionary = new Dictionary<int, Entry>();
+            Dictionary<int, int> indexMap = new Dictionary<int, int>();
+
             tm.Load(); // prevent concurrency issues
             for (int i = 0; i < tm.Entries.Count; i++)
             {
                 //this.listBox1.Items.Add("[" + tm.Entries[i].ID.ToString() + "] " + tm.Entries[i].Description);
                 entryDictionary.Add(i, tm.Entries[i]);
+                indexMap.Add(i + 1, i + 1);
             }
             this.listBox1.ItemsSource = entryDictionary;
+            cp.IndexMap = indexMap;
         }
 
         private void textBox1_KeyUp(object sender, KeyEventArgs e)
@@ -85,7 +90,8 @@ namespace Calendo
         {
             if (this.listBox1.Items.Count > 0 && this.listBox1.SelectedIndex >= 0)
             {
-                tm.Remove(tm.Entries[this.listBox1.SelectedIndex].ID);
+                //tm.Remove(tm.Entries[this.listBox1.SelectedIndex].ID);
+                tm.Remove(this.listBox1.SelectedIndex + 1);
             }
             UpdateList();
         }
@@ -147,8 +153,10 @@ namespace Calendo
             KeyValuePair<int, Entry> dContext = (KeyValuePair<int, Entry>)btn.DataContext;
 
             Entry currentEntry = dContext.Value;
-            JSON<Entry> jsonParse = new JSON<Entry>();
-            MessageBox.Show(jsonParse.Serialize(currentEntry));
+            //JSON<Entry> jsonParse = new JSON<Entry>();
+            //MessageBox.Show(jsonParse.Serialize(currentEntry));
+            int taskId = tm.Entries.FindIndex(x => x == currentEntry);
+            tm.Remove(taskId + 1);
         }
 
         // Used to prevent list update conflicts when items are dynamically changed
@@ -223,7 +231,8 @@ namespace Calendo
 
         private void SubscriberMethod()
         {
-            this.textBox1.Text = "The list has been updated";
+            //this.textBox1.Text = "The list has been updated";
+            this.StatusLabel.Content = "The list has been updated";
             this.UpdateList();
         }
     }
