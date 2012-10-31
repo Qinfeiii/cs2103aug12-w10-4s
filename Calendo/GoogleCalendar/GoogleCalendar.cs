@@ -41,11 +41,6 @@ namespace Calendo.GoogleCalendar
 
         public void Export()
         {
-            if (auth == "")
-            {
-                MessageBox.Show("Authorization code not provided!");
-                return;
-            }
             storage.Load();
             //deleteGcalTasks( getTasksIds(getTaskResponse(auth)),auth);
             postTasks(storage.Entries, auth);
@@ -81,11 +76,6 @@ namespace Calendo.GoogleCalendar
 
         public string Import()
         {
-            if (auth == "")
-            {
-                MessageBox.Show("Authorization code not provided!");
-                return "";
-            }
             List<Entry> taskList = getTaskDetails(getTaskResponse(auth));
             storage.Load();
             storage.Entries.Clear();
@@ -155,6 +145,11 @@ namespace Calendo.GoogleCalendar
             a.ShowDialog();
             string authCode = a.authCode;
 
+            if (authCode == "")
+            {
+                MessageBox.Show("Authorization code not provided!");
+                return "";
+            }
             // Retrieve the access token by using the authorization code:
             return authCode;
         }
