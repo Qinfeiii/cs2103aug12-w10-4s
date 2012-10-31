@@ -56,6 +56,12 @@ namespace Calendo.AutoSuggest
                 case "sync":
                     commandDescription = "synchronize with Google Calendar";
                     break;
+                case "import":
+                    commandDescription = "import tasks from Google Calendar";
+                    break;
+                case "export":
+                    commandDescription = "export tasks to Google Calendar";
+                    break;
             }
 
             AutoSuggestEntry mainEntry = new AutoSuggestEntry("/" + currentCommand, commandDescription, EntryType.MASTER, commandAliases);

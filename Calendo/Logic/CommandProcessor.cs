@@ -15,21 +15,22 @@ namespace Calendo.Logic
         private const string COMMAND_TYPE_ADD = "add";
         private const string COMMAND_TYPE_REMOVE = "remove";
         private const string COMMAND_TYPE_CHANGE = "change";
-        private const string COMMAND_TYPE_LIST = "list";
+        private const string COMMAND_TYPE_LIST = "list"; //TODO: Deprecated
         private const string COMMAND_TYPE_UNDO = "undo";
         private const string COMMAND_TYPE_REDO = "redo";
-        private const string COMMAND_TYPE_SYNC = "sync";
+        private const string COMMAND_TYPE_SYNC = "export"; // "sync" [temporary substitute for demo]
         private const string COMMAND_TYPE_IMPORT = "import";
 
         // This is the list of user-inputs the program can handle and process as a "proper" command
         private string[] INPUT_COMMANDS_SEARCH = { "/search", "/find" };
-        private string[] INPUT_COMMANDS_ADD = { "/add", "/a" };
-        private string[] INPUT_COMMANDS_REMOVE = { "/remove", "/delete", "/rm", "/del" };
-        private string[] INPUT_COMMANDS_CHANGE = { "/change", "/update", "/modify" };
-        private string[] INPUT_COMMANDS_LIST = { "/list", "/ls", "/show" };
+        private string[] INPUT_COMMANDS_ADD = { "/add", "/a", "/+" };
+        private string[] INPUT_COMMANDS_REMOVE = { "/remove", "/delete", "/rm", "/del", "/-" };
+        private string[] INPUT_COMMANDS_CHANGE = { "/change", "/update", "/modify", "/!" };
+        private string[] INPUT_COMMANDS_LIST = { "/list", "/ls", "/show" }; //TODO: Deprecated
         private string[] INPUT_COMMANDS_UNDO = { "/undo" };
         private string[] INPUT_COMMANDS_REDO = { "/redo" };
-        private string[] INPUT_COMMANDS_SYNC = { "/sync", "/export" };
+        //private string[] INPUT_COMMANDS_SYNC = { "/sync", "/export" };  
+        private string[] INPUT_COMMANDS_SYNC = { "/export" }; // [temporary substitute for demo]
         private string[] INPUT_COMMANDS_IMPORT = { "/import" };
         private string INPUT_COMMAND_EMPTY = "/";
 

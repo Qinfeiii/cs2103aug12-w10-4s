@@ -90,7 +90,8 @@ namespace Calendo
         {
             if (this.listBox1.Items.Count > 0 && this.listBox1.SelectedIndex >= 0)
             {
-                tm.Remove(tm.Entries[this.listBox1.SelectedIndex].ID);
+                //tm.Remove(tm.Entries[this.listBox1.SelectedIndex].ID);
+                tm.Remove(this.listBox1.SelectedIndex + 1);
             }
             UpdateList();
         }
@@ -152,8 +153,10 @@ namespace Calendo
             KeyValuePair<int, Entry> dContext = (KeyValuePair<int, Entry>)btn.DataContext;
 
             Entry currentEntry = dContext.Value;
-            JSON<Entry> jsonParse = new JSON<Entry>();
-            MessageBox.Show(jsonParse.Serialize(currentEntry));
+            //JSON<Entry> jsonParse = new JSON<Entry>();
+            //MessageBox.Show(jsonParse.Serialize(currentEntry));
+            int taskId = tm.Entries.FindIndex(x => x == currentEntry);
+            tm.Remove(taskId + 1);
         }
 
         // Used to prevent list update conflicts when items are dynamically changed
@@ -228,7 +231,8 @@ namespace Calendo
 
         private void SubscriberMethod()
         {
-            this.textBox1.Text = "The list has been updated";
+            //this.textBox1.Text = "The list has been updated";
+            this.StatusLabel.Content = "The list has been updated";
             this.UpdateList();
         }
     }
