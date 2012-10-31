@@ -1,4 +1,5 @@
-﻿using System;
+﻿//@author Jerome
+using System;
 using Calendo.Converters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
