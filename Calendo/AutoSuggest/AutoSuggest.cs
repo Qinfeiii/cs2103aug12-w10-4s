@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿//@author Jerome
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
@@ -37,11 +38,11 @@ namespace Calendo.AutoSuggest
             {
                 case "add":
                     commandDescription = "add a new item";
-                    commandInstruction = "[description] /date [DD/MM] /time [HH:MM]";
+                    commandInstruction = "[description] /date [DD/MM] /time [HH:MM] /enddate [DD/MM] /endtime [HH:MM]";
                     break;
                 case "change":
                     commandDescription = "edit an item";
-                    commandInstruction = "[number] [description]";
+                    commandInstruction = "[number] [description] /date [DD/MM] /time [HH:MM] /enddate [DD/MM] /endtime [HH:MM]";
                     break;
                 case "remove":
                     commandDescription = "remove an item";
@@ -55,6 +56,12 @@ namespace Calendo.AutoSuggest
                     break;
                 case "sync":
                     commandDescription = "synchronize with Google Calendar";
+                    break;
+                case "import":
+                    commandDescription = "import tasks from Google Calendar";
+                    break;
+                case "export":
+                    commandDescription = "export tasks to Google Calendar";
                     break;
             }
 

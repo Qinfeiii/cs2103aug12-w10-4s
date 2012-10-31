@@ -1,10 +1,7 @@
-﻿using System;
+﻿//@author Jerome
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
-using Calendo.Data;
 using System.ComponentModel;
 
 namespace Calendo
@@ -15,16 +12,24 @@ namespace Calendo
         private CommandProcessor CommandProcessor { get; set; }
 
         public List<AutoSuggestEntry> SuggestionList { get { return AutoSuggestSystem.SuggestionList; } }
-        public Dictionary<int, Entry> TaskList { get; set;  }
+        public Dictionary<int, Entry> TaskList { get; set; }
 
-        private delegate void UpdateDelegate();
+        public int AutoSuggestRow
+        {
+            get
+            {
+                bool isOnlyOneSuggestion = SuggestionList.Count == 1;
+                bool isSuggestionDetail = (SuggestionList.Count > 0) && !SuggestionList[0].IsMaster;
+                return isOnlyOneSuggestion && isSuggestionDetail ? 2 : 3;
+            }
+        }
 
         public UiViewModel()
         {
             CommandProcessor = new CommandProcessor();
             AutoSuggestSystem = new AutoSuggest.AutoSuggest(CommandProcessor.GetInputCommandList());
-            UpdateDelegate updateDelegate = new UpdateDelegate(UpdateItemsList);
-            TaskManager.Instance.AddSubscriber(updateDelegate);
+            TaskManager.UpdateHandler updateHandler = UpdateItemsList;
+            TaskManager.Instance.AddSubscriber(updateHandler);
             UpdateItemsList();
         }
 
@@ -38,6 +43,7 @@ namespace Calendo
         {
             AutoSuggestSystem.SetSuggestions(input);
             OnPropertyChanged("SuggestionList");
+            OnPropertyChanged("AutoSuggestRow");
         }
 
         private void UpdateItemsList()

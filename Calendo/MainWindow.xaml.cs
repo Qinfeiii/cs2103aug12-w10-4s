@@ -1,4 +1,5 @@
-﻿using System;
+﻿//@author Jerome
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -8,9 +9,7 @@ using System.Diagnostics;
 using System.Windows.Shapes;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
-using Calendo.Data;
 using System.Windows.Interop;
-using EntryType = Calendo.Data.EntryType;
 
 namespace Calendo
 {
@@ -239,7 +238,7 @@ namespace Calendo
         private void ChangeSelectedTask()
         {
             string command = "/change";
-            ExecuteCommandOnSelectedTask(command);
+            FillCommandOnSelectedTask(command);
         }
 
         private void UndoHandler(object sender, ExecutedRoutedEventArgs e)
@@ -271,17 +270,36 @@ namespace Calendo
 
         private void ExecuteCommandOnSelectedTask(string command)
         {
-            var selectedItem = TaskList.SelectedItem;
-            if (selectedItem != null)
-            {
-                KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>)selectedItem;
-                Entry selectedEntry = selectedPair.Value;
+            int selectedIndex = GetSelectedIndex();
 
-                int selectedIndex = selectedPair.Key;
+            if (selectedIndex != -1)
+            {
+                ViewModel.ExecuteCommand(command + " " + selectedIndex);
+            }
+        }
+
+        private void FillCommandOnSelectedTask(string command)
+        {
+            int selectedIndex = GetSelectedIndex();
+
+            if (selectedIndex != -1)
+            {
                 CommandBar.Text = command + " " + selectedIndex;
                 CommandBar.Focus();
                 CommandBar.SelectionStart = CommandBar.Text.Length;
             }
+        }
+
+        private int GetSelectedIndex()
+        {
+            var selectedItem = TaskList.SelectedItem;
+            int selectedIndex = -1;
+            if (selectedItem != null)
+            {
+                KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>)selectedItem;
+                selectedIndex = selectedPair.Key;
+            }
+            return selectedIndex;
         }
 
         private void AutoSuggestListKeyUp(object sender, KeyEventArgs e)
@@ -303,7 +321,7 @@ namespace Calendo
 
         private void SelectTaskFromCommandButton(object sender)
         {
-// Find the Grid that this button was in.
+            // Find the Grid that this button was in.
             Button senderButton = sender as Button;
             FrameworkElement currentItem = senderButton.Parent as FrameworkElement;
             Grid relevantItem = null;
@@ -313,8 +331,8 @@ namespace Calendo
                 relevantItem = currentItem as Grid;
             }
 
-            KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>) relevantItem.DataContext;
-            TaskList.SelectedIndex = selectedPair.Key - 1;
+            KeyValuePair<int, Entry> selectedPair = (KeyValuePair<int, Entry>)relevantItem.DataContext;
+            TaskList.SelectedItem = selectedPair;
         }
 
         private void ResizeStart(object sender, MouseEventArgs e)

@@ -1,8 +1,9 @@
-﻿using System;
+﻿//@author Jerome
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Calendo.Data;
+using Calendo.Logic;
 
 namespace Calendo
 {

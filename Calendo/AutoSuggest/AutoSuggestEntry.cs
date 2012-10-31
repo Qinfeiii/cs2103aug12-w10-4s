@@ -1,4 +1,5 @@
-﻿using System;
+﻿//@author Jerome
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,7 @@ namespace Calendo.AutoSuggest
         public EntryType Type { get; set; }
         public string[] Aliases { get; set; }
         public bool IsMaster { get { return Type == EntryType.MASTER; } }
+        public bool HasAliases { get { return IsMaster && Aliases.Length > 1; } }
 
         public AutoSuggestEntry(string command, string description, EntryType type, string[] aliases)
         {
