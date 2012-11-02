@@ -14,11 +14,11 @@ namespace Calendo
             bool isOverdue = false;
             DateTime relevantTime;
 
-            if (currentEntry.Type == EntryType.TIMED)
+            if (currentEntry.Type == EntryType.Timed)
             {
                 relevantTime = currentEntry.EndTime;
             }
-            else if (currentEntry.Type == EntryType.DEADLINE)
+            else if (currentEntry.Type == EntryType.Deadline)
             {
                 relevantTime = currentEntry.StartTime;
             }
@@ -42,7 +42,7 @@ namespace Calendo
 
             bool isTaskStarting = isTaskDifferencePositive && isTaskADayAway;
 
-            if (currentEntry.Type == EntryType.TIMED)
+            if (currentEntry.Type == EntryType.Timed)
             {
                 bool isStartBeforeNow = currentEntry.StartTime.CompareTo(DateTime.Now) < 0;
                 bool isEndAfterNow = DateTime.Now.CompareTo(currentEntry.EndTime) < 0;
@@ -50,7 +50,7 @@ namespace Calendo
                 bool isNowBetweenStartAndEnd = isStartBeforeNow && isEndAfterNow;
                 isOngoing = isTaskStarting || isNowBetweenStartAndEnd;
             }
-            else if (currentEntry.Type == EntryType.DEADLINE)
+            else if (currentEntry.Type == EntryType.Deadline)
             {
                 isOngoing = isTaskStarting;
             }
@@ -63,8 +63,8 @@ namespace Calendo
         {
             // We assume the given tasks are either Timed or Deadline tasks.
             // Floating tasks have no date, and hence wouldn't need to be compared this way.
-            bool isFirstTimed = first.Type == EntryType.TIMED;
-            bool isSecondTimed = second.Type == EntryType.TIMED;
+            bool isFirstTimed = first.Type == EntryType.Timed;
+            bool isSecondTimed = second.Type == EntryType.Timed;
 
             bool isFirstOverdue = IsTaskOverdue(first);
             bool isSecondOverdue = IsTaskOverdue(second);
@@ -101,7 +101,7 @@ namespace Calendo
 
         public static bool IsTaskFloating(Entry task)
         {
-            return task.Type == EntryType.FLOATING;
+            return task.Type == EntryType.Floating;
         }
     }
 }

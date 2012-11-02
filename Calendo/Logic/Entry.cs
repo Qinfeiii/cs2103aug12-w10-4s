@@ -1,4 +1,4 @@
-﻿//@author Nicholas
+﻿//@author A0080933E
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,10 +9,10 @@ namespace Calendo.Logic
     /// Entry Type
     /// </summary>
     public enum EntryType {
-        FLOATING,
-        DEADLINE,
-        TIMED,
-        COMPLETE
+        Floating,
+        Deadline,
+        Timed,
+        Complete
     }
 
     /// <summary>
@@ -20,10 +20,10 @@ namespace Calendo.Logic
     /// </summary>
     public enum TimeFormat
     {
-        DATETIME,
-        DATE,
-        TIME,
-        NONE
+        DateTime = 3,
+        Date = 1,
+        Time = 2,
+        None = 0
     }
 
     /// <summary>
@@ -42,10 +42,10 @@ namespace Calendo.Logic
             Created = DateTime.Now;
             Description = "";
             StartTime = DateTime.Today;
-            StartTimeFormat = TimeFormat.NONE;
+            StartTimeFormat = TimeFormat.None;
             EndTime = DateTime.Today;
-            EndTimeFormat = TimeFormat.NONE;
-            Type = EntryType.FLOATING;
+            EndTimeFormat = TimeFormat.None;
+            Type = EntryType.Floating;
         }
 
         /// <summary>

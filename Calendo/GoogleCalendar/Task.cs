@@ -1,7 +1,6 @@
-﻿//@author Nicholas
+﻿//@author A0080933E
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Calendo.GoogleCalendar

@@ -168,7 +168,7 @@ namespace Calendo.GoogleCalendar
                 responseText = "";
                 JSON<TaskResponse> jtest = new JSON<TaskResponse>();
                 string postData = "{\"title\": \"" + task.Description + "\"";
-                if(task.Type!= EntryType.FLOATING)
+                if(task.Type!= EntryType.Floating)
                     postData+=",\"due\": \"" + jtest.DateToJSON(task.StartTime) + "\"";
                 postData+="}";
 
@@ -234,11 +234,11 @@ namespace Calendo.GoogleCalendar
                 if (values.Items[c].due != null)
                 {
                     entry.StartTime = jtest.JSONToDate(values.Items[c].due);
-                    entry.StartTimeFormat = TimeFormat.DATETIME;
-                    entry.Type = EntryType.DEADLINE;
+                    entry.StartTimeFormat = TimeFormat.DateTime;
+                    entry.Type = EntryType.Deadline;
                 }
                 else
-                    entry.Type = EntryType.FLOATING;
+                    entry.Type = EntryType.Floating;
                 taskList.Add(entry);
             }
             return taskList;
