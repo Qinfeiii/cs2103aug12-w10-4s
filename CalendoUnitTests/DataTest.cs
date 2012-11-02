@@ -1,4 +1,4 @@
-﻿//@author Nicholas
+﻿//@author A0080933E
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -101,9 +101,9 @@ namespace CalendoUnitTests
             testEntry.Description = "";
             testEntry.EndTime = DateTime.Today;
             testEntry.StartTime = DateTime.Today;
-            testEntry.StartTimeFormat = TimeFormat.DATE;
-            testEntry.EndTimeFormat = TimeFormat.DATETIME;
-            testEntry.Type = EntryType.DEADLINE;
+            testEntry.StartTimeFormat = TimeFormat.Date;
+            testEntry.EndTimeFormat = TimeFormat.DateTime;
+            testEntry.Type = EntryType.Deadline;
             testEntry.Meta = "meta test";
             Entry cloneEntry = (Entry)testEntry.Clone();
             Assert.IsFalse(cloneEntry == testEntry);

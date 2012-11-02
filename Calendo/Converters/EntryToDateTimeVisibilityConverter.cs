@@ -17,14 +17,14 @@ namespace Calendo.Converters
                 var parameterString = parameter as string;
                 if (parameterString == "StackPanel")
                 {
-                    if (current.StartTimeFormat != TimeFormat.NONE || current.EndTimeFormat != TimeFormat.NONE)
+                    if (current.StartTimeFormat != TimeFormat.None || current.EndTimeFormat != TimeFormat.None)
                     {
                         return Visibility.Visible;
                     }
                 }
                 else if (parameterString == "RangeText")
                 {
-                    if (current.EndTimeFormat != TimeFormat.NONE)
+                    if (current.EndTimeFormat != TimeFormat.None)
                     {
                         return Visibility.Visible;
                     }
