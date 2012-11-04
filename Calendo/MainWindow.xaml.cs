@@ -103,13 +103,6 @@ namespace Calendo
         {
             if (WindowState == WindowState.Maximized)
             {
-                // Toggling of WindowStyle is needed to get around the window
-                // overlapping the TaskBar if it is maximized when WindowStyle is None.
-                /*
-                WindowStyle = WindowStyle.SingleBorderWindow;
-                WindowState = WindowState.Maximized;
-                WindowStyle = WindowStyle.None;
-                */
                 this.BorderThickness = new Thickness(0);
                 RestoreButton.Visibility = Visibility.Visible;
                 MaximiseButton.Visibility = Visibility.Collapsed;
@@ -129,7 +122,10 @@ namespace Calendo
                 // Select the first item in the auto-suggest list, and give it focus.
                 AutoSuggestList.SelectedIndex = 0;
                 ListBoxItem selectedItem = AutoSuggestList.ItemContainerGenerator.ContainerFromIndex(0) as ListBoxItem;
-                selectedItem.Focus();
+                if (selectedItem != null)
+                {
+                    selectedItem.Focus();
+                }
             }
             else if (e.Key == Key.Return)
             {
@@ -148,6 +144,11 @@ namespace Calendo
             else if (!CommandBar.Text.StartsWith("/"))
             {
                 FilterListContents();
+            }
+            else if (e.Key == Key.Tab)
+            {
+                // Enter the first suggestion in the auto-suggest list.
+                
             }
         }
 
@@ -178,6 +179,7 @@ namespace Calendo
 
         private void FocusOnTaskList()
         {
+            TaskList.SelectedIndex = -1;
             TaskList.Focus();
             AutoSuggestBorder.Visibility = Visibility.Collapsed;
         }
@@ -253,8 +255,7 @@ namespace Calendo
 
         private void GridMouseDown(object sender, MouseButtonEventArgs e)
         {
-            // Disabled as behavior conflicts with several controls
-            //FocusOnTaskList();
+            FocusOnTaskList();
         }
 
         private void DeleteHandler(object sender, ExecutedRoutedEventArgs e)
