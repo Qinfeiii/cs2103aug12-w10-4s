@@ -1,4 +1,4 @@
-﻿//@author Nicholas
+﻿//@author A0080933E
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -71,10 +71,8 @@ namespace Calendo.Logic
             List<KeyPair<string, string>> settingsList = this.settingsStorage.Entries;
             for (int i = 0; i < settingsList.Count; i++)
             {
-                if (settingsList[i].Key != null)
-                {
-                    this.settingsDictionary.Add(settingsList[i].Key, i);
-                }
+                Debug.Assert(settingsList[i].Key != null);
+                this.settingsDictionary.Add(settingsList[i].Key, i);
             }
         }
 
@@ -85,6 +83,7 @@ namespace Calendo.Logic
         /// <returns>Returns the value of the setting, null otherwise</returns>
         public string GetSetting(string settingName)
         {
+            Debug.Assert(settingName != null);
             if (this.settingsDictionary.ContainsKey(settingName))
             {
                 int settingID = this.settingsDictionary[settingName];
@@ -104,6 +103,7 @@ namespace Calendo.Logic
         /// <param name="settingValue">Value of the setting</param>
         public void SetSetting(string settingName, string settingValue)
         {
+            Debug.Assert(settingName != null);
             KeyPair<string, string> newSetting = new KeyPair<string, string>(settingName, settingValue);
             if (this.settingsDictionary.ContainsKey(settingName))
             {
@@ -129,6 +129,7 @@ namespace Calendo.Logic
             this.settingsStorage.Save();
             this.settingsStorage.Load();
             this.LoadList();
+            Debug.Assert(this.settingsDictionary != null);
         }
     }
 }
