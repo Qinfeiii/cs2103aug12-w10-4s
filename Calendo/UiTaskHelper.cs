@@ -1,8 +1,6 @@
 ﻿//@author Jerome
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using Calendo.Logic;
 
 namespace Calendo
@@ -63,6 +61,8 @@ namespace Calendo
         {
             // We assume the given tasks are either Timed or Deadline tasks.
             // Floating tasks have no date, and hence wouldn't need to be compared this way.
+            Debug.Assert(first.Type != EntryType.FLOATING && second.Type != EntryType.FLOATING);
+
             bool isFirstTimed = first.Type == EntryType.TIMED;
             bool isSecondTimed = second.Type == EntryType.TIMED;
 
@@ -96,12 +96,14 @@ namespace Calendo
 
         public static int CompareByDescription(Entry first, Entry second)
         {
-            return first.Description.CompareTo(second.Description);
+            int descriptionComparisonValue = first.Description.CompareTo(second.Description);
+            return descriptionComparisonValue;
         }
 
         public static bool IsTaskFloating(Entry task)
         {
-            return task.Type == EntryType.FLOATING;
+            bool isTaskFloating = task.Type == EntryType.FLOATING;
+            return isTaskFloating;
         }
     }
 }
