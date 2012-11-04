@@ -172,7 +172,6 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Label x:Name="FocusLabel" />
 
                         <Button Name="SettingsButton" Grid.Column="0" HorizontalAlignment="Left"
                                 Style="{StaticResource WindowControlButtonStyle}" Click="SettingsButtonClick">
