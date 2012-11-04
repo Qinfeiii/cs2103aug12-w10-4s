@@ -52,6 +52,7 @@ namespace Calendo.GoogleCalendar
             set;
         }
 
+        //@author Rahij
         public string due
         {
             get;
