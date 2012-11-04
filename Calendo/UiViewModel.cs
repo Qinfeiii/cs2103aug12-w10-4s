@@ -50,79 +50,10 @@ namespace Calendo
         {
             Dictionary<int, Entry> itemDictionary = new Dictionary<int, Entry>();
 
-            int count = 1;
-
             List<Entry> entries = new List<Entry>(CommandProcessor.TaskList);
-            entries.Sort(delegate(Entry first, Entry second)
-            {
-                // We want items sorted by Overdue -> Active -> Floating
-                bool isFirstOverdue = UiTaskHelper.IsTaskOverdue(first);
-                bool isSecondOverdue = UiTaskHelper.IsTaskOverdue(second);
+            entries.Sort(TaskListSorter);
 
-                bool isFirstActive = UiTaskHelper.IsTaskOngoing(first);
-                bool isSecondActive = UiTaskHelper.IsTaskOngoing(second);
-
-                bool isFirstFloating = UiTaskHelper.IsTaskFloating(first);
-                bool isSecondFloating = UiTaskHelper.IsTaskFloating(second);
-
-                int orderByDate;
-
-                // If both are floating, this is irrelevant.
-                if (isFirstFloating && isSecondFloating)
-                {
-                    orderByDate = 0;
-                }
-                else if (isFirstOverdue && isSecondOverdue || isFirstActive && isSecondActive)
-                {
-                    orderByDate = UiTaskHelper.CompareByDate(first, second);
-                }
-                else if (isFirstOverdue)
-                {
-                    // The first task is overdue, but the second isn't.
-                    orderByDate = -1;
-                }
-                else if (isSecondOverdue)
-                {
-                    // The second task is overdue, but the first isn't.
-                    orderByDate = 1;
-                }
-                // Neither is overdue.
-                else if (isFirstActive)
-                {
-                    // The first task is active and the second isn't.
-                    // Second is either floating or inactive. Regardless,
-                    orderByDate = -1;
-                }
-                else if (isSecondActive)
-                {
-                    // The second task is active and the first isn't.
-                    // First is either floating or inactive.
-                    orderByDate = 1;
-                }
-                // Neither is active.
-                else if (!isFirstFloating && !isSecondFloating)
-                {
-                    // Neither are floating.
-                    orderByDate = UiTaskHelper.CompareByDate(first, second);
-                }
-                else if (isFirstFloating)
-                {
-                    // First is floating, second isn't.
-                    orderByDate = 1;
-                }
-                else
-                {
-                    // Second is floating, first isn't.
-                    orderByDate = -1;
-                }
-
-                if (orderByDate == 0)
-                {
-                    return UiTaskHelper.CompareByDescription(first, second);
-                }
-                return orderByDate;
-            });
-
+            int count = 1;
             CommandProcessor.IndexMap = new Dictionary<int, int>();
             foreach (Entry currentEntry in entries)
             {
@@ -134,6 +65,76 @@ namespace Calendo
 
             TaskList = itemDictionary;
             OnPropertyChanged("TaskList");
+        }
+
+        private int TaskListSorter(Entry first, Entry second)
+        {
+            // We want items sorted by Overdue -> Active -> Floating
+            bool isFirstOverdue = UiTaskHelper.IsTaskOverdue(first);
+            bool isSecondOverdue = UiTaskHelper.IsTaskOverdue(second);
+
+            bool isFirstActive = UiTaskHelper.IsTaskOngoing(first);
+            bool isSecondActive = UiTaskHelper.IsTaskOngoing(second);
+
+            bool isFirstFloating = UiTaskHelper.IsTaskFloating(first);
+            bool isSecondFloating = UiTaskHelper.IsTaskFloating(second);
+
+            int order;
+
+            // If both are floating, this is irrelevant.
+            if (isFirstFloating && isSecondFloating)
+            {
+                order = 0;
+            }
+            else if (isFirstOverdue && isSecondOverdue || isFirstActive && isSecondActive)
+            {
+                order = UiTaskHelper.Compare(first, second);
+            }
+            else if (isFirstOverdue)
+            {
+                // The first task is overdue, but the second isn't.
+                order = -1;
+            }
+            else if (isSecondOverdue)
+            {
+                // The second task is overdue, but the first isn't.
+                order = 1;
+            }
+            // Neither is overdue.
+            else if (isFirstActive)
+            {
+                // The first task is active and the second isn't.
+                // Second is either floating or inactive. Regardless,
+                order = -1;
+            }
+            else if (isSecondActive)
+            {
+                // The second task is active and the first isn't.
+                // First is either floating or inactive.
+                order = 1;
+            }
+            // Neither is active.
+            else if (!isFirstFloating && !isSecondFloating)
+            {
+                // Neither are floating.
+                order = UiTaskHelper.Compare(first, second);
+            }
+            else if (isFirstFloating)
+            {
+                // First is floating, second isn't.
+                order = 1;
+            }
+            else
+            {
+                // Second is floating, first isn't.
+                order = -1;
+            }
+
+//            if (order == 0)
+//            {
+//                return UiTaskHelper.CompareByDescription(first, second);
+//            }
+            return order;
         }
 
 
