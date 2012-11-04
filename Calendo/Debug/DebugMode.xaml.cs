@@ -23,7 +23,7 @@ namespace Calendo
     public partial class DebugMode : Window
     {
         // NOTE: This is a testing class with a GUI interface
-        // Used for exploratory testing for TaskManager, SettingsManager, CommandProcessor
+        // Used for exploratory testing of experimental features
         TaskManager tm = TaskManager.Instance;
         CommandProcessor cp = new CommandProcessor();
         public DebugMode()
@@ -123,14 +123,12 @@ namespace Calendo
 
         private void buttonclose_Click(object sender, RoutedEventArgs e)
         {
-            //this.Close();
-            ((ListBoxItem)this.listBox1.Items[0]).Focus();
+            this.Close();
+            //((ListBoxItem)this.listBox1.Items[0]).Focus();
         }
 
         private void buttonnew_Click(object sender, RoutedEventArgs e)
         {
-            TestShadow ts = new TestShadow();
-            ts.Show();
         }
 
         private void button6_Click(object sender, RoutedEventArgs e)

@@ -8,22 +8,12 @@ namespace Calendo.Logic
     /// <summary>
     /// Entry Type
     /// </summary>
-    public enum EntryType {
+    public enum EntryType
+    {
         Floating,
         Deadline,
         Timed,
         Complete
-    }
-
-    /// <summary>
-    /// Time Format
-    /// </summary>
-    public enum TimeFormat
-    {
-        DateTime = 3,
-        Date = 1,
-        Time = 2,
-        None = 0
     }
 
     /// <summary>
@@ -37,7 +27,8 @@ namespace Calendo.Logic
         /// <summary>
         /// Creates a new entry object
         /// </summary>
-        public Entry() {
+        public Entry()
+        {
             ID = IDCounter++;
             Created = DateTime.Now;
             Description = "";
@@ -145,7 +136,7 @@ namespace Calendo.Logic
             EntryClone.EndTimeFormat = EndTimeFormat;
             EntryClone.Type = Type;
             EntryClone.Meta = Meta;
-            return (object) EntryClone;
+            return (object)EntryClone;
         }
     }
 }

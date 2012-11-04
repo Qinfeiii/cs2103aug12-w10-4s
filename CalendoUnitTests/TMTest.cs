@@ -151,7 +151,7 @@ namespace CalendoUnitTests
             tm.Change(1, "Test Changed 1", null, null, null, null);
             Assert.IsTrue(tm.Entries[0].Description == "Test Changed 1");
 
-            tm.Change(2, "", "6/6", "", "1/1", "12:00AM");
+            tm.Change(2, "", "6/6/2012", "", "1/1/2013", "12:00AM");
             Assert.IsTrue(tm.Entries[1].Description == "Test Floating");
             Assert.IsTrue(tm.Entries[1].StartTime.Day == 6);
             Assert.IsTrue(tm.Entries[1].StartTime.Month == 6);
