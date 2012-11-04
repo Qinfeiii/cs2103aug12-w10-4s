@@ -54,7 +54,7 @@ namespace Calendo
             int count = 1;
             Dictionary<int, Entry> itemDictionary = new Dictionary<int, Entry>();
             Dictionary<int, int> indexMap = new Dictionary<int, int>();
-            
+
             foreach (Entry currentEntry in entries)
             {
                 int originalIndex = CommandProcessor.TaskList.IndexOf(currentEntry) + 1;
@@ -80,14 +80,15 @@ namespace Calendo
             bool isFirstFloating = UiTaskHelper.IsTaskFloating(first);
             bool isSecondFloating = UiTaskHelper.IsTaskFloating(second);
 
+            bool isBothInSameCategory = isFirstOverdue && isSecondOverdue || isFirstActive && isSecondActive;
+
             int order;
 
-            // If both are floating, this is irrelevant.
             if (isFirstFloating && isSecondFloating)
             {
-                order = 0;
+                order = UiTaskHelper.CompareByDescription(first, second);
             }
-            else if (isFirstOverdue && isSecondOverdue || isFirstActive && isSecondActive)
+            else if (isBothInSameCategory)
             {
                 order = UiTaskHelper.Compare(first, second);
             }
@@ -131,10 +132,6 @@ namespace Calendo
                 order = -1;
             }
 
-//            if (order == 0)
-//            {
-//                return UiTaskHelper.CompareByDescription(first, second);
-//            }
             return order;
         }
 
