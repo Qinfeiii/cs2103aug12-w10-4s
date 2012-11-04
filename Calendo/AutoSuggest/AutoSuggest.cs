@@ -139,14 +139,8 @@ namespace Calendo.AutoSuggest
                 return false;
             }
 
-            foreach (string currentAlias in entry.Aliases)
-            {
-                if (currentAlias.StartsWith(inputCommand))
-                {
-                    return true;
-                }
-            }
-            return false;
+            bool isCommandInAliases = entry.Aliases.Any(currentAlias => currentAlias.StartsWith(inputCommand));
+            return isCommandInAliases;
         }
     }
 }
