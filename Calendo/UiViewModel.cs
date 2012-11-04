@@ -48,22 +48,23 @@ namespace Calendo
 
         private void UpdateItemsList()
         {
-            Dictionary<int, Entry> itemDictionary = new Dictionary<int, Entry>();
-
             List<Entry> entries = new List<Entry>(CommandProcessor.TaskList);
             entries.Sort(TaskListSorter);
 
             int count = 1;
-            CommandProcessor.IndexMap = new Dictionary<int, int>();
+            Dictionary<int, Entry> itemDictionary = new Dictionary<int, Entry>();
+            Dictionary<int, int> indexMap = new Dictionary<int, int>();
+            
             foreach (Entry currentEntry in entries)
             {
                 int originalIndex = CommandProcessor.TaskList.IndexOf(currentEntry) + 1;
-                CommandProcessor.IndexMap.Add(count, originalIndex);
+                indexMap.Add(count, originalIndex);
                 itemDictionary.Add(count, currentEntry);
                 count++;
             }
 
             TaskList = itemDictionary;
+            CommandProcessor.IndexMap = indexMap;
             OnPropertyChanged("TaskList");
         }
 
