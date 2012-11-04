@@ -1,11 +1,13 @@
 ﻿//@author Jerome
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Diagnostics;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
@@ -144,11 +146,6 @@ namespace Calendo
             else if (!CommandBar.Text.StartsWith("/"))
             {
                 FilterListContents();
-            }
-            else if (e.Key == Key.Tab)
-            {
-                // Enter the first suggestion in the auto-suggest list.
-                
             }
         }
 
@@ -316,13 +313,43 @@ namespace Calendo
 
         private void ChangeButtonClick(object sender, RoutedEventArgs e)
         {
-            SelectTaskFromCommandButton(sender);
-            ChangeSelectedTask();
+            TextBox relevantBox = GetTextBoxFromCommandButton(sender);
+
+            if (relevantBox != null)
+            {
+                relevantBox.IsReadOnly = false;
+                relevantBox.Focusable = true;
+                relevantBox.Focus();
+                relevantBox.SelectionStart = relevantBox.Text.Length;
+            }
+        }
+
+        private static TextBox GetTextBoxFromCommandButton(object sender)
+        {
+            Button senderButton = sender as Button;
+            FrameworkElement currentItem = senderButton.Parent as FrameworkElement;
+            Grid parentGrid = null;
+            while (parentGrid == null)
+            {
+                currentItem = currentItem.Parent as FrameworkElement;
+                parentGrid = currentItem as Grid;
+            }
+
+            TextBox relevantBox = null;
+            foreach (UIElement element in parentGrid.Children)
+            {
+                relevantBox = element as TextBox;
+                if (relevantBox != null)
+                {
+                    break;
+                }
+            }
+            return relevantBox;
         }
 
         private void SelectTaskFromCommandButton(object sender)
         {
-            // Find the Grid that this button was in.
+            // Find the Grid that this sender was in.
             Button senderButton = sender as Button;
             FrameworkElement currentItem = senderButton.Parent as FrameworkElement;
             Grid relevantItem = null;
@@ -445,6 +472,37 @@ namespace Calendo
         {
             SelectTaskFromCommandButton(sender);
             DeleteSelectedTask();
+        }
+
+        private void TextBoxLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            ChangeEntryFromTextBox(sender);
+        }
+
+        private void ChangeEntryFromTextBox(object sender)
+        {
+            TextBox currentTextBox = sender as TextBox;
+            if (!currentTextBox.IsReadOnly)
+            {
+                currentTextBox.IsReadOnly = true;
+                currentTextBox.Focusable = false;
+
+                KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)currentTextBox.DataContext;
+                int currentTask = currentPair.Key;
+
+                if(currentTextBox.Text != currentPair.Value.Description)
+                {
+                    ViewModel.ExecuteCommand("/change " + currentTask + " " + currentTextBox.Text);
+                }
+            }
+        }
+
+        private void TextBoxKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape || e.Key == Key.Enter)
+            {
+                ChangeEntryFromTextBox(sender);
+            }
         }
     }
 }
