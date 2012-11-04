@@ -291,7 +291,7 @@ namespace Calendo.Logic
             }
 
             // Get last 2 letters
-            string timeMeta = GetSubstring(timeString, timeString.Length - 2); 
+            string timeMeta = GetSubstring(timeString, timeString.Length - 2);
             timeMeta = timeMeta.ToUpper();
 
             // Handle AM or PM
@@ -319,7 +319,7 @@ namespace Calendo.Logic
             // Hour must be specified, Minute is optional
             int hour = INVALID_VALUE;
             int minute = 0;
-            
+
             // Handle AM or PM
             int flagAMPM = GetFlagAMPM(timeString);
             if (flagAMPM != IS_24HOUR)
@@ -440,6 +440,52 @@ namespace Calendo.Logic
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Merge changes in times
+        /// </summary>
+        /// <param name="source">Source time</param>
+        /// <param name="destination">Target time</param>
+        /// <param name="flag">Modify Flag</param>
+        /// <returns>Returns merged times</returns>
+        public static TaskTime MergeTime(TaskTime source, TaskTime destination, ModifyFlag flag)
+        {
+            int day = destination.Time.Day;
+            int month = destination.Time.Month;
+            int year = destination.Time.Year;
+            int minute = destination.Time.Minute;
+            int hour = destination.Time.Hour;
+            TimeFormat format = destination.Format;
+
+            // Only override required fields
+            if (flag.Contains(ModifyFlag.StartDate | ModifyFlag.EndDate))
+            {
+                day = source.Time.Day;
+                month = source.Time.Month;
+                year = source.Time.Year;
+                format = format.AddDate();
+            }
+
+            if (flag.Contains(ModifyFlag.StartTime | ModifyFlag.EndTime))
+            {
+                minute = source.Time.Minute;
+                hour = source.Time.Hour;
+                format = format.AddTime();
+            }
+
+            if (flag.Contains(ModifyFlag.EraseStartDate | ModifyFlag.EraseEndDate))
+            {
+                format = format.RemoveDate();
+            }
+
+            if (flag.Contains(ModifyFlag.EraseStartTime | ModifyFlag.EraseEndTime))
+            {
+                format = format.RemoveTime();
+            }
+
+            DateTime newTime = new DateTime(year, month, day, hour, minute, 0);
+            return new TaskTime(newTime, format);
         }
     }
 }

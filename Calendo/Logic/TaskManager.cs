@@ -6,27 +6,15 @@ using System.Threading;
 using System.Diagnostics;
 using Calendo.Data;
 using Calendo.Diagnostics;
+using Calendo.GoogleCalendar;
 
 namespace Calendo.Logic
 {
-    [Flags]
-    public enum ModifyFlag
-    {
-        Description = 1,
-        StartDate = 2,
-        StartTime = 4,
-        EndDate = 8,
-        EndTime = 16,
-        EraseStartDate = 32,
-        EraseStartTime = 64,
-        EraseEndDate = 128,
-        EraseEndTime = 256
-    }
-
     public class TaskManager
     {
-        private const string ERROR_ENTRYNOTFOUND = "Entry not found";
-        private const string ERROR_INVALIDDATETIME = "Specified Date or Time is invalid";
+        private const string ERROR_ENTRY_NOT_FOUND = "Entry not found";
+        private const string ERROR_INVALID_DATETIME = "Specified Date or Time is invalid";
+        private const string ERROR_END_BEFORE_START = "End date cannot be before start date";
         private const string KEYWORD_REMOVE = "-";
         private const string STORAGE_PATH = "archive.txt";
         private static TaskManager CurrentInstance = new TaskManager();
@@ -80,7 +68,7 @@ namespace Calendo.Logic
         }
 
         /// <summary>
-        /// Get or set the entries
+        /// Gets the list of entries
         /// </summary>
         public List<Entry> Entries
         {
@@ -133,9 +121,9 @@ namespace Calendo.Logic
         }
 
         /// <summary>
-        /// Add an entry to task list
+        /// Add a task
         /// </summary>
-        /// <param name="entry"></param>
+        /// <param name="entry">Entry to be added</param>
         private void Add(Entry entry)
         {
             this.storage.Entries.Add(entry);
@@ -176,7 +164,7 @@ namespace Calendo.Logic
                     {
                         // End is before start, mark end as invalid
                         endTime.Format = TimeFormat.None;
-                        DebugTool.Alert("End date cannot be before start date.");
+                        DebugTool.Alert(ERROR_END_BEFORE_START);
                         return EntryType.Deadline;
                     }
                     else
@@ -210,32 +198,30 @@ namespace Calendo.Logic
         {
             TaskTime startDateTime = this.ConvertTime(startDate, startTime);
             TaskTime endDateTime = this.ConvertTime(endDate, endTime);
-            ModifyFlag flag = 0; // Flag is a bitwise switch determining which field to change
+            ModifyFlag flag = 0; // Flag determines which field to change
 
             // Description changed
-            flag = AddFlag(flag, ModifyFlag.Description, HasText(description));
+            flag = flag.Add(ModifyFlag.Description, HasText(description));
 
             if (!startDateTime.HasError)
             {
-                // Start Date changed
-                flag = AddFlag(flag, ModifyFlag.StartDate, HasText(startDate));
-                // Start Time changed
-                flag = AddFlag(flag, ModifyFlag.StartTime, HasText(startTime));
+                // Start Date or Time changed
+                flag = flag.Add(ModifyFlag.StartDate, HasText(startDate));
+                flag = flag.Add(ModifyFlag.StartTime, HasText(startTime));
             }
 
             if (!endDateTime.HasError)
             {
-                // End Date changed
-                flag = AddFlag(flag, ModifyFlag.EndDate, !endDateTime.HasError && HasText(endDate));
-                // End Time changed
-                flag = AddFlag(flag, ModifyFlag.EndTime, !endDateTime.HasError && HasText(endTime));
+                // End Date or Time changed
+                flag = flag.Add(ModifyFlag.EndDate, HasText(endDate));
+                flag = flag.Add(ModifyFlag.EndTime, HasText(endTime));
             }
 
-            // Flag entries for removal if requested
-            flag = AddFlag(flag, ModifyFlag.StartDate | ModifyFlag.EraseStartDate, startDate == KEYWORD_REMOVE);
-            flag = AddFlag(flag, ModifyFlag.StartTime | ModifyFlag.EraseStartTime, startTime == KEYWORD_REMOVE);
-            flag = AddFlag(flag, ModifyFlag.EndDate | ModifyFlag.EraseEndDate, endDate == KEYWORD_REMOVE);
-            flag = AddFlag(flag, ModifyFlag.EndTime | ModifyFlag.EraseEndTime, endTime == KEYWORD_REMOVE);
+            // Flag parameters for removal if requested
+            flag = flag.Add(ModifyFlag.StartDate | ModifyFlag.EraseStartDate, startDate == KEYWORD_REMOVE);
+            flag = flag.Add(ModifyFlag.StartTime | ModifyFlag.EraseStartTime, startTime == KEYWORD_REMOVE);
+            flag = flag.Add(ModifyFlag.EndDate | ModifyFlag.EraseEndDate, endDate == KEYWORD_REMOVE);
+            flag = flag.Add(ModifyFlag.EndTime | ModifyFlag.EraseEndTime, endTime == KEYWORD_REMOVE);
 
             this.Change(id, flag, description, startDateTime, endDateTime);
         }
@@ -273,30 +259,29 @@ namespace Calendo.Logic
             if (entry != null)
             {
                 // If the relevant flag is set, update that value, otherwise ignore the value
-
-                if (ContainsFlag(flag, ModifyFlag.Description))
+                if (flag.Contains(ModifyFlag.Description))
                 {
                     entry.Description = description;
                 }
-                if (ContainsFlag(flag, ModifyFlag.StartTime | ModifyFlag.StartDate))
-                {
-                    // Create a new flag to avoid conflicts with other time values
-                    ModifyFlag startFlag = UnsetFlag(flag, ModifyFlag.EndDate | ModifyFlag.EndTime);
 
+                if (flag.Contains(ModifyFlag.StartTime | ModifyFlag.StartDate))
+                {
+                    ModifyFlag startFlag = flag.Unset(ModifyFlag.EndDate | ModifyFlag.EndTime);
                     TaskTime entryTime = new TaskTime(entry.StartTime, entry.StartTimeFormat);
-                    TaskTime mergedTime = MergeTime(startTime, entryTime, startFlag);
+                    TaskTime mergedTime = TimeConverter.MergeTime(startTime, entryTime, startFlag);
                     entry.StartTime = mergedTime.Time;
                     entry.StartTimeFormat = mergedTime.Format;
                 }
-                if (ContainsFlag(flag, ModifyFlag.EndTime | ModifyFlag.EndDate))
+
+                if (flag.Contains(ModifyFlag.EndTime | ModifyFlag.EndDate))
                 {
-                    // Create a new flag to avoid conflicts with other time values
-                    ModifyFlag endFlag = UnsetFlag(flag, ModifyFlag.StartDate | ModifyFlag.StartTime);
+                    ModifyFlag endFlag = flag.Unset(ModifyFlag.StartDate | ModifyFlag.StartTime);
                     TaskTime entryTime = new TaskTime(entry.EndTime, entry.EndTimeFormat);
-                    TaskTime mergedTime = MergeTime(endTime, entryTime, endFlag);
+                    TaskTime mergedTime = TimeConverter.MergeTime(endTime, entryTime, endFlag);
                     entry.EndTime = mergedTime.Time;
                     entry.EndTimeFormat = mergedTime.Format;
                 }
+
                 TaskTime startTaskTime = new TaskTime(entry.StartTime, entry.StartTimeFormat);
                 TaskTime endTaskTime = new TaskTime(entry.EndTime, entry.EndTimeFormat);
                 entry.Type = this.GetTaskType(startTaskTime, endTaskTime);
@@ -310,100 +295,10 @@ namespace Calendo.Logic
             }
             else
             {
-                DebugTool.Alert(ERROR_ENTRYNOTFOUND);
+                DebugTool.Alert(ERROR_ENTRY_NOT_FOUND);
             }
         }
 
-        /// <summary>
-        /// Merge changes in times
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="destination"></param>
-        /// <param name="flag"></param>
-        /// <returns></returns>
-        private TaskTime MergeTime(TaskTime source, TaskTime destination, ModifyFlag flag)
-        {
-            int day = destination.Time.Day;
-            int month = destination.Time.Month;
-            int year = destination.Time.Year;
-            int minute = destination.Time.Minute;
-            int hour = destination.Time.Hour;
-            TimeFormat format = destination.Format;
-
-            // Only override required fields
-            if (ContainsFlag(flag, ModifyFlag.StartDate | ModifyFlag.EndDate))
-            {
-                day = source.Time.Day;
-                month = source.Time.Month;
-                year = source.Time.Year;
-                // Add the date flag
-                format |= TimeFormat.Date;
-            }
-            if (ContainsFlag(flag, ModifyFlag.StartTime | ModifyFlag.EndTime))
-            {
-                minute = source.Time.Minute;
-                hour = source.Time.Hour;
-                // Add the time flag
-                format |= TimeFormat.Time;
-            }
-            if (ContainsFlag(flag, ModifyFlag.EraseStartDate | ModifyFlag.EraseEndDate))
-            {
-                // Unset the date flag
-                format |= TimeFormat.Date;
-                format ^= TimeFormat.Date;
-            }
-            if (ContainsFlag(flag, ModifyFlag.EraseStartTime | ModifyFlag.EraseEndTime))
-            {
-                // Unset the time flag
-                format |= TimeFormat.Time;
-                format ^= TimeFormat.Time;
-            }
-            DateTime newTime = new DateTime(year, month, day, hour, minute, 0);
-            return new TaskTime(newTime, format);
-        }
-
-        /// <summary>
-        /// Checks if a flag contains the attribute
-        /// </summary>
-        /// <param name="flag">Binary Flag</param>
-        /// <param name="attribute">Attribute</param>
-        /// <returns>Returns true if flag has at least one of the attributes</returns>
-        private bool ContainsFlag(ModifyFlag flag, ModifyFlag attribute)
-        {
-            return (flag & attribute) != 0;
-        }
-
-        /// <summary>
-        /// Adds attributes to the flag if the condition is true
-        /// </summary>
-        /// <param name="flag">Binary Flag</param>
-        /// <param name="attribute">Attribute</param>
-        /// <param name="condition">Condition to check with, default is true</param>
-        /// <returns>Returns the merged flag</returns>
-        private ModifyFlag AddFlag(ModifyFlag flag, ModifyFlag attribute, bool condition = true)
-        {
-            if (condition)
-            {
-                return flag | attribute;
-            }
-            else
-            {
-                return flag;
-            }
-        }
-
-        /// <summary>
-        /// Removes the attributes from the flag
-        /// </summary>
-        /// <param name="flag">Binary flag</param>
-        /// <param name="attribute">Attributes to be removed</param>
-        /// <returns>Flag with attributes removed</returns>
-        private ModifyFlag UnsetFlag(ModifyFlag flag, ModifyFlag attribute)
-        {
-            ModifyFlag presetFlag = AddFlag(flag, attribute);
-            ModifyFlag unsetFlag = presetFlag ^ attribute;
-            return unsetFlag;
-        }
 
         /// <summary>
         /// Remove a task by ID
@@ -419,7 +314,7 @@ namespace Calendo.Logic
             }
             else
             {
-                DebugTool.Alert(ERROR_ENTRYNOTFOUND);
+                DebugTool.Alert(ERROR_ENTRY_NOT_FOUND);
             }
         }
 
@@ -463,9 +358,7 @@ namespace Calendo.Logic
         /// </summary>
         public void Export()
         {
-            // Authorization must occur on same thread as main application
-            GoogleCalendar.GoogleCalendar.Authorize();
-            this.RunThread(new ThreadStart(ThreadedExport));
+            ThreadedGoogleCalendar.Export();
         }
 
         /// <summary>
@@ -473,41 +366,11 @@ namespace Calendo.Logic
         /// </summary>
         public void Import()
         {
-            // Authorization must occur on same thread as main application
-            GoogleCalendar.GoogleCalendar.Authorize();
-            this.RunThread(new ThreadStart(ThreadedImport));
+            ThreadedGoogleCalendar.Import();
         }
 
         /// <summary>
-        /// Wrapper method for multithreading export
-        /// </summary>
-        private void ThreadedExport()
-        {
-            GoogleCalendar.GoogleCalendar gcal = new GoogleCalendar.GoogleCalendar();
-            gcal.Export();
-        }
-
-        /// <summary>
-        /// Wrapper method for multithreading import
-        /// </summary>
-        private void ThreadedImport()
-        {
-            GoogleCalendar.GoogleCalendar gcal = new GoogleCalendar.GoogleCalendar();
-            gcal.Import();
-        }
-
-        /// <summary>
-        /// Performs the operation in a separate thread
-        /// </summary>
-        /// <param name="method"></param>
-        private void RunThread(ThreadStart method)
-        {
-            Thread threadInstance = new Thread(method);
-            threadInstance.Start();
-        }
-
-        /// <summary>
-        /// Force a save
+        /// Save the list of entries
         /// </summary>
         public void Save()
         {
@@ -516,11 +379,11 @@ namespace Calendo.Logic
         }
 
         /// <summary>
-        /// Force a load
+        /// Load the entries
         /// </summary>
         public void Load()
         {
-            // Loading does not notify subscribers (otherwise it triggers infinite loop if they load on update)
+            // Subscribers are not notified, it is up to subscriber to update display
             this.storage.Load();
         }
 
@@ -536,7 +399,6 @@ namespace Calendo.Logic
             {
                 convertedString = input;
             }
-
             Debug.Assert(convertedString != null);
             return convertedString;
         }
