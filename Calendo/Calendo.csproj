@@ -68,6 +68,7 @@
     <Reference Include="Google.Apis.Tasks.v1">
       <HintPath>GoogleCalendar\Services\TasksService\Google.Apis.Tasks.v1.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
