@@ -1,7 +1,8 @@
-﻿//@author Nicholas
+﻿//@author A0080933E
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 using Calendo.Data;
 using Calendo.Diagnostics;
 
@@ -11,7 +12,7 @@ namespace Calendo.Logic
     {
         public TaskTime()
         {
-            this.Format = TimeFormat.NONE;
+            this.Format = TimeFormat.None;
             this.Time = DateTime.Today;
             this.HasError = true;
         }
@@ -60,7 +61,15 @@ namespace Calendo.Logic
         {
             try
             {
-                return int.Parse(str);
+                int convertedValue = int.Parse(str);
+                if (convertedValue > INVALID_VALUE)
+                {
+                    return convertedValue;
+                }
+                else
+                {
+                    return INVALID_VALUE;
+                }
             }
             catch
             {
@@ -76,18 +85,18 @@ namespace Calendo.Logic
         /// <returns>Returns TimeFormat value</returns>
         private TimeFormat GetFormat(bool hasDate, bool hasTime)
         {
-            TimeFormat newTimeFormat = TimeFormat.NONE;
+            TimeFormat newTimeFormat = TimeFormat.None;
             if (hasDate)
             {
-                newTimeFormat = TimeFormat.DATE;
+                newTimeFormat = TimeFormat.Date;
             }
             if (hasTime)
             {
-                newTimeFormat = TimeFormat.TIME;
+                newTimeFormat = TimeFormat.Time;
             }
             if (hasDate && hasTime)
             {
-                newTimeFormat = TimeFormat.DATETIME;
+                newTimeFormat = TimeFormat.DateTime;
             }
             return newTimeFormat;
         }
@@ -149,6 +158,9 @@ namespace Calendo.Logic
         /// <returns>Returns converted value, otherwise -1 on failure</returns>
         private int ConvertValue(string value, int lowerBound, int upperBound)
         {
+            Debug.Assert(lowerBound > INVALID_VALUE);
+            Debug.Assert(upperBound >= lowerBound);
+
             int convertedValue = ConvertInt(value);
             if (convertedValue < lowerBound)
             {
@@ -193,11 +205,11 @@ namespace Calendo.Logic
 
             if (convertedTime < DateTime.Now)
             {
-                if (taskDuration.Format == TimeFormat.TIME)
+                if (taskDuration.Format == TimeFormat.Time)
                 {
                     // Date is actually the next day
                     convertedTime = convertedTime.AddDays(1);
-                    taskDuration.Format = TimeFormat.DATETIME;
+                    taskDuration.Format = TimeFormat.DateTime;
                 }
             }
             taskDuration.Time = convertedTime;
@@ -212,19 +224,22 @@ namespace Calendo.Logic
         /// <returns>Returns string if not null, empty string if null</returns>
         private string SanitizeString(string input)
         {
-            if (input == null)
+            string convertedString = "";
+            if (input != null)
             {
-                return "";
+                convertedString = input;
             }
-            else
-            {
-                return input;
-            }
+
+            Debug.Assert(convertedString != null);
+            return convertedString;
         }
 
         private string GetSubstring(string input, int start)
         {
-            if (input.Length >= start && start >= 0)
+            Debug.Assert(input != null);
+            Debug.Assert(start >= 0);
+
+            if (input.Length >= start)
             {
                 return input.Substring(start);
             }
@@ -267,6 +282,14 @@ namespace Calendo.Logic
 
         private int GetFlagAMPM(string timeString)
         {
+            Debug.Assert(timeString != null);
+
+            if (timeString.Length < 2)
+            {
+                // No AM or PM
+                return IS_24HOUR;
+            }
+
             // Get last 2 letters
             string timeMeta = GetSubstring(timeString, timeString.Length - 2); 
             timeMeta = timeMeta.ToUpper();
@@ -380,7 +403,11 @@ namespace Calendo.Logic
             // Day
             if (dateFragment.Length > 0)
             {
-                day = this.ConvertValue(dateFragment[0], 1, MaxDays(month, year));
+                int maxDays = MaxDays(month, year);
+                if (maxDays > 0)
+                {
+                    day = this.ConvertValue(dateFragment[0], 1, MaxDays(month, year));
+                }
             }
 
             if (date == "")

@@ -1,6 +1,8 @@
 ﻿//@author Jerome
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Calendo.Logic;
 
 namespace Calendo
@@ -12,11 +14,11 @@ namespace Calendo
             bool isOverdue = false;
             DateTime relevantTime;
 
-            if (currentEntry.Type == EntryType.TIMED)
+            if (currentEntry.Type == EntryType.Timed)
             {
                 relevantTime = currentEntry.EndTime;
             }
-            else if (currentEntry.Type == EntryType.DEADLINE)
+            else if (currentEntry.Type == EntryType.Deadline)
             {
                 relevantTime = currentEntry.StartTime;
             }
@@ -40,7 +42,7 @@ namespace Calendo
 
             bool isTaskStarting = isTaskDifferencePositive && isTaskADayAway;
 
-            if (currentEntry.Type == EntryType.TIMED)
+            if (currentEntry.Type == EntryType.Timed)
             {
                 bool isStartBeforeNow = currentEntry.StartTime.CompareTo(DateTime.Now) < 0;
                 bool isEndAfterNow = DateTime.Now.CompareTo(currentEntry.EndTime) < 0;
@@ -48,7 +50,7 @@ namespace Calendo
                 bool isNowBetweenStartAndEnd = isStartBeforeNow && isEndAfterNow;
                 isOngoing = isTaskStarting || isNowBetweenStartAndEnd;
             }
-            else if (currentEntry.Type == EntryType.DEADLINE)
+            else if (currentEntry.Type == EntryType.Deadline)
             {
                 isOngoing = isTaskStarting;
             }
@@ -57,67 +59,49 @@ namespace Calendo
             return isOngoing;
         }
 
-        public static int CompareByStartTime(Entry first, Entry second)
+        public static int CompareByDate(Entry first, Entry second)
         {
-            // The given tasks must be either Timed or Deadline tasks.
-            // Floating tasks have no start time, and so can't be compared this way.
-            Debug.Assert(first.Type != EntryType.FLOATING && second.Type != EntryType.FLOATING);
+            // We assume the given tasks are either Timed or Deadline tasks.
+            // Floating tasks have no date, and hence wouldn't need to be compared this way.
+            bool isFirstTimed = first.Type == EntryType.Timed;
+            bool isSecondTimed = second.Type == EntryType.Timed;
 
-            return first.StartTime.CompareTo(second.StartTime);
-        }
+            bool isFirstOverdue = IsTaskOverdue(first);
+            bool isSecondOverdue = IsTaskOverdue(second);
 
-        public static int CompareByEndTime(Entry first, Entry second)
-        {
-            // The given tasks must be either Timed or Deadline tasks.
-            // Floating tasks have no end time, and so can't be compared this way.
-            Debug.Assert(first.Type != EntryType.FLOATING && second.Type != EntryType.FLOATING);
+            DateTime firstRelevantTime;
+            DateTime secondRelevantTime;
 
-            return first.EndTime.CompareTo(second.EndTime);
-        }
-
-        public static int Compare(Entry first, Entry second)
-        {
-            bool isFirstFloating = first.Type == EntryType.FLOATING;
-            bool isSecondFloating = second.Type == EntryType.FLOATING;
-            int comparisonByDescription = CompareByDescription(first, second);
-
-            if (isFirstFloating && isSecondFloating)
+            if (isFirstTimed && isFirstOverdue)
             {
-                return comparisonByDescription;
+                firstRelevantTime = first.EndTime;
             }
-            else if (isFirstFloating && !isSecondFloating)
+            else
             {
-                return 1;
-            }
-            else if (!isFirstFloating && isSecondFloating)
-            {
-                return -1;
+                firstRelevantTime = first.StartTime;
             }
 
-            int comparisonByStartTime = CompareByStartTime(first, second);
-            int comparisonByEndTime = CompareByEndTime(first, second);
+            if (isSecondTimed && isSecondOverdue)
+            {
+                secondRelevantTime = second.EndTime;
+            }
+            else
+            {
+                secondRelevantTime = second.StartTime;
+            }
 
-            if (comparisonByStartTime == 0 && comparisonByEndTime == 0)
-            {
-                return comparisonByDescription;
-            }
-            else if (comparisonByStartTime != 0)
-            {
-                return comparisonByStartTime;
-            }
-            return comparisonByEndTime;
+            int firstCompareSecond = firstRelevantTime.CompareTo(secondRelevantTime);
+            return firstCompareSecond;
         }
 
         public static int CompareByDescription(Entry first, Entry second)
         {
-            int descriptionComparisonValue = first.Description.CompareTo(second.Description);
-            return descriptionComparisonValue;
+            return first.Description.CompareTo(second.Description);
         }
 
         public static bool IsTaskFloating(Entry task)
         {
-            bool isTaskFloating = task.Type == EntryType.FLOATING;
-            return isTaskFloating;
+            return task.Type == EntryType.Floating;
         }
     }
 }
