@@ -75,43 +75,6 @@ namespace Calendo
             return first.EndTime.CompareTo(second.EndTime);
         }
 
-        public static int CompareByDate(Entry first, Entry second)
-        {
-            // We assume the given tasks are either Timed or Deadline tasks.
-            // Floating tasks have no date, and hence wouldn't need to be compared this way.
-            Debug.Assert(first.Type != EntryType.FLOATING && second.Type != EntryType.FLOATING);
-
-            bool isFirstTimed = first.Type == EntryType.TIMED;
-            bool isSecondTimed = second.Type == EntryType.TIMED;
-
-            bool isFirstOverdue = IsTaskOverdue(first);
-            bool isSecondOverdue = IsTaskOverdue(second);
-
-            DateTime firstRelevantTime;
-            DateTime secondRelevantTime;
-
-            if (isFirstTimed && isFirstOverdue)
-            {
-                firstRelevantTime = first.EndTime;
-            }
-            else
-            {
-                firstRelevantTime = first.StartTime;
-            }
-
-            if (isSecondTimed && isSecondOverdue)
-            {
-                secondRelevantTime = second.EndTime;
-            }
-            else
-            {
-                secondRelevantTime = second.StartTime;
-            }
-
-            int firstCompareSecond = firstRelevantTime.CompareTo(secondRelevantTime);
-            return firstCompareSecond;
-        }
-
         public static int Compare(Entry first, Entry second)
         {
             bool isFirstFloating = first.Type == EntryType.FLOATING;
