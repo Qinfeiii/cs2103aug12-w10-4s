@@ -1,13 +1,10 @@
-﻿//@author Jerome
+﻿//@author A0080860H
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Diagnostics;
-using System.Windows.Media;
 using System.Windows.Shapes;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
@@ -190,7 +187,7 @@ namespace Calendo
                     if (currentEntry != null)
                     {
                         bool isEntryWithinNextWeek = currentEntry.StartTime.CompareTo(DateTime.Now.AddDays(7)) <= 0;
-                        bool isEntryFloating = currentEntry.Type == EntryType.FLOATING;
+                        bool isEntryFloating = currentEntry.Type == EntryType.Floating;
                         return !isEntryFloating && isEntryWithinNextWeek;
                     }
                     break;

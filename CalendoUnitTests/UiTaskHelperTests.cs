@@ -1,4 +1,4 @@
-﻿//@author Jerome
+﻿//@author A0080860H
 using System;
 using Calendo;
 using Calendo.Logic;
