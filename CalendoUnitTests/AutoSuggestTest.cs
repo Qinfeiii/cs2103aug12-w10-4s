@@ -1,5 +1,4 @@
-﻿using System;
-using Calendo;
+﻿//@author A0080860H
 using Calendo.AutoSuggest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -18,9 +17,9 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void AutoSuggestMatchAlias()
+        public void UI_AutoSuggestMatchAlias()
         {
-            AutoSuggestEntry testEntry = new AutoSuggestEntry("test", "test description", EntryType.MASTER, new string[] { "alpha", "beta", "charlie" });
+            AutoSuggestEntry testEntry = new AutoSuggestEntry("test", "test description", EntryType.Master, new string[] { "alpha", "beta", "charlie" });
             bool actual = AutoSuggest.CheckAliasesForCommand("al", testEntry);
             bool expected = true;
             Assert.AreEqual(expected, actual);

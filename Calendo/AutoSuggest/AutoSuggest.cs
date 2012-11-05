@@ -1,6 +1,5 @@
-﻿//@author Jerome
+﻿//@author A0080860H
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace Calendo.AutoSuggest
@@ -65,7 +64,7 @@ namespace Calendo.AutoSuggest
                     break;
             }
 
-            AutoSuggestEntry mainEntry = new AutoSuggestEntry("/" + currentCommand, commandDescription, EntryType.MASTER, commandAliases);
+            AutoSuggestEntry mainEntry = new AutoSuggestEntry("/" + currentCommand, commandDescription, EntryType.Master, commandAliases);
             MasterList.Add(mainEntry);
 
             AutoSuggestEntry detailEntry;
@@ -73,7 +72,7 @@ namespace Calendo.AutoSuggest
             {
                 foreach (string alias in commandAliases)
                 {
-                    detailEntry = new AutoSuggestEntry(alias, commandInstruction, EntryType.DETAIL, null);
+                    detailEntry = new AutoSuggestEntry(alias, commandInstruction, EntryType.Detail, null);
                     MasterList.Add(detailEntry);
                 }
             }
@@ -113,7 +112,7 @@ namespace Calendo.AutoSuggest
         private void MatchInputToInstruction(string inputCommand)
         {
             // Full command has been entered. Show parameter suggestions.
-            SuggestionList = new List<AutoSuggestEntry>(MasterList.Where(o => o.Type == EntryType.DETAIL && o.Command.Equals(inputCommand)));
+            SuggestionList = new List<AutoSuggestEntry>(MasterList.Where(o => o.Type == EntryType.Detail && o.Command.Equals(inputCommand)));
         }
 
         private void MatchInputToCommandSuggestion(string inputCommand)

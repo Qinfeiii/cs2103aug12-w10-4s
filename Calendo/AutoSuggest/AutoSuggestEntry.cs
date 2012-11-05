@@ -1,19 +1,15 @@
-﻿//@author Jerome
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿//@author A0080860H
 
 namespace Calendo.AutoSuggest
 {
     /// <summary>
-    /// MASTER entries appear as main suggestions when the user starts typing a command.
-    /// DETAIL entries are command-specific guides for the user.
+    /// Master entries appear as main suggestions when the user starts typing a command.
+    /// Detail entries are command-specific guides for the user.
     /// </summary>
     public enum EntryType
     {
-        MASTER,
-        DETAIL
+        Master,
+        Detail
     }
 
     public class AutoSuggestEntry
@@ -22,7 +18,7 @@ namespace Calendo.AutoSuggest
         public string Description { get; set; }
         public EntryType Type { get; set; }
         public string[] Aliases { get; set; }
-        public bool IsMaster { get { return Type == EntryType.MASTER; } }
+        public bool IsMaster { get { return Type == EntryType.Master; } }
         public bool HasAliases { get { return IsMaster && Aliases.Length > 1; } }
 
         public AutoSuggestEntry(string command, string description, EntryType type, string[] aliases)
