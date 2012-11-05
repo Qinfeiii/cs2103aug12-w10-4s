@@ -250,17 +250,6 @@ namespace Calendo
             SetCommandFromSuggestion();
         }
 
-        private void TaskListDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
-        {
-            ChangeSelectedTask();
-        }
-
-        private void ChangeSelectedTask()
-        {
-            string command = "/change";
-            FillCommandOnSelectedTask(command);
-        }
-
         private void UndoHandler(object sender, ExecutedRoutedEventArgs e)
         {
             ViewModel.ExecuteCommand("/undo");
