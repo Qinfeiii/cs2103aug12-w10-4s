@@ -12,11 +12,11 @@ namespace Calendo
             bool isOverdue = false;
             DateTime relevantTime;
 
-            if (currentEntry.Type == EntryType.TIMED)
+            if (currentEntry.Type == EntryType.Timed)
             {
                 relevantTime = currentEntry.EndTime;
             }
-            else if (currentEntry.Type == EntryType.DEADLINE)
+            else if (currentEntry.Type == EntryType.Deadline)
             {
                 relevantTime = currentEntry.StartTime;
             }
@@ -40,7 +40,7 @@ namespace Calendo
 
             bool isTaskStarting = isTaskDifferencePositive && isTaskADayAway;
 
-            if (currentEntry.Type == EntryType.TIMED)
+            if (currentEntry.Type == EntryType.Timed)
             {
                 bool isStartBeforeNow = currentEntry.StartTime.CompareTo(DateTime.Now) < 0;
                 bool isEndAfterNow = DateTime.Now.CompareTo(currentEntry.EndTime) < 0;
@@ -48,7 +48,7 @@ namespace Calendo
                 bool isNowBetweenStartAndEnd = isStartBeforeNow && isEndAfterNow;
                 isOngoing = isTaskStarting || isNowBetweenStartAndEnd;
             }
-            else if (currentEntry.Type == EntryType.DEADLINE)
+            else if (currentEntry.Type == EntryType.Deadline)
             {
                 isOngoing = isTaskStarting;
             }
@@ -61,7 +61,7 @@ namespace Calendo
         {
             // The given tasks must be either Timed or Deadline tasks.
             // Floating tasks have no start time, and so can't be compared this way.
-            Debug.Assert(first.Type != EntryType.FLOATING && second.Type != EntryType.FLOATING);
+            Debug.Assert(first.Type != EntryType.Floating && second.Type != EntryType.Floating);
 
             return first.StartTime.CompareTo(second.StartTime);
         }
@@ -70,15 +70,15 @@ namespace Calendo
         {
             // The given tasks must be either Timed or Deadline tasks.
             // Floating tasks have no end time, and so can't be compared this way.
-            Debug.Assert(first.Type != EntryType.FLOATING && second.Type != EntryType.FLOATING);
+            Debug.Assert(first.Type != EntryType.Floating && second.Type != EntryType.Floating);
 
             return first.EndTime.CompareTo(second.EndTime);
         }
 
         public static int Compare(Entry first, Entry second)
         {
-            bool isFirstFloating = first.Type == EntryType.FLOATING;
-            bool isSecondFloating = second.Type == EntryType.FLOATING;
+            bool isFirstFloating = first.Type == EntryType.Floating;
+            bool isSecondFloating = second.Type == EntryType.Floating;
             int comparisonByDescription = CompareByDescription(first, second);
 
             if (isFirstFloating && isSecondFloating)
@@ -116,7 +116,7 @@ namespace Calendo
 
         public static bool IsTaskFloating(Entry task)
         {
-            bool isTaskFloating = task.Type == EntryType.FLOATING;
+            bool isTaskFloating = task.Type == EntryType.Floating;
             return isTaskFloating;
         }
     }
