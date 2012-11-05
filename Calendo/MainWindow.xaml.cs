@@ -12,6 +12,7 @@ using System.Windows.Shapes;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
 using System.Windows.Interop;
+using EntryType = Calendo.Logic.EntryType;
 
 namespace Calendo
 {
@@ -151,27 +152,50 @@ namespace Calendo
 
         private void FilterListContents()
         {
-            string searchString = CommandBar.Text.ToLowerInvariant().Trim();
-            if (CommandBar.Text != "")
+            // This method gets called during window initialisation, when
+            // there isn't actually a TaskList element yet - hence this check.
+            if (TaskList != null)
             {
-                TaskList.Items.Filter = delegate(object o)
-                                                {
-                                                    KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
-                                                    Entry currentEntry = currentPair.Value;
-                                                    if (currentEntry != null)
-                                                    {
-                                                        string lowercaseDescription =
-                                                            currentEntry.Description.ToLowerInvariant();
-                                                        return lowercaseDescription.Contains(searchString);
-                                                    }
+                TaskList.Items.Filter = o => DateFilter(o) && SearchFilter(o);
+            }
+        }
 
-                                                    return false;
-                                                };
-            }
-            else
+        private bool SearchFilter(object o)
+        {
+            string searchString = CommandBar.Text.ToLowerInvariant().Trim();
+            if (searchString != "")
             {
-                TaskList.Items.Filter = null;
+                KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
+                Entry currentEntry = currentPair.Value;
+                if (currentEntry != null)
+                {
+                    string lowercaseDescription =
+                        currentEntry.Description.ToLowerInvariant();
+                    return lowercaseDescription.Contains(searchString);
+                }
+                return false;
             }
+            return true;
+        }
+
+        private bool DateFilter(object o)
+        {
+            switch (FilterSelector.SelectedIndex)
+            {
+                case 0: // All items.
+                    return true;
+                case 1: // Next week.
+                    KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
+                    Entry currentEntry = currentPair.Value;
+                    if (currentEntry != null)
+                    {
+                        bool isEntryWithinNextWeek = currentEntry.StartTime.CompareTo(DateTime.Now.AddDays(7)) <= 0;
+                        bool isEntryFloating = currentEntry.Type == EntryType.FLOATING;
+                        return !isEntryFloating && isEntryWithinNextWeek;
+                    }
+                    break;
+            }
+            return false;
         }
 
         private void FocusOnTaskList()
@@ -490,7 +514,7 @@ namespace Calendo
                 KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)currentTextBox.DataContext;
                 int currentTask = currentPair.Key;
 
-                if(currentTextBox.Text != currentPair.Value.Description)
+                if (currentTextBox.Text != currentPair.Value.Description)
                 {
                     ViewModel.ExecuteCommand("/change " + currentTask + " " + currentTextBox.Text);
                 }
@@ -503,6 +527,11 @@ namespace Calendo
             {
                 ChangeEntryFromTextBox(sender);
             }
+        }
+
+        private void FilterSelectorSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            FilterListContents();
         }
     }
 }
