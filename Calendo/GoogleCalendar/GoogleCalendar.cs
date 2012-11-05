@@ -39,13 +39,8 @@ namespace Calendo.GoogleCalendar
 
         public void Export()
         {
-            if (auth == "")
-            {
-                MessageBox.Show("Authorization code not provided!");
-                return;
-            }
             storage.Load();
-            //deleteGcalTasks( getTasksIds(getTaskResponse(auth)),auth);
+            deleteGcalTasks( getTasksIds(getTaskResponse(auth)),auth);
             postTasks(storage.Entries, auth);
         }
 
@@ -79,11 +74,6 @@ namespace Calendo.GoogleCalendar
 
         public string Import()
         {
-            if (auth == "")
-            {
-                MessageBox.Show("Authorization code not provided!");
-                return "";
-            }
             List<Entry> taskList = getTaskDetails(getTaskResponse(auth));
             storage.Load();
             storage.Entries.Clear();
@@ -153,6 +143,11 @@ namespace Calendo.GoogleCalendar
             a.ShowDialog();
             string authCode = a.AuthorizationCode;
 
+            if (authCode == "")
+            {
+                MessageBox.Show("Authorization code not provided!");
+                return "";
+            }
             // Retrieve the access token by using the authorization code:
             return authCode;
         }
@@ -173,7 +168,7 @@ namespace Calendo.GoogleCalendar
                 responseText = "";
                 JSON<TaskResponse> jtest = new JSON<TaskResponse>();
                 string postData = "{\"title\": \"" + task.Description + "\"";
-                if(task.Type!= EntryType.FLOATING)
+                if(task.Type!= EntryType.Floating)
                     postData+=",\"due\": \"" + jtest.DateToJSON(task.StartTime) + "\"";
                 postData+="}";
 
@@ -239,11 +234,11 @@ namespace Calendo.GoogleCalendar
                 if (values.Items[c].due != null)
                 {
                     entry.StartTime = jtest.JSONToDate(values.Items[c].due);
-                    entry.StartTimeFormat = TimeFormat.DATETIME;
-                    entry.Type = EntryType.DEADLINE;
+                    entry.StartTimeFormat = TimeFormat.DateTime;
+                    entry.Type = EntryType.Deadline;
                 }
                 else
-                    entry.Type = EntryType.FLOATING;
+                    entry.Type = EntryType.Floating;
                 taskList.Add(entry);
             }
             return taskList;

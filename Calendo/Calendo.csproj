@@ -95,13 +95,12 @@
     <Compile Include="Converters\StringArrayToStringConverter.cs" />
     <Compile Include="Data\Data.cs" />
     <Compile Include="Data\State.cs" />
+    <Compile Include="GoogleCalendar\ThreadedGoogleCalendar.cs" />
+    <Compile Include="Logic\ModifyFlag.cs" />
+    <Compile Include="Logic\TimeFormat.cs" />
     <Compile Include="UiViewModel.cs" />
     <Compile Include="UiTaskHelper.cs" />
     <Page Include="Debug\DebugMode.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Debug\TestShadow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -119,9 +118,6 @@
     </Compile>
     <Compile Include="AutoSuggest\AutoSuggest.cs" />
     <Compile Include="AutoSuggest\AutoSuggestEntry.cs" />
-    <Compile Include="Debug\TestShadow.xaml.cs">
-      <DependentUpon>TestShadow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="FormMaximize.cs" />
     <Compile Include="GoogleCalendar\Task.cs" />
     <Compile Include="Logic\CommandProcessor.cs" />

@@ -1,4 +1,4 @@
-﻿//@author Nicholas
+﻿//@author A0080933E
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,22 +8,12 @@ namespace Calendo.Logic
     /// <summary>
     /// Entry Type
     /// </summary>
-    public enum EntryType {
-        FLOATING,
-        DEADLINE,
-        TIMED,
-        COMPLETE
-    }
-
-    /// <summary>
-    /// Time Format
-    /// </summary>
-    public enum TimeFormat
+    public enum EntryType
     {
-        DATETIME,
-        DATE,
-        TIME,
-        NONE
+        Floating,
+        Deadline,
+        Timed,
+        Complete
     }
 
     /// <summary>
@@ -37,15 +27,16 @@ namespace Calendo.Logic
         /// <summary>
         /// Creates a new entry object
         /// </summary>
-        public Entry() {
+        public Entry()
+        {
             ID = IDCounter++;
             Created = DateTime.Now;
             Description = "";
             StartTime = DateTime.Today;
-            StartTimeFormat = TimeFormat.NONE;
+            StartTimeFormat = TimeFormat.None;
             EndTime = DateTime.Today;
-            EndTimeFormat = TimeFormat.NONE;
-            Type = EntryType.FLOATING;
+            EndTimeFormat = TimeFormat.None;
+            Type = EntryType.Floating;
         }
 
         /// <summary>
@@ -145,7 +136,7 @@ namespace Calendo.Logic
             EntryClone.EndTimeFormat = EndTimeFormat;
             EntryClone.Type = Type;
             EntryClone.Meta = Meta;
-            return (object) EntryClone;
+            return (object)EntryClone;
         }
     }
 }
