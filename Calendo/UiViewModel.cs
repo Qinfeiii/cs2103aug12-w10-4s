@@ -20,7 +20,7 @@ namespace Calendo
             {
                 bool isOnlyOneSuggestion = SuggestionList.Count == 1;
                 bool isSuggestionDetail = (SuggestionList.Count > 0) && !SuggestionList[0].IsMaster;
-                return isOnlyOneSuggestion && isSuggestionDetail ? 2 : 3;
+                return isOnlyOneSuggestion && isSuggestionDetail ? 3 : 4;
             }
         }
 
