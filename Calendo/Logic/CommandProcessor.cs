@@ -240,6 +240,7 @@ namespace Calendo.Logic
             // By default, the program interprets a query as an empty command
             if (IsNoCommand())
             {
+                commandType = "add";
                 return;
             }
 
