@@ -1,4 +1,5 @@
-﻿using System;
+﻿//@author A0091539X
+using System;
 using System.Net;
 using System.Collections.Generic;
 using System.Web;
@@ -168,7 +169,7 @@ namespace Calendo.GoogleCalendar
                 responseText = "";
                 JSON<TaskResponse> jtest = new JSON<TaskResponse>();
                 string postData = "{\"title\": \"" + task.Description + "\"";
-                if(task.Type!= EntryType.Floating)
+                if(task.Type!= EntryType.FLOATING)
                     postData+=",\"due\": \"" + jtest.DateToJSON(task.StartTime) + "\"";
                 postData+="}";
 
@@ -234,11 +235,11 @@ namespace Calendo.GoogleCalendar
                 if (values.Items[c].due != null)
                 {
                     entry.StartTime = jtest.JSONToDate(values.Items[c].due);
-                    entry.StartTimeFormat = TimeFormat.DateTime;
-                    entry.Type = EntryType.Deadline;
+                    entry.StartTimeFormat = TimeFormat.DATE;
+                    entry.Type = EntryType.DEADLINE;
                 }
                 else
-                    entry.Type = EntryType.Floating;
+                    entry.Type = EntryType.FLOATING;
                 taskList.Add(entry);
             }
             return taskList;
