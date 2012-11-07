@@ -8,12 +8,29 @@ namespace Calendo.GoogleCalendar
 {
     public class ThreadedGoogleCalendar
     {
+        private static Type GoogleCalendarClassType = typeof(GoogleCalendar);
+        /// <summary>
+        /// Sets the Google Calendar class used
+        /// </summary>
+        public static Type GoogleCalendarType
+        {
+            set { GoogleCalendarClassType = value; }
+        }
+
+        public delegate void AuthorizationCall();
+        private static Delegate AuthMethod = new AuthorizationCall(delegate() { GoogleCalendar.Authorize(); });
+
+        public static Delegate AuthorizationMethod
+        {
+            set { AuthMethod = value; }
+        }
+
         /// <summary>
         /// Export to Google Calendar
         /// </summary>
         public static void Export()
         {
-            GoogleCalendar.Authorize();
+            AuthMethod.DynamicInvoke();
             RunThread(new ThreadStart(ThreadedExport));
         }
 
@@ -22,7 +39,7 @@ namespace Calendo.GoogleCalendar
         /// </summary>
         public static void Import()
         {
-            GoogleCalendar.Authorize();
+            AuthMethod.DynamicInvoke();
             RunThread(new ThreadStart(ThreadedImport));
         }
 
@@ -41,8 +58,9 @@ namespace Calendo.GoogleCalendar
         /// </summary>
         private static void ThreadedExport()
         {
-            GoogleCalendar googleCalendar = new GoogleCalendar();
+            GoogleCalendar googleCalendar = (GoogleCalendar)Activator.CreateInstance(GoogleCalendarClassType);
             googleCalendar.Export();
+            
         }
 
         /// <summary>
@@ -50,7 +68,7 @@ namespace Calendo.GoogleCalendar
         /// </summary>
         private static void ThreadedImport()
         {
-            GoogleCalendar googleCalendar = new GoogleCalendar();
+            GoogleCalendar googleCalendar = (GoogleCalendar)Activator.CreateInstance(GoogleCalendarClassType);
             googleCalendar.Import();
         }
     }

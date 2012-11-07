@@ -54,9 +54,9 @@ namespace Calendo.Data
                 // Initialize XMLserializer to use the Data<T> type template
                 serializer = XmlSerializer.FromTypes(new[] { typeof(Data<T>) })[0];
             }
-            catch (Exception e)
+            catch
             {
-                Debug.Assert(serializer != null, ERROR_UNSERIALIZABLE, e.InnerException.Message);
+                DebugTool.Alert(ERROR_UNSERIALIZABLE);
             }
         }
 
@@ -79,7 +79,8 @@ namespace Calendo.Data
         /// </summary>
         public virtual T Entries
         {
-            get {
+            get
+            {
                 if (UseWrapper)
                 {
                     Data<T> dataWrapper = dataObject as Data<T>;
@@ -91,7 +92,8 @@ namespace Calendo.Data
                     return dataWrapper;
                 }
             }
-            set {
+            set
+            {
                 if (UseWrapper)
                 {
                     Data<T> dataWrapper = dataObject as Data<T>;

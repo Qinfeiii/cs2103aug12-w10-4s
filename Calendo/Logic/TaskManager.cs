@@ -83,7 +83,7 @@ namespace Calendo.Logic
         /// <param name="startTime">Start Time</param>
         /// <param name="endDate">End Date</param>
         /// <param name="endTime">End Time</param>
-        public void Add(string description, string startDate, string startTime, string endDate, string endTime)
+        public void Add(string description, string startDate = "", string startTime = "", string endDate = "", string endTime = "")
         {
             startDate = SanitizeString(startDate);
             if (startDate.Contains("-") && !HasText(endDate))
@@ -183,7 +183,8 @@ namespace Calendo.Logic
         /// <returns>True if no time format</returns>
         private bool HasNoTimeFormat(TaskTime taskTime)
         {
-            return (taskTime == null) || (taskTime.Format == TimeFormat.None);
+            Debug.Assert(taskTime != null);
+            return (taskTime.Format == TimeFormat.None);
         }
 
         /// <summary>
@@ -194,7 +195,7 @@ namespace Calendo.Logic
         /// <param name="startTime">Start Time</param>
         /// <param name="endDate">End Date</param>
         /// <param name="endTime">End Time</param>
-        public void Change(int id, string description, string startDate, string startTime, string endDate, string endTime)
+        public void Change(int id, string description = "", string startDate = "", string startTime = "", string endDate = "", string endTime = "")
         {
             TaskTime startDateTime = this.ConvertTime(startDate, startTime);
             TaskTime endDateTime = this.ConvertTime(endDate, endTime);
@@ -267,6 +268,7 @@ namespace Calendo.Logic
                 if (flag.Contains(ModifyFlag.StartTime | ModifyFlag.StartDate))
                 {
                     ModifyFlag startFlag = flag.Unset(ModifyFlag.EndDate | ModifyFlag.EndTime);
+                    startFlag = startFlag.Unset(ModifyFlag.EraseEndDate | ModifyFlag.EraseEndTime);
                     TaskTime entryTime = new TaskTime(entry.StartTime, entry.StartTimeFormat);
                     TaskTime mergedTime = TimeConverter.MergeTime(startTime, entryTime, startFlag);
                     entry.StartTime = mergedTime.Time;
@@ -276,6 +278,7 @@ namespace Calendo.Logic
                 if (flag.Contains(ModifyFlag.EndTime | ModifyFlag.EndDate))
                 {
                     ModifyFlag endFlag = flag.Unset(ModifyFlag.StartDate | ModifyFlag.StartTime);
+                    endFlag = endFlag.Unset(ModifyFlag.EraseStartDate | ModifyFlag.EraseStartTime);
                     TaskTime entryTime = new TaskTime(entry.EndTime, entry.EndTimeFormat);
                     TaskTime mergedTime = TimeConverter.MergeTime(endTime, entryTime, endFlag);
                     entry.EndTime = mergedTime.Time;

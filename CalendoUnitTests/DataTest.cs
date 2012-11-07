@@ -67,6 +67,8 @@ namespace CalendoUnitTests
             UTStorage.Load();
             // The contents should be overriden with the new one
             Assert.IsTrue(UTStorage.Entries.Count != 2);
+
+            Storage<Stack<string>> UnsupportedStorage = new Storage<Stack<string>>("test3.txt");
         }
         [TestMethod]
         public void DataUnwritable()
@@ -210,6 +212,9 @@ namespace CalendoUnitTests
             string jsonTime = jsonParser.DateToJSON(properTime);
             DateTime parsedTime = jsonParser.JSONToDate(jsonTime).ToLocalTime();
             Assert.IsTrue(properTime == parsedTime);
+
+            DateTime invalidTime = jsonParser.JSONToDate(null);
+            Assert.IsTrue(invalidTime == new DateTime(0));
         }
     }
 }
