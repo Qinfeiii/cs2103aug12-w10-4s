@@ -17,7 +17,7 @@ using System.Windows.Forms;
 
 namespace Calendo.GoogleCalendar
 {
-    class GoogleCalendar
+    public class GoogleCalendar
     {
         //private static string STORAGE_PATH = "archive.txt";
         private TaskManager storage = TaskManager.Instance;

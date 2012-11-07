@@ -241,12 +241,9 @@ namespace Calendo.Logic
 
             if (input.Length >= start)
             {
-                return input.Substring(start);
+                input = input.Substring(start);
             }
-            else
-            {
-                return "";
-            }
+            return input;
         }
 
         private int ConvertAMPM(int hour, int flagAMPM)

@@ -23,7 +23,6 @@ namespace Calendo.Data
         public State()
         {
             this.Value = new T();
-            //this.States = new List<T>();
         }
 
         /// <summary>
@@ -48,7 +47,7 @@ namespace Calendo.Data
                 // Recreate state list if it was null
                 if (stateList == null)
                 {
-                    stateList = new List<T>();
+                    this.States = new List<T>();
                 }
                 // There must be at least one item in state list
                 if (stateList.Count == 0)

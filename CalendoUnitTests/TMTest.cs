@@ -3,6 +3,7 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Calendo;
 using Calendo.Logic;
+using Calendo.GoogleCalendar;
 
 namespace CalendoUnitTests
 {
@@ -14,7 +15,9 @@ namespace CalendoUnitTests
         [TestMethod]
         public void TMCreate()
         {
+            tm.Load();
             tm.Add("Test1", null, null, null, null);
+            tm.Save();
         }
         [TestMethod]
         public void TMAdd()
@@ -115,8 +118,9 @@ namespace CalendoUnitTests
             // Non-existant date
             tm.Add("Test Invalid 1", "32/12", "0:00 PM", null, null);  // Bad daate and invalid time
             tm.Add("Test Invalid 2", "1/2/" + (DateTime.Today.Year.ToString()), "25:00", null, null); // Day in past (same year) and invalid time
-            tm.Add("Test Invalid 3", "1/1/2011", null, null, null); // Day in past and null string
+            tm.Add("Test Invalid 3", "1/1/2011", null, "1/1/2010", null); // Day in past and null string
             tm.Add("Test Invalid 4", "a/b/c", "-1:m", null, null);
+            
             // Invalid fields should be ignored
             Assert.IsTrue(tm.Entries[0].Type == EntryType.Floating);
             //Assert.IsTrue(tm.Entries[1].Type == EntryType.FLOATING);
@@ -131,6 +135,9 @@ namespace CalendoUnitTests
             tm.Add("Test Invalid 6", "1/1", "a:-1", null, null);
             Assert.IsTrue(tm.Entries[5].Type == EntryType.Deadline);
             Assert.IsTrue(tm.Entries[5].StartTimeFormat == TimeFormat.Date);
+
+            tm.Add("Test Invalid 5", null, null, "1/1", null);
+            Assert.IsTrue(tm.Entries[6].Type == EntryType.Floating);
         }
 
         [TestMethod]
@@ -140,7 +147,7 @@ namespace CalendoUnitTests
             tm.Entries.Clear();
             tm.Add("Test Timed", "1/12", "14:00", "31/1", "3:02PM");
             tm.Add("Test Floating", null, null, null, null);
-            tm.Add("Test Floating 2", null, null, null, null);
+            tm.Add("Test Floating 2", "1/1", "12:00PM", "2/1", null);
 
             // Out of range (do nothing)
             tm.Change(0, "a", "", "", "", "");
@@ -160,9 +167,9 @@ namespace CalendoUnitTests
             Assert.IsTrue(tm.Entries[1].EndTime.Minute == 0);
             Assert.IsTrue(tm.Entries[1].EndTimeFormat == TimeFormat.DateTime);
 
-            tm.Change(3, "Test Floating 2 changed", "", "", "", "");
+            tm.Change(3, "Test Floating 2 changed", "", "-", "-", "-");
             Assert.IsTrue(tm.Entries[2].Description == "Test Floating 2 changed");
-            Assert.IsTrue(tm.Entries[2].StartTimeFormat == TimeFormat.None);
+            Assert.IsTrue(tm.Entries[2].StartTimeFormat == TimeFormat.Date);
             Assert.IsTrue(tm.Entries[2].EndTimeFormat == TimeFormat.None);
         }
 
@@ -207,6 +214,26 @@ namespace CalendoUnitTests
             Assert.IsTrue(tm.Entries.Count == 2);
             Assert.IsTrue(tm.Entries[0].Description == "Test Floating 2");
             Assert.IsTrue(tm.Entries[1].Description == "Test Floating 3");
+        }
+
+        [TestMethod]
+        public void TMSubscriber()
+        {
+            bool isUpdated = false;
+            tm.Entries.Clear();
+            Delegate d = new TaskManager.UpdateHandler(delegate() { isUpdated = true; });
+            tm.AddSubscriber(d);
+            tm.Add("Test");
+            Assert.IsTrue(isUpdated == true);
+        }
+
+        [TestMethod]
+        public void TMGoogleCalendar()
+        {
+            ThreadedGoogleCalendar.GoogleCalendarType = typeof(GoogleCalendarStub);
+            ThreadedGoogleCalendar.AuthorizationMethod = new ThreadedGoogleCalendar.AuthorizationCall(delegate() { });
+            tm.Export();
+            tm.Import();
         }
     }
 }
