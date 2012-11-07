@@ -296,6 +296,8 @@
                         <ComboBox Name="FilterSelector" SelectedIndex="0" SelectionChanged="FilterSelectorSelectionChanged">
                             <ComboBoxItem>ALL TASKS</ComboBoxItem>
                             <ComboBoxItem>NEXT 7 DAYS</ComboBoxItem>
+                            <ComboBoxItem>OVERDUE</ComboBoxItem>
+                            <ComboBoxItem>ACTIVE</ComboBoxItem>
                         </ComboBox>
                     </StackPanel>
 
