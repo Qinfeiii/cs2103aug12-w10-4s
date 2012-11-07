@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Calendo.Logic
 {
@@ -44,34 +43,30 @@ namespace Calendo.Logic
 
         string inputString;
         List<string> inputStringWords;
-        string commandType;
-        string commandStartDate;
-        string commandStartTime;
-        string commandEndDate;
-        string commandEndTime;
-        string commandText;
+        Command command;
 
         TaskManager taskManager;
 
         //The following is public so that it can be "read" by the UI for auto-completion
-        public Dictionary<string, string[]> GetInputCommandList() {
+        public Dictionary<string, string[]> GetInputCommandList()
+        {
             return DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE;
         }
         public List<Entry> TaskList { get { return taskManager.Entries; } }
 
         // Used to map the UI index (Key) to the actual index in the task list (Value).
-        public Dictionary<int, int> IndexMap { get; set; } 
+        public Dictionary<int, int> IndexMap { get; set; }
 
         #region execution
         private void HandleCommand()
         {
             // TaskManager.ExecuteCommand(commandType, commandDate, commandTime, commandText);
-            if (commandType == null)
+            if (command.Type == null)
             {
                 // Non-matching command
                 return;
             }
-            switch (commandType.ToLower())
+            switch (command.Type.ToLower())
             {
                 case COMMAND_TYPE_ADD:
                     ExecuteAdd();
@@ -111,7 +106,7 @@ namespace Calendo.Logic
 
         private void ExecuteRemove()
         {
-            if (commandText == null)
+            if (command.Text == null)
             {
                 // Command without parameter
                 return;
@@ -120,7 +115,7 @@ namespace Calendo.Logic
             int index;
             try
             {
-                inputValue = Convert.ToInt32(commandText);
+                inputValue = Convert.ToInt32(command.Text);
                 IndexMap.TryGetValue(inputValue, out index);
             }
             catch
@@ -133,12 +128,12 @@ namespace Calendo.Logic
 
         private void ExecuteChange()
         {
-            if (commandText == null)
+            if (command.Text == null)
             {
                 // Command without parameter
                 return;
             }
-            string[] commandTextPieces = commandText.Split();
+            string[] commandTextPieces = command.Text.Split();
             int taskNumberToChange = 0;
             int inputValue;
             try
@@ -158,7 +153,7 @@ namespace Calendo.Logic
             {
                 newTaskName = listOfCommandTextPieces.Aggregate((x, y) => x + " " + y);
             }
-            taskManager.Change(taskNumberToChange, newTaskName, commandStartDate, commandStartTime, commandEndDate, commandEndTime);
+            taskManager.Change(taskNumberToChange, newTaskName, command.StartDate, command.StartTime, command.EndDate, command.EndTime);
         }
 
         private void ExecuteUndo()
@@ -173,7 +168,7 @@ namespace Calendo.Logic
 
         private void ExecuteAdd()
         {
-            taskManager.Add(commandText, commandStartDate, commandStartTime, commandEndDate, commandEndTime);
+            taskManager.Add(command.Text, command.StartDate, command.StartTime, command.EndDate, command.EndTime);
         }
         #endregion execution
 
@@ -204,19 +199,9 @@ namespace Calendo.Logic
         public void ExecuteCommand(string userInput)
         {
             inputString = userInput;
-            InitialiseCommandParts();
+            command = new Command();
             GetCommandParts();
             HandleCommand();
-        }
-
-        private void InitialiseCommandParts()
-        {
-            commandStartDate = null;
-            commandStartTime = null;
-            commandEndDate = null;
-            commandEndTime = null;
-            commandType = null;
-            commandText = null;
         }
 
         private void GetCommandParts()
@@ -267,14 +252,12 @@ namespace Calendo.Logic
 
         private void GetCommandType(string commandTypeInput)
         {
-
             KeyValuePair<string, string[]> commandTypePair = DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
-            commandType = commandTypePair.Key;
+            command.Type = commandTypePair.Key;
         }
 
         private bool IsValidCommand(string commandTypeInput)
         {
-            //return DICTIONARY_COMMAND_TYPE.Values.Any(x => commandTypeInput.ToLower() == x);
             return VALID_INPUT_COMMAND_LIST.Contains(commandTypeInput.ToLower());
         }
 
@@ -290,12 +273,12 @@ namespace Calendo.Logic
 
         private void ExtractAndRemoveCommandStartDate()
         {
-            commandStartDate = RemoveAndReturnCommandDate(INPUT_HANDLES_START_DATE);
+            command.StartDate = RemoveAndReturnCommandDate(INPUT_HANDLES_START_DATE);
         }
 
         private void ExtractAndRemoveCommandEndDate()
         {
-            commandEndDate = RemoveAndReturnCommandDate(INPUT_HANDLES_END_DATE);
+            command.EndDate = RemoveAndReturnCommandDate(INPUT_HANDLES_END_DATE);
         }
 
         private string RemoveAndReturnCommandDate(string[] dateInputHandles)
@@ -324,12 +307,12 @@ namespace Calendo.Logic
 
         private void ExtractAndRemoveCommandStartTime()
         {
-            commandStartTime = RemoveAndReturnCommandTime(INPUT_HANDLES_START_TIME);
+            command.StartTime = RemoveAndReturnCommandTime(INPUT_HANDLES_START_TIME);
         }
 
         private void ExtractAndRemoveCommandEndTime()
         {
-            commandEndTime = RemoveAndReturnCommandTime(INPUT_HANDLES_END_TIME);
+            command.EndTime = RemoveAndReturnCommandTime(INPUT_HANDLES_END_TIME);
         }
 
         // Expecting time as: HH:MM ["AM"/"PM"]
@@ -376,7 +359,7 @@ namespace Calendo.Logic
         {
             string separator = " ";
             if (inputStringWords.Count > 0)
-                commandText = inputStringWords.Aggregate((first, rest) => first + separator + rest);
+                command.Text = inputStringWords.Aggregate((first, rest) => first + separator + rest);
         }
 
         private Boolean IsNoCommand()
