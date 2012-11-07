@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2012 for Windows Desktop
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalendoUnitTests", "CalendoUnitTests.csproj", "{3D7B0867-A919-4949-AEC1-2D968D7D1476}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calendo", "..\Calendo\Calendo.csproj", "{3DE53BC9-2CAA-422B-B8C6-E27E524447C1}"
