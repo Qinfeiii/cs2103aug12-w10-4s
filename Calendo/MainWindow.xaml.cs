@@ -153,7 +153,7 @@ namespace Calendo
             // there isn't actually a TaskList element yet - hence this check.
             if (TaskList != null)
             {
-                TaskList.Items.Filter = o => DateFilter(o) && SearchFilter(o);
+                TaskList.Items.Filter = o => CategoryFilter(o) && SearchFilter(o);
             }
         }
 
@@ -175,20 +175,34 @@ namespace Calendo
             return true;
         }
 
-        private bool DateFilter(object o)
+        private bool CategoryFilter(object o)
         {
+            KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
+            Entry currentEntry = currentPair.Value;
             switch (FilterSelector.SelectedIndex)
             {
                 case 0: // All items.
                     return true;
                 case 1: // Next week.
-                    KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
-                    Entry currentEntry = currentPair.Value;
                     if (currentEntry != null)
                     {
                         bool isEntryWithinNextWeek = currentEntry.StartTime.CompareTo(DateTime.Now.AddDays(7)) <= 0;
                         bool isEntryFloating = currentEntry.Type == EntryType.Floating;
                         return !isEntryFloating && isEntryWithinNextWeek;
+                    }
+                    break;
+                case 2: // Overdue.
+                    if (currentEntry != null)
+                    {
+                        bool isEntryOverdue = UiTaskHelper.IsTaskOverdue(currentEntry);
+                        return isEntryOverdue;
+                    }
+                    break;
+                case 3: // Ongoing.
+                    if (currentEntry != null)
+                    {
+                        bool isEntryOngoing = UiTaskHelper.IsTaskOngoing(currentEntry);
+                        return isEntryOngoing;
                     }
                     break;
             }
