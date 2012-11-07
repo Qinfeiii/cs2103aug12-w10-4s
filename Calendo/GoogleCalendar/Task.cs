@@ -52,7 +52,7 @@ namespace Calendo.GoogleCalendar
             set;
         }
 
-        //@author Rahij
+        //@author A0091539X
         public string due
         {
             get;
