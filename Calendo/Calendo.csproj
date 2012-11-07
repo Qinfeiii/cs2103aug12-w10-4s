@@ -97,6 +97,7 @@
     <Compile Include="Data\State.cs" />
     <Compile Include="GoogleCalendar\ThreadedGoogleCalendar.cs" />
     <Compile Include="Logic\Command.cs" />
+    <Compile Include="Logic\CommandExtractors.cs" />
     <Compile Include="Logic\ModifyFlag.cs" />
     <Compile Include="Logic\TimeFormat.cs" />
     <Compile Include="UiViewModel.cs" />

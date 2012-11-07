@@ -4,26 +4,40 @@ namespace Calendo.Logic
 {
     class Command
     {
-        public string StartDate { get; set; }
-        public string StartTime { get; set; }
-        public string EndDate { get; set; }
-        public string EndTime { get; set; }
-        public string Type { get; set; }
-        public string Text { get; set; }
+        private string startDate;
+        private string startTime;
+        private string endDate;
+        private string endTime;
+        private string type;
+        private string text;
 
-        public Command()
+        public string StartDate { get { return startDate; } }
+        public string StartTime { get { return startTime; } }
+        public string EndDate { get { return endDate; } }
+        public string EndTime { get { return endTime; } }
+        public string Type { get { return type; } }
+        public string Text { get { return text; } }
+
+        public Command(string userInput, ref CommandExtractors extractors)
         {
             Initialise();
+            extractors.Extract(userInput,
+                ref type,
+                ref startDate,
+                ref startTime,
+                ref endDate,
+                ref endTime,
+                ref text);
         }
 
         private void Initialise()
         {
-            StartDate = null;
-            StartTime = null;
-            EndDate = null;
-            EndTime = null;
-            Type = null;
-            Text = null;
+            startDate = null;
+            startTime = null;
+            endDate = null;
+            endTime = null;
+            type = null;
+            text = null;
         }
     }
 }
