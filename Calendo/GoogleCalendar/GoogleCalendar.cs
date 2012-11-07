@@ -1,4 +1,5 @@
-﻿using System;
+﻿//@author A0091539X
+using System;
 using System.Net;
 using System.Collections.Generic;
 using System.Web;
@@ -234,7 +235,7 @@ namespace Calendo.GoogleCalendar
                 if (values.Items[c].due != null)
                 {
                     entry.StartTime = jtest.JSONToDate(values.Items[c].due);
-                    entry.StartTimeFormat = TimeFormat.DateTime;
+                    entry.StartTimeFormat = TimeFormat.Date;
                     entry.Type = EntryType.Deadline;
                 }
                 else
