@@ -1,4 +1,4 @@
-﻿//@author Pallav
+﻿//@author A0091571E
 using Calendo.Logic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -100,7 +100,7 @@ namespace CommandProcessorTest
             Assert.AreEqual(RESULT_CHANGE_FIRST_TASK_DESCRIPTION, taskList[0].Description);
         }
 
-        //@author Nicholas
+        //@author A0080933E
         private Dictionary<int, int> GenerateMapping(int max)
         {
             // Generates a one-to-one mapping

@@ -1,4 +1,4 @@
-﻿//@author Jerome
+﻿//@author A0080860H
 using System;
 using System.Globalization;
 using System.Windows.Data;
@@ -17,11 +17,11 @@ namespace Calendo.Converters
 
                 switch (current.StartTimeFormat)
                 {
-                    case TimeFormat.NONE:
+                    case TimeFormat.None:
                         break;
-                    case TimeFormat.TIME:
+                    case TimeFormat.Time:
                         return returnDate.ToString("HH:mm");
-                    case TimeFormat.DATETIME:
+                    case TimeFormat.DateTime:
                         if (returnDate.Date == DateTime.Today)
                         {
                             return "Today " + returnDate.ToString("HH:mm");
@@ -34,7 +34,7 @@ namespace Calendo.Converters
                         {
                             return returnDate.ToString("dd/MM/yyyy HH:mm");
                         }
-                    case TimeFormat.DATE:
+                    case TimeFormat.Date:
                         if (returnDate.Date == DateTime.Today)
                         {
                             return "Today";

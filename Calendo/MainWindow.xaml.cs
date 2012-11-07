@@ -1,15 +1,15 @@
-﻿//@author Jerome
+﻿//@author A0080860H
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Diagnostics;
 using System.Windows.Shapes;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
 using System.Windows.Interop;
+using EntryType = Calendo.Logic.EntryType;
 
 namespace Calendo
 {
@@ -103,13 +103,6 @@ namespace Calendo
         {
             if (WindowState == WindowState.Maximized)
             {
-                // Toggling of WindowStyle is needed to get around the window
-                // overlapping the TaskBar if it is maximized when WindowStyle is None.
-                /*
-                WindowStyle = WindowStyle.SingleBorderWindow;
-                WindowState = WindowState.Maximized;
-                WindowStyle = WindowStyle.None;
-                */
                 this.BorderThickness = new Thickness(0);
                 RestoreButton.Visibility = Visibility.Visible;
                 MaximiseButton.Visibility = Visibility.Collapsed;
@@ -129,7 +122,10 @@ namespace Calendo
                 // Select the first item in the auto-suggest list, and give it focus.
                 AutoSuggestList.SelectedIndex = 0;
                 ListBoxItem selectedItem = AutoSuggestList.ItemContainerGenerator.ContainerFromIndex(0) as ListBoxItem;
-                selectedItem.Focus();
+                if (selectedItem != null)
+                {
+                    selectedItem.Focus();
+                }
             }
             else if (e.Key == Key.Return)
             {
@@ -153,31 +149,55 @@ namespace Calendo
 
         private void FilterListContents()
         {
-            string searchString = CommandBar.Text.ToLowerInvariant().Trim();
-            if (CommandBar.Text != "")
+            // This method gets called during window initialisation, when
+            // there isn't actually a TaskList element yet - hence this check.
+            if (TaskList != null)
             {
-                TaskList.Items.Filter = delegate(object o)
-                                                {
-                                                    KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
-                                                    Entry currentEntry = currentPair.Value;
-                                                    if (currentEntry != null)
-                                                    {
-                                                        string lowercaseDescription =
-                                                            currentEntry.Description.ToLowerInvariant();
-                                                        return lowercaseDescription.Contains(searchString);
-                                                    }
+                TaskList.Items.Filter = o => DateFilter(o) && SearchFilter(o);
+            }
+        }
 
-                                                    return false;
-                                                };
-            }
-            else
+        private bool SearchFilter(object o)
+        {
+            string searchString = CommandBar.Text.ToLowerInvariant().Trim();
+            if (searchString != "")
             {
-                TaskList.Items.Filter = null;
+                KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
+                Entry currentEntry = currentPair.Value;
+                if (currentEntry != null)
+                {
+                    string lowercaseDescription =
+                        currentEntry.Description.ToLowerInvariant();
+                    return lowercaseDescription.Contains(searchString);
+                }
+                return false;
             }
+            return true;
+        }
+
+        private bool DateFilter(object o)
+        {
+            switch (FilterSelector.SelectedIndex)
+            {
+                case 0: // All items.
+                    return true;
+                case 1: // Next week.
+                    KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
+                    Entry currentEntry = currentPair.Value;
+                    if (currentEntry != null)
+                    {
+                        bool isEntryWithinNextWeek = currentEntry.StartTime.CompareTo(DateTime.Now.AddDays(7)) <= 0;
+                        bool isEntryFloating = currentEntry.Type == EntryType.Floating;
+                        return !isEntryFloating && isEntryWithinNextWeek;
+                    }
+                    break;
+            }
+            return false;
         }
 
         private void FocusOnTaskList()
         {
+            TaskList.SelectedIndex = -1;
             TaskList.Focus();
             AutoSuggestBorder.Visibility = Visibility.Collapsed;
         }
@@ -230,17 +250,6 @@ namespace Calendo
             SetCommandFromSuggestion();
         }
 
-        private void TaskListDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
-        {
-            ChangeSelectedTask();
-        }
-
-        private void ChangeSelectedTask()
-        {
-            string command = "/change";
-            FillCommandOnSelectedTask(command);
-        }
-
         private void UndoHandler(object sender, ExecutedRoutedEventArgs e)
         {
             ViewModel.ExecuteCommand("/undo");
@@ -253,8 +262,7 @@ namespace Calendo
 
         private void GridMouseDown(object sender, MouseButtonEventArgs e)
         {
-            // Disabled as behavior conflicts with several controls
-            //FocusOnTaskList();
+            FocusOnTaskList();
         }
 
         private void DeleteHandler(object sender, ExecutedRoutedEventArgs e)
@@ -315,13 +323,43 @@ namespace Calendo
 
         private void ChangeButtonClick(object sender, RoutedEventArgs e)
         {
-            SelectTaskFromCommandButton(sender);
-            ChangeSelectedTask();
+            TextBox relevantBox = GetTextBoxFromCommandButton(sender);
+
+            if (relevantBox != null)
+            {
+                relevantBox.IsReadOnly = false;
+                relevantBox.Focusable = true;
+                relevantBox.Focus();
+                relevantBox.SelectionStart = relevantBox.Text.Length;
+            }
+        }
+
+        private static TextBox GetTextBoxFromCommandButton(object sender)
+        {
+            Button senderButton = sender as Button;
+            FrameworkElement currentItem = senderButton.Parent as FrameworkElement;
+            Grid parentGrid = null;
+            while (parentGrid == null)
+            {
+                currentItem = currentItem.Parent as FrameworkElement;
+                parentGrid = currentItem as Grid;
+            }
+
+            TextBox relevantBox = null;
+            foreach (UIElement element in parentGrid.Children)
+            {
+                relevantBox = element as TextBox;
+                if (relevantBox != null)
+                {
+                    break;
+                }
+            }
+            return relevantBox;
         }
 
         private void SelectTaskFromCommandButton(object sender)
         {
-            // Find the Grid that this button was in.
+            // Find the Grid that this sender was in.
             Button senderButton = sender as Button;
             FrameworkElement currentItem = senderButton.Parent as FrameworkElement;
             Grid relevantItem = null;
@@ -444,6 +482,42 @@ namespace Calendo
         {
             SelectTaskFromCommandButton(sender);
             DeleteSelectedTask();
+        }
+
+        private void TextBoxLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            ChangeEntryFromTextBox(sender);
+        }
+
+        private void ChangeEntryFromTextBox(object sender)
+        {
+            TextBox currentTextBox = sender as TextBox;
+            if (!currentTextBox.IsReadOnly)
+            {
+                currentTextBox.IsReadOnly = true;
+                currentTextBox.Focusable = false;
+
+                KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)currentTextBox.DataContext;
+                int currentTask = currentPair.Key;
+
+                if (currentTextBox.Text != currentPair.Value.Description)
+                {
+                    ViewModel.ExecuteCommand("/change " + currentTask + " " + currentTextBox.Text);
+                }
+            }
+        }
+
+        private void TextBoxKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape || e.Key == Key.Enter)
+            {
+                ChangeEntryFromTextBox(sender);
+            }
+        }
+
+        private void FilterSelectorSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            FilterListContents();
         }
     }
 }

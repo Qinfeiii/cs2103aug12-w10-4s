@@ -46,31 +46,54 @@
 
                 <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="3">
                     <Grid.Resources>
+                        <SolidColorBrush x:Key="ItemSelectedBorder" Color="#FF71C0E7" />
+
                         <Style x:Key="NormalTextStyle" TargetType="TextBlock">
                             <Setter Property="FontSize" Value="16" />
                             <Setter Property="Margin" Value="12,4" />
                             <Setter Property="Foreground" Value="#FF464646" />
                         </Style>
+
                         <Style x:Key="ListBoxItemTextStyle" TargetType="TextBlock"
                                BasedOn="{StaticResource NormalTextStyle}">
                             <Setter Property="Margin" Value="0" />
                         </Style>
+
                         <Style x:Key="ListBoxItemSubtleTextStyle" TargetType="{x:Type TextBlock}"
                                BasedOn="{StaticResource ListBoxItemTextStyle}">
                             <Setter Property="FontSize" Value="12" />
                             <Setter Property="Foreground" Value="Gray" />
                         </Style>
-                        <Style x:Key="TaskTextStyle" TargetType="TextBlock"
-                               BasedOn="{StaticResource ListBoxItemTextStyle}">
+
+                        <Style x:Key="EditableTaskTextStyle" TargetType="TextBox">
+                            <Setter Property="FontSize" Value="16" />
+                            <Setter Property="Margin" Value="-2,0,0,0" />
                             <Setter Property="Foreground"
                                     Value="{Binding Value, Converter={StaticResource EntryToBrushConverter}}" />
+                            <Setter Property="BorderThickness" Value="0" />
+                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="IsReadOnly" Value="True" />
+                            <Setter Property="Focusable" Value="False" />
+                            <Setter Property="Cursor" Value="Arrow" />
+
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsReadOnly, RelativeSource={RelativeSource Self}}"
+                                             Value="False">
+                                    <Setter Property="BorderBrush" Value="{StaticResource ItemSelectedBorder}" />
+                                    <Setter Property="BorderThickness" Value="1px" />
+                                    <Setter Property="Background" Value="White" />
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="Cursor" Value="IBeam" />
+                                </DataTrigger>
+                            </Style.Triggers>
                         </Style>
-                        <SolidColorBrush x:Key="ItemSelectedBorder" Color="#FF71C0E7" />
+
                         <Style x:Key="TransparentWithBorder" TargetType="Control">
                             <Setter Property="Background" Value="Transparent" />
                             <Setter Property="BorderThickness" Value="3" />
                             <Setter Property="BorderBrush" Value="DarkGray" />
                         </Style>
+
                         <Style x:Key="TransparentBorderHighlights" TargetType="Control" BasedOn="{StaticResource TransparentWithBorder}">
                             <Style.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
@@ -81,6 +104,7 @@
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
+
                         <Style x:Key="ListItemStyle" TargetType="ListBoxItem">
                             <Style.Resources>
                                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FFCBE8F6" />
@@ -118,6 +142,7 @@
                                 </MultiTrigger>
                             </Style.Triggers>
                         </Style>
+
                         <Style x:Key="WindowControlButtonStyle" TargetType="Button">
                             <Setter Property="Template">
                                 <Setter.Value>
@@ -139,11 +164,13 @@
                                 </Setter.Value>
                             </Setter>
                         </Style>
+
                         <Style x:Key="AutoCompleteBoxStyle" TargetType="Border">
                             <Setter Property="Margin" Value="12,0,12,0" />
                             <Setter Property="Background" Value="#FFEAEAEA" />
                             <Setter Property="VerticalAlignment" Value="Top" />
                         </Style>
+
                         <Style x:Key="ButtonStyle" TargetType="Button">
                             <Setter Property="Template">
                                 <Setter.Value>
@@ -161,6 +188,7 @@
                         <RowDefinition Height="30" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
@@ -172,18 +200,17 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Label x:Name="FocusLabel" />
 
-                        <Button Name="SettingsButton" Grid.Column="0" HorizontalAlignment="Left"
+                        <!--<Button Name="SettingsButton" Grid.Column="0" HorizontalAlignment="Left"
                                 Style="{StaticResource WindowControlButtonStyle}" Click="SettingsButtonClick">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="CALENDO" FontWeight="Bold" FontSize="14" Margin="12,0,0,0"
+                            <StackPanel Orientation="Horizontal"> -->
+                                <TextBlock Grid.Column="0" Text="CALENDO" FontWeight="Bold" FontSize="14" Margin="12,0,0,0"
                                            VerticalAlignment="Center" Foreground="#FF5B5B5B" />
-                                <Image Source=".\Images\settings.png" />
+                               <!-- <Image Source=".\Images\settings.png" />
                             </StackPanel>
-                        </Button>
+                        </Button> -->
 
-                        <Border x:Name="TitleBar" Grid.Column="1" Background="Transparent" MouseDown="DragWindow" />
+                        <Border x:Name="TitleBar" Grid.Column="0" Grid.ColumnSpan="2" Background="Transparent" MouseDown="DragWindow" />
 
                         <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Click="MinimiseWindow" Style="{StaticResource WindowControlButtonStyle}">
@@ -251,8 +278,29 @@
                         </StackPanel>
                     </Grid>
 
+                    <!--Filter-->
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">
+
+                        <StackPanel.Resources>
+                            <Style TargetType="ComboBox">
+                                <Setter Property="Foreground" Value="#FF5B5B5B" />
+                                <Setter Property="FontSize" Value="10" />
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="FontWeight" Value="Bold" />
+                                <Setter Property="Padding" Value="5,2,3,2" />
+                            </Style>
+                        </StackPanel.Resources>
+
+                        <TextBlock Text="SHOW" FontWeight="Bold" FontSize="10" Margin="12,0,3,0"
+                                           VerticalAlignment="Center" Foreground="BLACK" />
+                        <ComboBox Name="FilterSelector" SelectedIndex="0" SelectionChanged="FilterSelectorSelectionChanged">
+                            <ComboBoxItem>ALL TASKS</ComboBoxItem>
+                            <ComboBoxItem>NEXT 7 DAYS</ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+
                     <!--Command Bar-->
-                    <Grid Grid.Row="1">
+                    <Grid Grid.Row="2">
                         <TextBlock Name="EnterCommandWatermark" Grid.Row="1" Margin="22,8"
                                    Style="{StaticResource NormalTextStyle}">
                             Search, or type /
@@ -305,7 +353,7 @@
                     </Border>
 
                     <!--Task List-->
-                    <ListBox Name="TaskList" Grid.Row="3" VerticalAlignment="Stretch" Margin="12,4,12,12"
+                    <ListBox Name="TaskList" Grid.Row="4" VerticalAlignment="Stretch" Margin="12,4,12,12"
                              HorizontalContentAlignment="Stretch" Style="{StaticResource TransparentWithBorder}"
                              FocusVisualStyle="{x:Null}"
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled" ItemContainerStyle="{StaticResource ListItemStyle}"
@@ -317,28 +365,29 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding Key}"
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Top" Text="{Binding Key}"
                                                Style="{StaticResource ListBoxItemTextStyle}" Margin="0,0,6,0" />
-                                    <WrapPanel Grid.Column="1">
-                                        <StackPanel>
-                                            <TextBlock Text="{Binding Value.Description}"
-                                                   Style="{StaticResource TaskTextStyle}" TextWrapping="WrapWithOverflow" />
-                                            <StackPanel Grid.Row="1" Orientation="Horizontal"
+                                    <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding Value.Description}"
+                                                   Style="{StaticResource EditableTaskTextStyle}" TextWrapping="WrapWithOverflow" LostKeyboardFocus="TextBoxLostKeyboardFocus" KeyUp="TextBoxKeyUp" />
+                                    <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal"
                                                     Visibility="{Binding Value, Converter={StaticResource DateTimeVisibilityConverter}, ConverterParameter='StackPanel'}">
-                                                <TextBlock
+                                        <TextBlock
                                                 Text="{Binding Value, Converter={StaticResource DateTimeConverter}, ConverterParameter='StartDate'}"
                                                 Style="{StaticResource ListBoxItemSubtleTextStyle}" />
-                                                <TextBlock Text="to" Margin="4,0,4,0"
+                                        <TextBlock Text="to" Margin="4,0,4,0"
                                                        Style="{StaticResource ListBoxItemSubtleTextStyle}"
                                                        Visibility="{Binding Value, Converter={StaticResource DateTimeVisibilityConverter}, ConverterParameter='RangeText'}" />
-                                                <TextBlock
+                                        <TextBlock
                                                 Text="{Binding Value, Converter={StaticResource DateTimeConverter}, ConverterParameter='EndDate'}"
                                                 Style="{StaticResource ListBoxItemSubtleTextStyle}"
                                                 Visibility="{Binding Value, Converter={StaticResource DateTimeVisibilityConverter}, ConverterParameter='RangeText'}" />
-                                            </StackPanel>
-                                        </StackPanel>
-                                    </WrapPanel>
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Panel.ZIndex="1" HorizontalAlignment="Right"
+                                    </StackPanel>
+
+                                    <StackPanel Grid.RowSpan="2" Grid.Column="1" Orientation="Horizontal" Panel.ZIndex="1" HorizontalAlignment="Right"
                                                 Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, 
                                         Path=IsMouseOver, Converter={StaticResource BooleanToVisibilityConverter}}">
                                         <Button Style="{StaticResource ButtonStyle}" Click="ChangeButtonClick">
@@ -380,15 +429,15 @@
                            Cursor="SizeWE" MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd" MouseMove="Resize"
                            Fill="{StaticResource BorderColourBrush}" />
 
-                <Rectangle x:Name="ResizeBottomLeft" Grid.Row="4" Grid.Column="0" Width="{StaticResource BorderWidth}"
+                <Rectangle x:Name="ResizeBottomLeft" Grid.Row="5" Grid.Column="0" Width="{StaticResource BorderWidth}"
                            Height="{StaticResource BorderWidth}" Cursor="SizeNESW" MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
                            MouseMove="Resize" Fill="{StaticResource BorderColourBrush}" />
 
-                <Rectangle x:Name="ResizeBottomMiddle" Grid.Row="4" Grid.Column="1"
+                <Rectangle x:Name="ResizeBottomMiddle" Grid.Row="5" Grid.Column="1"
                            Height="{StaticResource BorderWidth}" Cursor="SizeNS" MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
                            MouseMove="Resize" Fill="{StaticResource BorderColourBrush}" />
 
-                <Rectangle x:Name="ResizeBottomRight" Grid.Row="4" Grid.Column="2" Width="{StaticResource BorderWidth}"
+                <Rectangle x:Name="ResizeBottomRight" Grid.Row="5" Grid.Column="2" Width="{StaticResource BorderWidth}"
                            Height="{StaticResource BorderWidth}" Cursor="SizeNWSE" MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
                            MouseMove="Resize" Fill="{StaticResource BorderColourBrush}" />
             </Grid>

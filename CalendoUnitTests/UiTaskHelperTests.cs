@@ -1,4 +1,4 @@
-﻿//@author Jerome
+﻿//@author A0080860H
 using System;
 using Calendo;
 using Calendo.Logic;
@@ -10,10 +10,10 @@ namespace UiUnitTests
     public class UiTaskHelperTests
     {
         [TestMethod]
-        public void OverdueTest_DeadlineTaskOverdue_JustNow()
+        public void UI_OverdueTest_DeadlineTaskOverdue_JustNow()
         {
             Entry testData = new Entry();
-            testData.Type = EntryType.DEADLINE;
+            testData.Type = EntryType.Deadline;
             testData.StartTime = DateTime.Now.Subtract(TimeSpan.FromSeconds(1));
 
             bool expected = true;
@@ -22,10 +22,10 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void OverdueTest_DeadlineTaskNotOverdue_VerySoon()
+        public void UI_OverdueTest_DeadlineTaskNotOverdue_VerySoon()
         {
             Entry testData = new Entry();
-            testData.Type = EntryType.DEADLINE;
+            testData.Type = EntryType.Deadline;
             testData.StartTime = DateTime.Now.AddSeconds(1);
 
             bool expected = false;
@@ -34,10 +34,10 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void OverdueTest_TimedTaskOverdue_JustNow()
+        public void UI_OverdueTest_TimedTaskOverdue_JustNow()
         {
             Entry testData = new Entry();
-            testData.Type = EntryType.TIMED;
+            testData.Type = EntryType.Timed;
             testData.EndTime = DateTime.Now.Subtract(TimeSpan.FromSeconds(1));
 
             bool expected = true;
@@ -46,10 +46,10 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void OverdueTest_TimedTaskNotOverdue_VerySoon()
+        public void UI_OverdueTest_TimedTaskNotOverdue_VerySoon()
         {
             Entry testData = new Entry();
-            testData.Type = EntryType.TIMED;
+            testData.Type = EntryType.Timed;
             testData.EndTime = DateTime.Now.AddSeconds(1);
 
             bool expected = false;
@@ -58,10 +58,10 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void OverdueTest_FloatingTask()
+        public void UI_OverdueTest_FloatingTask()
         {
             Entry testData = new Entry();
-            testData.Type = EntryType.FLOATING;
+            testData.Type = EntryType.Floating;
 
             bool expected = false;
             bool actual = UiTaskHelper.IsTaskOverdue(testData);
@@ -69,10 +69,10 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void OngoingTest_DeadlineTaskOngoing_Now()
+        public void UI_OngoingTest_DeadlineTaskOngoing_Now()
         {
             Entry testData = new Entry();
-            testData.Type = EntryType.DEADLINE;
+            testData.Type = EntryType.Deadline;
             testData.StartTime = DateTime.Now.AddSeconds(1); // Done to account for slowness in execution.
 
             bool expected = true;
@@ -81,10 +81,10 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void OngoingTest_DeadlineTaskOngoing_Under24Hours()
+        public void UI_OngoingTest_DeadlineTaskOngoing_Under24Hours()
         {
             Entry testData = new Entry();
-            testData.Type = EntryType.DEADLINE;
+            testData.Type = EntryType.Deadline;
             testData.StartTime = DateTime.Now.AddHours(23).AddMinutes(59);
 
             bool expected = true;
@@ -93,10 +93,10 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void OngoingTest_DeadlineTaskNotOngoing_24Hours()
+        public void UI_OngoingTest_DeadlineTaskNotOngoing_24Hours()
         {
             Entry testData = new Entry();
-            testData.Type = EntryType.DEADLINE;
+            testData.Type = EntryType.Deadline;
             testData.StartTime = DateTime.Now.AddHours(24);
 
             bool expected = false;
@@ -105,10 +105,10 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void OngoingTest_DeadlineTaskNotOngoing_Past()
+        public void UI_OngoingTest_DeadlineTaskNotOngoing_Past()
         {
             Entry testData = new Entry();
-            testData.Type = EntryType.DEADLINE;
+            testData.Type = EntryType.Deadline;
             testData.StartTime = DateTime.Now.Subtract(TimeSpan.FromSeconds(1));
 
             bool expected = false;

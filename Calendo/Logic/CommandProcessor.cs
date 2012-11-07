@@ -1,4 +1,5 @@
-﻿using System;
+﻿//@author A0091571E
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,22 +12,18 @@ namespace Calendo.Logic
     {
         #region constants
         // This is the list of "actual" command types identified by the program
-        private const string COMMAND_TYPE_SEARCH = "search";
         private const string COMMAND_TYPE_ADD = "add";
         private const string COMMAND_TYPE_REMOVE = "remove";
         private const string COMMAND_TYPE_CHANGE = "change";
-        private const string COMMAND_TYPE_LIST = "list"; //TODO: Deprecated
         private const string COMMAND_TYPE_UNDO = "undo";
         private const string COMMAND_TYPE_REDO = "redo";
         private const string COMMAND_TYPE_SYNC = "export"; // "sync" [temporary substitute for demo]
         private const string COMMAND_TYPE_IMPORT = "import";
 
         // This is the list of user-inputs the program can handle and process as a "proper" command
-        private string[] INPUT_COMMANDS_SEARCH = { "/search", "/find" };
         private string[] INPUT_COMMANDS_ADD = { "/add", "/a", "/+" };
         private string[] INPUT_COMMANDS_REMOVE = { "/remove", "/delete", "/rm", "/del", "/-" };
         private string[] INPUT_COMMANDS_CHANGE = { "/change", "/update", "/modify", "/!" };
-        private string[] INPUT_COMMANDS_LIST = { "/list", "/ls", "/show" }; //TODO: Deprecated
         private string[] INPUT_COMMANDS_UNDO = { "/undo" };
         private string[] INPUT_COMMANDS_REDO = { "/redo" };
         //private string[] INPUT_COMMANDS_SYNC = { "/sync", "/export" };  
@@ -76,9 +73,6 @@ namespace Calendo.Logic
             }
             switch (commandType.ToLower())
             {
-                case COMMAND_TYPE_SEARCH:
-                    ExecuteSearch();
-                    break;
                 case COMMAND_TYPE_ADD:
                     ExecuteAdd();
                     break;
@@ -87,9 +81,6 @@ namespace Calendo.Logic
                     break;
                 case COMMAND_TYPE_CHANGE:
                     ExecuteChange();
-                    break;
-                case COMMAND_TYPE_LIST:
-                    ExecuteList();
                     break;
                 case COMMAND_TYPE_UNDO:
                     ExecuteUndo();
@@ -106,10 +97,6 @@ namespace Calendo.Logic
                 default:
                     break;
             }
-        }
-
-        private void ExecuteSearch()
-        {
         }
 
         private void ExecuteSync()
@@ -174,10 +161,6 @@ namespace Calendo.Logic
             taskManager.Change(taskNumberToChange, newTaskName, commandStartDate, commandStartTime, commandEndDate, commandEndTime);
         }
 
-        private void ExecuteList()
-        {
-        }
-
         private void ExecuteUndo()
         {
             taskManager.Undo();
@@ -197,22 +180,18 @@ namespace Calendo.Logic
         public CommandProcessor()
         {
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE = new Dictionary<string, string[]>();
-         //   DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_SEARCH, INPUT_COMMANDS_SEARCH);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_ADD, INPUT_COMMANDS_ADD);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_REMOVE, INPUT_COMMANDS_REMOVE);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
-         //   DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_LIST, INPUT_COMMANDS_LIST);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_SYNC, INPUT_COMMANDS_SYNC);
             DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_IMPORT, INPUT_COMMANDS_IMPORT);
 
             VALID_INPUT_COMMAND_LIST = new List<string>();
-            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_SEARCH);
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_ADD);
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_REMOVE);
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_CHANGE);
-            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_LIST);
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_UNDO);
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_REDO);
             VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_SYNC);
@@ -258,10 +237,9 @@ namespace Calendo.Logic
 
         private void ExtractAndRemoveCommandType()
         {
-            // By default, the program interprets a query as a "search" command
+            // By default, the program interprets a query as an empty command
             if (IsNoCommand())
             {
-                commandType = COMMAND_TYPE_SEARCH;
                 return;
             }
 
