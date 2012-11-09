@@ -100,7 +100,9 @@
     <Compile Include="Logic\Command.cs" />
     <Compile Include="Logic\CommandExtractors.cs" />
     <Compile Include="Logic\ModifyFlag.cs" />
+    <Compile Include="Logic\TaskTime.cs" />
     <Compile Include="Logic\TimeFormat.cs" />
+    <Compile Include="Logic\TimeHelper.cs" />
     <Compile Include="UiViewModel.cs" />
     <Compile Include="UiTaskHelper.cs" />
     <Page Include="Debug\DebugMode.xaml">
