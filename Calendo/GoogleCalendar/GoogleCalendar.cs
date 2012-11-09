@@ -38,7 +38,7 @@ namespace Calendo.GoogleCalendar
             return "";
         }
 
-        public void Export()
+        public virtual void Export()
         {
             storage.Load();
             deleteGcalTasks( getTasksIds(getTaskResponse(auth)),auth);
@@ -73,7 +73,7 @@ namespace Calendo.GoogleCalendar
             return tasks;
         }
 
-        public string Import()
+        public virtual string Import()
         {
             List<Entry> taskList = getTaskDetails(getTaskResponse(auth));
             storage.Load();

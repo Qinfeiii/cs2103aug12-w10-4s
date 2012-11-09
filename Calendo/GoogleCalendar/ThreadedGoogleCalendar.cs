@@ -9,6 +9,11 @@ namespace Calendo.GoogleCalendar
     public class ThreadedGoogleCalendar
     {
         private static Type GoogleCalendarClassType = typeof(GoogleCalendar);
+        private static Delegate AuthMethod = new AuthorizationCall(delegate() { GoogleCalendar.Authorize(); });
+        private static Thread ActiveThread = null;
+
+        public delegate void AuthorizationCall();
+
         /// <summary>
         /// Sets the Google Calendar class used
         /// </summary>
@@ -17,12 +22,20 @@ namespace Calendo.GoogleCalendar
             set { GoogleCalendarClassType = value; }
         }
 
-        public delegate void AuthorizationCall();
-        private static Delegate AuthMethod = new AuthorizationCall(delegate() { GoogleCalendar.Authorize(); });
-
+        /// <summary>
+        /// Sets the authorization method used
+        /// </summary>
         public static Delegate AuthorizationMethod
         {
             set { AuthMethod = value; }
+        }
+
+        /// <summary>
+        /// Gets the current thread
+        /// </summary>
+        public static Thread CurrentThread
+        {
+            get { return ActiveThread; }
         }
 
         /// <summary>
@@ -50,6 +63,7 @@ namespace Calendo.GoogleCalendar
         private static void RunThread(ThreadStart method)
         {
             Thread threadInstance = new Thread(method);
+            ActiveThread = threadInstance;
             threadInstance.Start();
         }
 

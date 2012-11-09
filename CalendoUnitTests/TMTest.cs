@@ -233,7 +233,11 @@ namespace CalendoUnitTests
             ThreadedGoogleCalendar.GoogleCalendarType = typeof(GoogleCalendarStub);
             ThreadedGoogleCalendar.AuthorizationMethod = new ThreadedGoogleCalendar.AuthorizationCall(delegate() { });
             tm.Export();
+            ThreadedGoogleCalendar.CurrentThread.Join();
+            Assert.IsTrue(GoogleCalendarStub.LastRun == "Export");
             tm.Import();
+            ThreadedGoogleCalendar.CurrentThread.Join();
+            Assert.IsTrue(GoogleCalendarStub.LastRun == "Import");
         }
     }
 }

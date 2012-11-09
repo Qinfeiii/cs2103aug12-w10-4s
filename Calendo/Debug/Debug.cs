@@ -8,15 +8,23 @@ using System.Diagnostics;
 
 namespace Calendo.Diagnostics
 {
+    public enum MessageType
+    {
+        Critical,
+        Alert,
+        Info
+    }
+
     public class DebugTool
     {
         private const string LOG_FILEPATH = "log.txt";
-        private const string LOG_FORMAT = "{0:G}: {1} {2}";
+        private const string LOG_FORMAT = "{0:G}: [{1}] {2}";
         private const string CONFIG_FILEPATH = "debugcfg.txt";
+        private const string MESSAGE_DEBUG_LOAD = "Debug file loaded, debugging state = {0}";
         private static bool IsEnable = true;
         private static bool IsConfigLoaded = false;
-
         private static bool IsHasNotification = false;
+
         /// <summary>
         /// Gets whether if there are notifications. Value will be changed to false after being accessed.
         /// </summary>
@@ -103,7 +111,7 @@ namespace Calendo.Diagnostics
                 fileStream.Close();
                 IsConfigLoaded = true;
 
-                WriteLog("Debug file loaded, debugging state = " + Enable.ToString(), "[Init] ");
+                WriteLog(String.Format(MESSAGE_DEBUG_LOAD, Enable.ToString()));
             }
             catch (Exception e)
             {
@@ -128,21 +136,21 @@ namespace Calendo.Diagnostics
                 MessageBox.Show(message);
                 UpdateSubscribers(message);
             }
-            WriteLog(message);
+            WriteLog(message, MessageType.Alert);
         }
 
         /// <summary>
         /// Writes a log message
         /// </summary>
         /// <param name="message">Message string</param>
-        public static void WriteLog(string message, string type = "[Info] ")
+        public static void WriteLog(string message, MessageType type = MessageType.Info)
         {
             if (!IsConfigLoaded)
             {
                 LoadConfig();
             }
             string timeStamp = DateTime.Now.ToString();
-            string prefix = type;
+            string prefix = type.ToString();
             StreamWriter file = System.IO.File.AppendText(LOG_FILEPATH);
             file.WriteLine(String.Format(LOG_FORMAT, timeStamp, prefix, message));
             file.Close();

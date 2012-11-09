@@ -14,14 +14,15 @@ namespace Calendo.GoogleCalendar
             get { return lastRunMessage; }
         }
 
-        public new void Export()
+        public override void Export()
         {
             lastRunMessage = "Export";
         }
 
-        public new void Import()
+        public override string Import()
         {
             lastRunMessage = "Import";
+            return "";
         }
     }
 }
