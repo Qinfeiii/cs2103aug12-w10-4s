@@ -28,7 +28,11 @@ namespace Calendo.GoogleCalendar
                 return false;
             storage.Load();
             deleteGcalTasks( getTasksIds(getTaskResponse(auth)),auth);
-            postTasks(storage.Entries, auth);
+            if (postTasks(storage.Entries, auth) == null)
+            {
+                MessageBox.Show("Oops! An error has occurred. Please try again later or contact support");
+                return false;
+            }
             return true;
         }
 
@@ -98,8 +102,8 @@ namespace Calendo.GoogleCalendar
                     taskListDetails += sLine;
             }
 
-            JSON<TaskResponse> jtest = new JSON<TaskResponse>();
-            TaskResponse values = jtest.Deserialize(taskListDetails);
+            JSON<TaskResponse> jsonObject = new JSON<TaskResponse>();
+            TaskResponse values = jsonObject.Deserialize(taskListDetails);
             String taskListId = "";
             for (int c = 0; c < values.Items.Count; c++)
             {
@@ -173,9 +177,14 @@ namespace Calendo.GoogleCalendar
                     newStream.Write(data, 0, data.Length);
                 }
 
-                var httpResponse = (HttpWebResponse)httpWReq.GetResponse();
+                var response = (HttpWebResponse)httpWReq.GetResponse();
 
-                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    return null;
+                }
+
+                using (var streamReader = new StreamReader(response.GetResponseStream()))
                 {
                     responseText += streamReader.ReadToEnd();
                 }
@@ -212,8 +221,8 @@ namespace Calendo.GoogleCalendar
 
         private List<Entry> getTaskDetails(string tasks)
         {
-            JSON<TaskResponse> jtest = new JSON<TaskResponse>();
-            TaskResponse values = jtest.Deserialize(tasks);
+            JSON<TaskResponse> jsonObject = new JSON<TaskResponse>();
+            TaskResponse values = jsonObject.Deserialize(tasks);
             List<Entry> taskList = new List<Entry>();
             for (int c = 0; c < values.Items.Count; c++)
             {
@@ -223,7 +232,7 @@ namespace Calendo.GoogleCalendar
                 entry.Description = values.Items[c].Title;
                 if (values.Items[c].due != null)
                 {
-                    entry.StartTime = jtest.JSONToDate(values.Items[c].due);
+                    entry.StartTime = jsonObject.JSONToDate(values.Items[c].due);
                     entry.StartTimeFormat = TimeFormat.DATE;
                     entry.Type = EntryType.DEADLINE;
                 }
