@@ -197,7 +197,7 @@ namespace CalendoUnitTests
         }
 
         [TestMethod]
-        public void DataJSON()
+        public void GCJSON()
         {
             Entry testEntry = new Entry();
             testEntry.Description = "test";
@@ -210,7 +210,7 @@ namespace CalendoUnitTests
         }
 
         [TestMethod]
-        public void DataJSONTime()
+        public void GCJSONTime()
         {
             JSON<Entry> jsonParser = new JSON<Entry>();
             DateTime nowTime = DateTime.Now;
