@@ -117,28 +117,27 @@ namespace CalendoUnitTests
             taskManager.Entries.Clear();
 
             // Non-existant date
-            taskManager.Add("Test Invalid 1", "32/12", "0:00 PM");  // Bad daate and invalid time
+            taskManager.Add("Test Invalid 1", "32/12", "0:00 PM");  // Bad date and invalid time
+            Assert.IsTrue(taskManager.Entries.Count == 0);
+
             taskManager.Add("Test Invalid 2", "1/2/" + (DateTime.Today.Year.ToString()), "25:00"); // Day in past (same year) and invalid time
+            Assert.IsTrue(taskManager.Entries.Count == 0);
+
             taskManager.Add("Test Invalid 3", "1/1/2011", null, "1/1/2010", null); // Day in past and null string
+            Assert.IsTrue(taskManager.Entries.Count == 0);
+
             taskManager.Add("Test Invalid 4", "a/b/c", "-1:m");
+            Assert.IsTrue(taskManager.Entries.Count == 0);
 
-            // Invalid fields should be ignored
-            Assert.IsTrue(taskManager.Entries[0].Type == EntryType.Floating);
-            //Assert.IsTrue(tm.Entries[1].Type == EntryType.FLOATING);
-            //Assert.IsTrue(tm.Entries[2].Type == EntryType.FLOATING);
-            Assert.IsTrue(taskManager.Entries[3].Type == EntryType.Floating);
-
-            // Partially valid
+            // Partially valid should also be rejected
             taskManager.Add("Test Invalid 5", "a/b/c", "23:59");
-            Assert.IsTrue(taskManager.Entries[4].Type == EntryType.Deadline);
-            Assert.IsTrue(taskManager.Entries[4].StartTimeFormat == TimeFormat.Time);
+            Assert.IsTrue(taskManager.Entries.Count == 0);
 
             taskManager.Add("Test Invalid 6", "1/1", "a:-1");
-            Assert.IsTrue(taskManager.Entries[5].Type == EntryType.Deadline);
-            Assert.IsTrue(taskManager.Entries[5].StartTimeFormat == TimeFormat.Date);
+            Assert.IsTrue(taskManager.Entries.Count == 0);
 
             taskManager.Add("Test Invalid 5", null, null, "1/1", null);
-            Assert.IsTrue(taskManager.Entries[6].Type == EntryType.Floating);
+            Assert.IsTrue(taskManager.Entries.Count == 0);
         }
 
         [TestMethod]
@@ -155,7 +154,6 @@ namespace CalendoUnitTests
             taskManager.Change(taskManager.Entries.Count + 1, "b", "", "", "", "");
             taskManager.Change(-1, "c", "", "", "", "");
 
-            // Note: Task ID is 1-based
             taskManager.Change(1, "Test Changed 1");
             Assert.IsTrue(taskManager.Entries[0].Description == "Test Changed 1");
 
@@ -172,6 +170,35 @@ namespace CalendoUnitTests
             Assert.IsTrue(taskManager.Entries[2].Description == "Test Floating 2 changed");
             Assert.IsTrue(taskManager.Entries[2].StartTimeFormat == TimeFormat.Date);
             Assert.IsTrue(taskManager.Entries[2].EndTimeFormat == TimeFormat.None);
+        }
+
+        [TestMethod]
+        public void TMChangeInvalid()
+        {
+            taskManager.Entries.Clear();
+            taskManager.Add("Test Timed", "1/12/2012", "14:00", "31/1/2013", "3:02PM");
+
+            // Invalid change operations should not alter the task
+
+            // Invalid date
+            taskManager.Change(1, null, "31/2");
+            Assert.IsTrue(taskManager.Entries[0].StartTime.Day == 1);
+            Assert.IsTrue(taskManager.Entries[0].StartTime.Month == 12);
+
+            // Invalid time
+            taskManager.Change(1, null, "1/2", "-1:00");
+            Assert.IsTrue(taskManager.Entries[0].StartTime.Day == 1);
+            Assert.IsTrue(taskManager.Entries[0].StartTime.Month == 12);
+
+            // Start date after end
+            taskManager.Change(1, null, "2/2/13");
+            Assert.IsTrue(taskManager.Entries[0].StartTime.Day == 1);
+            Assert.IsTrue(taskManager.Entries[0].StartTime.Month == 12);
+
+            // End date before start
+            taskManager.Change(1, null, null, null, null, "2/2/2012");
+            Assert.IsTrue(taskManager.Entries[0].StartTime.Day == 1);
+            Assert.IsTrue(taskManager.Entries[0].StartTime.Month == 12);
         }
 
         [TestMethod]

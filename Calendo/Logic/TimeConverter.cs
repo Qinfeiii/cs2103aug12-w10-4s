@@ -13,6 +13,7 @@ namespace Calendo.Logic
         private const string ERROR_INVALID_DATE = "Date is invalid";
         private const string ERROR_INVALID_TIME = "Time is invalid";
         private const int INVALID_VALUE = -1;
+        private readonly string[] KEYWORDS = new string[] { "-" };
         private readonly char[] DELIMITTER_DATE = new char[] { '.', '/', '-' };
         private readonly char[] DELIMITTER_TIME = new char[] { ':', '.' };
 
@@ -101,6 +102,23 @@ namespace Calendo.Logic
         }
 
         /// <summary>
+        /// Determines if the input string has a keyword
+        /// </summary>
+        /// <param name="inputString">Input string</param>
+        /// <returns>Returns true if contains a keyword</returns>
+        private bool HasKeyword(string inputString)
+        {
+            inputString = inputString.Trim();
+            foreach (string keyword in KEYWORDS) {
+                if (inputString == keyword)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Converts time to DateTime
         /// </summary>
         /// <param name="timeString">Input time</param>
@@ -110,6 +128,13 @@ namespace Calendo.Logic
         private void ConvertTime(string timeString, ref DateTime newTime, ref StringBuilder errorMessage, ref bool isValidTime)
         {
             Debug.Assert(timeString != null);
+
+            if (HasKeyword(timeString))
+            {
+                newTime = new DateTime(0);
+                isValidTime = true;
+                return;
+            }
 
             int hour = INVALID_VALUE;
             int minute = 0;
@@ -165,6 +190,13 @@ namespace Calendo.Logic
         private void ConvertDate(string dateString, ref DateTime newDate, ref StringBuilder errorMessage, ref bool isValidDate)
         {
             Debug.Assert(dateString != null);
+
+            if (HasKeyword(dateString))
+            {
+                newDate = new DateTime(0);
+                isValidDate = true;
+                return;
+            }
 
             bool isYearProvided = false;
             int year = DateTime.Today.Year;
@@ -268,7 +300,12 @@ namespace Calendo.Logic
             }
 
             DateTime newTime = new DateTime(year, month, day, hour, minute, 0);
-            return new TaskTime(newTime, format);
+            TaskTime mergedTime = new TaskTime(newTime, format);
+
+            // Carry over error
+            mergedTime.HasError = source.HasError || destination.HasError;
+
+            return mergedTime;
         }
     }
 }

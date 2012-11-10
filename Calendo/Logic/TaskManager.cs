@@ -17,6 +17,7 @@ namespace Calendo.Logic
         private const string ERROR_END_BEFORE_START = "End date cannot be before start date";
         private const string KEYWORD_REMOVE = "-";
         private const string STORAGE_PATH = "archive.txt";
+        private const bool ALLOW_CONTINUE_ON_ERROR = false;
         private const ModifyFlag CHANGE_DESCRIPTION = ModifyFlag.Description;
         private const ModifyFlag CHANGE_START = ModifyFlag.StartDate | ModifyFlag.StartTime | ModifyFlag.EraseStartDate | ModifyFlag.EraseStartTime;
         private const ModifyFlag CHANGE_END = ModifyFlag.EndDate | ModifyFlag.EndTime | ModifyFlag.EraseEndDate | ModifyFlag.EraseEndTime;
@@ -88,6 +89,7 @@ namespace Calendo.Logic
         /// <param name="endTime">End Time</param>
         public void Add(string description, string startDate = "", string startTime = "", string endDate = "", string endTime = "")
         {
+            description = SanitizeString(description);
             startDate = SanitizeString(startDate);
             if (startDate.Contains("-") && !HasText(endDate))
             {
@@ -120,6 +122,14 @@ namespace Calendo.Logic
             entry.StartTimeFormat = startTime.Format;
             entry.EndTime = endTime.Time;
             entry.EndTimeFormat = endTime.Format;
+            if (!ALLOW_CONTINUE_ON_ERROR)
+            {
+                if (startTime.HasError || endTime.HasError)
+                {
+                    // Do not allow entry to be added
+                    return;
+                }
+            }
             this.Add(entry);
         }
 
@@ -151,6 +161,7 @@ namespace Calendo.Logic
                 {
                     // End time not to be used
                     endTime.Format = TimeFormat.None;
+                    endTime.HasError = true;
                 }
                 // No start time, means it is a floating task
                 return EntryType.Floating;
@@ -168,6 +179,7 @@ namespace Calendo.Logic
                     {
                         // End is before start, mark end as invalid
                         endTime.Format = TimeFormat.None;
+                        endTime.HasError = true;
                         DebugTool.Alert(ERROR_END_BEFORE_START);
                         return EntryType.Deadline;
                     }
@@ -263,40 +275,45 @@ namespace Calendo.Logic
             Entry entry = this.Get(id);
             if (entry != null)
             {
-                // If the relevant flag is set, update that value, otherwise ignore the value
+                string entryDescription = entry.Description;
                 if (flag.Contains(ModifyFlag.Description))
                 {
-                    entry.Description = description;
+                    entryDescription = description;
                 }
+
+                TaskTime entryStart = new TaskTime(entry.StartTime, entry.StartTimeFormat);
+                TaskTime entryEnd = new TaskTime(entry.EndTime, entry.EndTimeFormat);
 
                 if (flag.Contains(CHANGE_START))
                 {
                     ModifyFlag startFlag = flag.Unset(CHANGE_END);
-                    TaskTime entryTime = new TaskTime(entry.StartTime, entry.StartTimeFormat);
-                    TaskTime mergedTime = TimeConverter.MergeTime(startTime, entryTime, startFlag);
-                    entry.StartTime = mergedTime.Time;
-                    entry.StartTimeFormat = mergedTime.Format;
+                    entryStart = TimeConverter.MergeTime(startTime, entryStart, startFlag);
                 }
 
                 if (flag.Contains(CHANGE_END))
                 {
                     ModifyFlag endFlag = flag.Unset(CHANGE_START);
-                    endFlag = endFlag.Unset(ModifyFlag.EraseStartDate | ModifyFlag.EraseStartTime);
-                    TaskTime entryTime = new TaskTime(entry.EndTime, entry.EndTimeFormat);
-                    TaskTime mergedTime = TimeConverter.MergeTime(endTime, entryTime, endFlag);
-                    entry.EndTime = mergedTime.Time;
-                    entry.EndTimeFormat = mergedTime.Format;
+                    entryEnd = TimeConverter.MergeTime(endTime, entryEnd, endFlag);
                 }
 
-                TaskTime startTaskTime = new TaskTime(entry.StartTime, entry.StartTimeFormat);
-                TaskTime endTaskTime = new TaskTime(entry.EndTime, entry.EndTimeFormat);
-                entry.Type = this.GetTaskType(startTaskTime, endTaskTime);
+                entry.Type = this.GetTaskType(entryStart, entryEnd);
 
-                // Re-update in case there are invalid times caught by checking task type
-                entry.StartTime = startTaskTime.Time;
-                entry.StartTimeFormat = startTaskTime.Format;
-                entry.EndTime = endTaskTime.Time;
-                entry.EndTimeFormat = endTaskTime.Format;
+                if (!ALLOW_CONTINUE_ON_ERROR)
+                {
+                    if (entryStart.HasError || entryEnd.HasError || startTime.HasError || endTime.HasError)
+                    {
+                        // Do not allow entry to be changed
+                        return;
+                    }
+                }
+
+                // Make changes if checks pass
+                entry.Description = entryDescription;
+                entry.StartTime = entryStart.Time;
+                entry.StartTimeFormat = entryStart.Format;
+                entry.EndTime = entryEnd.Time;
+                entry.EndTimeFormat = entryEnd.Format;
+
                 this.Save();
             }
             else
