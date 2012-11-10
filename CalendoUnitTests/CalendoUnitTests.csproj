@@ -63,6 +63,7 @@
     <Compile Include="TMTest.cs" />
     <Compile Include="SMTest.cs" />
     <Compile Include="UiTaskHelperTests.cs" />
+    <Compile Include="DebugTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Calendo\Calendo.csproj">
