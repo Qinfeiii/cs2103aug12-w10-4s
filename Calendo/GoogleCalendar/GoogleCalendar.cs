@@ -17,12 +17,12 @@ using System.Windows.Forms;
 
 namespace Calendo.GoogleCalendar
 {
-    class GoogleCalendar
+    public class GoogleCalendar
     {
         private TaskManager storage = TaskManager.Instance;
         private static string auth = "";
    
-        public Boolean Export()
+        public virtual bool Export()
         {
             if (auth == "")
                 return false;
@@ -36,7 +36,7 @@ namespace Calendo.GoogleCalendar
             return true;
         }
 
-        public Boolean Import()
+        public virtual bool Import()
         {
             if (auth == "")
                 return false;
@@ -104,7 +104,7 @@ namespace Calendo.GoogleCalendar
 
             JSON<TaskResponse> jsonObject = new JSON<TaskResponse>();
             TaskResponse values = jsonObject.Deserialize(taskListDetails);
-            String taskListId = "";
+            string taskListId = "";
             for (int c = 0; c < values.Items.Count; c++)
             {
                 taskListId += values.Items[c].Id;
@@ -151,7 +151,7 @@ namespace Calendo.GoogleCalendar
 
             foreach (Entry task in tasks)
             {
-                String taskListId = getTaskListId(auth);
+                string taskListId = getTaskListId(auth);
                 /*
                  * Creating a http request
                  */
@@ -163,7 +163,7 @@ namespace Calendo.GoogleCalendar
                 httpWReq.Timeout = 10000;
                 JSON<TaskResponse> jsonObject = new JSON<TaskResponse>();
                 string postData = "{\"title\": \"" + task.Description + "\"";
-                if (task.Type != EntryType.FLOATING)
+                if (task.Type != EntryType.Floating)
                     postData += ",\"due\": \"" + jsonObject.DateToJSON(task.StartTime) + "\"";
                 postData += "}";
                 responseText = "";
@@ -210,7 +210,7 @@ namespace Calendo.GoogleCalendar
 		{
             JSON<TaskResponse> jsonObject = new JSON<TaskResponse>();
             TaskResponse values = jsonObject.Deserialize(tasks);
-            List<String> taskList = new List<string>();
+            List<string> taskList = new List<string>();
             for (int c = 0; c < values.Items.Count; c++)
             {
                 if (values.Items[c].Title!="")
@@ -233,11 +233,11 @@ namespace Calendo.GoogleCalendar
                 if (values.Items[c].due != null)
                 {
                     entry.StartTime = jsonObject.JSONToDate(values.Items[c].due);
-                    entry.StartTimeFormat = TimeFormat.DATE;
-                    entry.Type = EntryType.DEADLINE;
+                    entry.StartTimeFormat = TimeFormat.Date;
+                    entry.Type = EntryType.Deadline;
                 }
                 else
-                    entry.Type = EntryType.FLOATING;
+                    entry.Type = EntryType.Floating;
                 taskList.Add(entry);
             }
             return taskList;

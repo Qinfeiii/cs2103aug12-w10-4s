@@ -8,20 +8,33 @@ namespace Calendo.GoogleCalendar
     public class GoogleCalendarStub : GoogleCalendar
     {
         private static string LastRunMessage = "";
+
+        /// <summary>
+        /// Gets the last run message
+        /// </summary>
         public static string LastRun
         {
             get { return LastRunMessage; }
         }
 
-        public override void Export()
+        /// <summary>
+        /// Export stub, sets last run message to "Export"
+        /// </summary>
+        /// <returns>Returns true by default</returns>
+        public override bool Export()
         {
             LastRunMessage = "Export";
+            return true;
         }
 
-        public override string Import()
+        /// <summary>
+        /// Import stub, sets last run message to "Import"
+        /// </summary>
+        /// <returns>Returns true by default</returns>
+        public override bool Import()
         {
             LastRunMessage = "Import";
-            return "";
+            return true;
         }
     }
 }
