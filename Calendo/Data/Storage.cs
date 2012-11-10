@@ -72,6 +72,9 @@ namespace Calendo.Data
             }
         }
 
+        /// <summary>
+        /// Indicates whether to use a wrapper
+        /// </summary>
         protected bool UseWrapper = true;
 
         /// <summary>
@@ -110,7 +113,7 @@ namespace Calendo.Data
         /// <summary>
         /// Saves the data
         /// </summary>
-        /// <returns>Returns true if file has been changed</returns>
+        /// <returns>True if file has been changed</returns>
         public virtual bool Save()
         {
             Stream fileStream = null;
@@ -140,7 +143,7 @@ namespace Calendo.Data
         /// <summary>
         /// Loads the data
         /// </summary>
-        /// <returns>Returns true if the file has been read</returns>
+        /// <returns>True if the file has been read</returns>
         public virtual bool Load()
         {
             Stream fileStream = null;

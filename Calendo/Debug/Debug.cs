@@ -15,6 +15,9 @@ namespace Calendo.Diagnostics
         Info
     }
 
+    /// <summary>
+    /// Debugging tool
+    /// </summary>
     public class DebugTool
     {
         private const string LOG_FILEPATH = "log.txt";
@@ -24,6 +27,7 @@ namespace Calendo.Diagnostics
         private static bool IsEnable = true;
         private static bool IsConfigLoaded = false;
         private static bool IsHasNotification = false;
+        private static string CurrentMessage = "";
 
         /// <summary>
         /// Gets whether if there are notifications. Value will be changed to false after being accessed.
@@ -38,7 +42,6 @@ namespace Calendo.Diagnostics
             }
         }
 
-        private static string CurrentMessage = "";
         /// <summary>
         /// Gets the latest notification message
         /// </summary>
@@ -50,11 +53,10 @@ namespace Calendo.Diagnostics
             }
         }
 
-
         /// <summary>
         /// Notify handler for DebugTool notifications
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">Message to send</param>
         public delegate void NotifyHandler(string message);
         private static List<NotifyHandler> SubscriberList = new List<NotifyHandler>();
 
@@ -79,7 +81,6 @@ namespace Calendo.Diagnostics
                 notifyMethod(message);
             }
         }
-
 
         /// <summary>
         /// Get or set debug enable switch
@@ -145,7 +146,7 @@ namespace Calendo.Diagnostics
         /// <summary>
         /// Writes a log message
         /// </summary>
-        /// <param name="message">Message string</param>
+        /// <param name="message">Message to write</param>
         public static void WriteLog(string message, MessageType type = MessageType.Info)
         {
             string timeStamp = DateTime.Now.ToString();
