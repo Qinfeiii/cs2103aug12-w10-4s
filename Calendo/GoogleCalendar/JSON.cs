@@ -27,7 +27,8 @@ namespace Calendo.GoogleCalendar
         /// </summary>
         /// <param name="obj">Object to convert</param>
         /// <returns>JSON string representation</returns>
-        public string Serialize(T obj) {
+        public string Serialize(T obj)
+        {
             string json = jsSerializer.Serialize(obj);
             return json;
         }
@@ -50,7 +51,7 @@ namespace Calendo.GoogleCalendar
         /// <returns>JSON representation of DateTime object</returns>
         public string DateToJSON(DateTime date)
         {
-            // NOTE: JSON do not have a standardized format. Google API uses RFC 3339.
+            // JSON do not have a standardized format. Google API uses RFC 3339.
             DateTime utcDate = date.ToUniversalTime();
             return utcDate.ToString("yyyy-MM-dd") + "T" + utcDate.ToString("HH:mm:ss") + ".000Z";
         }

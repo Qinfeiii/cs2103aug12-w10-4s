@@ -20,10 +20,10 @@
                                         ShadowDepth="0" Opacity=".5" BlurRadius="10" />
         </Border.Effect>
         <Grid x:Name="Grid" Background="White">
-            <TextBox Height="26" Margin="10,78,10,0" Name="textBox1" VerticalAlignment="Top" />
-            <Button Content="Ok" Height="23" Margin="0,116,91,0" Name="button1" VerticalAlignment="Top" Click="button1_Click" HorizontalAlignment="Right" Width="75" IsDefault="True" />
+            <TextBox Height="26" Margin="10,78,10,0" Name="authTextBox" VerticalAlignment="Top" />
+            <Button Content="Ok" Height="23" Margin="0,116,91,0" Name="button1" VerticalAlignment="Top" Click="OKButton_Click" HorizontalAlignment="Right" Width="75" IsDefault="True" />
             <TextBlock TextWrapping="Wrap" Text="In order to synchronize with Google Calendar, we would need your authorization code." Height="37" HorizontalAlignment="Left" Margin="10,32,0,0" Name="label1" VerticalAlignment="Top" Width="258" />
-            <Button Content="Cancel" Margin="0,116,10,0" Name="button2" Height="23" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Click="button2_Click" IsCancel="True" />
+            <Button Content="Cancel" Margin="0,116,10,0" Name="button2" Height="23" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Click="CloseButton_Click" IsCancel="True" />
             <Label x:Name="TitleBar" Content="Authorization Code" Background="#FFCA5100" Foreground="White" HorizontalAlignment="Left" Height="27" VerticalAlignment="Top" Width="278" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"/>
         </Grid>
     </Border>

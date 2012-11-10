@@ -1,6 +1,6 @@
-﻿using System;
+﻿//@author A0080933E
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,13 +33,14 @@ namespace Calendo.GoogleCalendar
             get { return authCode; }
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void OKButton_Click(object sender, RoutedEventArgs e)
         {
-            authCode = this.textBox1.Text;
+            authCode = this.authTextBox.Text;
+            this.DialogResult = true;
             this.Close();
         }
 
-        private void button2_Click(object sender, RoutedEventArgs e)
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
         }

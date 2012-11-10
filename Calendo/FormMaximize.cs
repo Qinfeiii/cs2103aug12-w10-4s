@@ -18,12 +18,7 @@ namespace Calendo
         /// <summary>
         /// Directly override WinProc messages
         /// </summary>
-        public static System.IntPtr WindowProc(
-              System.IntPtr handle,
-              int message,
-              System.IntPtr wParam,
-              System.IntPtr lParam,
-              ref bool handled)
+        public static IntPtr WindowProc(IntPtr handle, int message, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             switch (message)
             {
@@ -33,7 +28,7 @@ namespace Calendo
                     break;
             }
 
-            return (System.IntPtr)0;
+            return (IntPtr)0;
         }
 
         /// <summary>
@@ -41,13 +36,13 @@ namespace Calendo
         /// </summary>
         /// <param name="handle">Pointer to window</param>
         /// <param name="lParam">Long Parameter</param>
-        private static void WmGetMinMaxInfo(System.IntPtr handle, System.IntPtr lParam)
+        private static void WmGetMinMaxInfo(IntPtr handle, IntPtr lParam)
         {
             MinMaxInfo minmaxInfo = (MinMaxInfo)Marshal.PtrToStructure(lParam, typeof(MinMaxInfo));
 
             // Get current monitor information
             int MONITOR_DEFAULT_TO_NEAREST = 0x00000002;
-            System.IntPtr monitor = MonitorFromWindow(handle, MONITOR_DEFAULT_TO_NEAREST);
+            IntPtr monitor = MonitorFromWindow(handle, MONITOR_DEFAULT_TO_NEAREST);
 
             if (monitor != System.IntPtr.Zero) // Not null pointer
             {
