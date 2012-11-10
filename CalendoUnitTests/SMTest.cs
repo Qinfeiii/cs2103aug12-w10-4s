@@ -11,30 +11,32 @@ namespace CalendoUnitTests
         [TestMethod]
         public void SMLoad()
         {
-            SettingsManager sm = new SettingsManager();
-            sm.Clear();
-            Assert.IsNull(sm.GetSetting("non-existant"));
+            SettingsManager settingsManager = new SettingsManager();
+            settingsManager.Clear();
+            Assert.IsNull(settingsManager.GetSetting("non-existant"));
         }
+
         [TestMethod]
         public void SMAdd()
         {
-            SettingsManager sm = new SettingsManager();
-            sm.Clear();
-            sm.SetSetting("test 1", "test1 value");
-            Assert.IsTrue(sm.GetSetting("test 1") == "test1 value");
+            SettingsManager settingsManager = new SettingsManager();
+            settingsManager.Clear();
+            settingsManager.SetSetting("test 1", "test1 value");
+            Assert.IsTrue(settingsManager.GetSetting("test 1") == "test1 value");
 
             // Test if setting can be accessed
             SettingsManager sm2 = new SettingsManager();
             Assert.IsTrue(sm2.GetSetting("test 1") == "test1 value");
         }
+
         [TestMethod]
         public void SMModify()
         {
-            SettingsManager sm = new SettingsManager();
-            sm.Clear();
-            sm.SetSetting("test 2", "test2 value");
-            sm.SetSetting("test 2", "test2 new value");
-            Assert.IsTrue(sm.GetSetting("test 2") == "test2 new value");
+            SettingsManager settingsManager = new SettingsManager();
+            settingsManager.Clear();
+            settingsManager.SetSetting("test 2", "test2 value");
+            settingsManager.SetSetting("test 2", "test2 new value");
+            Assert.IsTrue(settingsManager.GetSetting("test 2") == "test2 new value");
         }
     }
 }

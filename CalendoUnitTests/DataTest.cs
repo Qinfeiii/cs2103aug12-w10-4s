@@ -21,6 +21,7 @@ namespace CalendoUnitTests
             UTStorage.Load();
             Assert.IsNotNull(UTStorage.Entries);
         }
+
         [TestMethod]
         public void DataSave()
         {
@@ -49,9 +50,10 @@ namespace CalendoUnitTests
             UTStorage.Save();
             Assert.IsTrue(UTStorage.Entries.Count == 0);
         }
+
         [TestMethod]
         public void DataIncompatible()
-        {   
+        {
             Storage<List<string>> UTStorage = new Storage<List<string>>("test2.txt");
             UTStorage.Load();
             UTStorage.Entries.Clear();
@@ -60,7 +62,7 @@ namespace CalendoUnitTests
             UTStorage.Save();
             UTStorage.Load();
             Assert.IsTrue(UTStorage.Entries.Count == 2);
-            
+
             Storage<State<int>> UTStorageINT = new Storage<State<int>>("test2.txt");
             UTStorageINT.Load();
             UTStorageINT.Save();
@@ -70,6 +72,7 @@ namespace CalendoUnitTests
 
             Storage<Stack<string>> UnsupportedStorage = new Storage<Stack<string>>("test3.txt");
         }
+
         [TestMethod]
         public void DataUnwritable()
         {
@@ -94,6 +97,7 @@ namespace CalendoUnitTests
             UTStorage.Load();
             Assert.IsTrue(UTStorage.Entries.Count == 2);
         }
+
         [TestMethod]
         public void DataEntry()
         {
@@ -114,7 +118,7 @@ namespace CalendoUnitTests
             Assert.IsTrue(cloneEntry.Description == testEntry.Description);
             Assert.IsTrue(cloneEntry.EndTime == testEntry.EndTime);
             Assert.IsTrue(cloneEntry.StartTime == testEntry.StartTime);
-            
+
             Assert.IsTrue(cloneEntry.StartTimeFormat == testEntry.StartTimeFormat);
             Assert.IsTrue(cloneEntry.EndTimeFormat == testEntry.EndTimeFormat);
             Assert.IsTrue(cloneEntry.Type == testEntry.Type);
@@ -123,6 +127,7 @@ namespace CalendoUnitTests
             testEntry.ID = 1;
             Assert.IsFalse(cloneEntry.ID == testEntry.ID);
         }
+
         [TestMethod]
         public void DataState()
         {
@@ -148,6 +153,7 @@ namespace CalendoUnitTests
             statevar.AddState();
             Assert.IsFalse(statevar.Value == 0);
         }
+
         [TestMethod]
         public void DataStateStorage()
         {
@@ -168,7 +174,7 @@ namespace CalendoUnitTests
             UTState.Redo();
             Assert.IsTrue(UTState.Entries.Count == 2);
             UTState.Save();
-            
+
             StateStorage<List<Entry>> UTState2 = new StateStorage<List<Entry>>("data.txt");
             UTState2.Clear(); // Remove all states
 
@@ -189,6 +195,7 @@ namespace CalendoUnitTests
             UTState2.Undo();
             Assert.IsTrue(UTState2.HasRedo);
         }
+
         [TestMethod]
         public void DataJSON()
         {
@@ -201,6 +208,7 @@ namespace CalendoUnitTests
             Assert.IsTrue(duplicate.Description == "test");
             Assert.IsTrue(jsonDup == jsonString);
         }
+
         [TestMethod]
         public void DataJSONTime()
         {

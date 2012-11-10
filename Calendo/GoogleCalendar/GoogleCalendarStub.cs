@@ -1,27 +1,26 @@
 ﻿//@author A0080933E
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Calendo.GoogleCalendar
 {
     public class GoogleCalendarStub : GoogleCalendar
     {
-        private static string lastRunMessage = "";
+        private static string LastRunMessage = "";
         public static string LastRun
         {
-            get { return lastRunMessage; }
+            get { return LastRunMessage; }
         }
 
         public override void Export()
         {
-            lastRunMessage = "Export";
+            LastRunMessage = "Export";
         }
 
         public override string Import()
         {
-            lastRunMessage = "Import";
+            LastRunMessage = "Import";
             return "";
         }
     }
