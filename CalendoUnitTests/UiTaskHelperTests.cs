@@ -10,7 +10,7 @@ namespace UiUnitTests
     public class UiTaskHelperTests
     {
         [TestMethod]
-        public void UI_OverdueTest_DeadlineTaskOverdue_JustNow()
+        public void UiOverdueTestDeadlineTaskOverdueJustNow()
         {
             Entry testData = new Entry();
             testData.Type = EntryType.Deadline;
@@ -22,7 +22,7 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void UI_OverdueTest_DeadlineTaskNotOverdue_VerySoon()
+        public void UiOverdueTestDeadlineTaskNotOverdueVerySoon()
         {
             Entry testData = new Entry();
             testData.Type = EntryType.Deadline;
@@ -34,7 +34,7 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void UI_OverdueTest_TimedTaskOverdue_JustNow()
+        public void UiOverdueTestTimedTaskOverdueJustNow()
         {
             Entry testData = new Entry();
             testData.Type = EntryType.Timed;
@@ -46,7 +46,7 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void UI_OverdueTest_TimedTaskNotOverdue_VerySoon()
+        public void UiOverdueTestTimedTaskNotOverdueVerySoon()
         {
             Entry testData = new Entry();
             testData.Type = EntryType.Timed;
@@ -58,7 +58,7 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void UI_OverdueTest_FloatingTask()
+        public void UiOverdueTestFloatingTask()
         {
             Entry testData = new Entry();
             testData.Type = EntryType.Floating;
@@ -69,7 +69,7 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void UI_OngoingTest_DeadlineTaskOngoing_Now()
+        public void UiOngoingTestDeadlineTaskOngoingNow()
         {
             Entry testData = new Entry();
             testData.Type = EntryType.Deadline;
@@ -81,7 +81,7 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void UI_OngoingTest_DeadlineTaskOngoing_Under24Hours()
+        public void UiOngoingTestDeadlineTaskOngoingUnder24Hours()
         {
             Entry testData = new Entry();
             testData.Type = EntryType.Deadline;
@@ -93,7 +93,7 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void UI_OngoingTest_DeadlineTaskNotOngoing_24Hours()
+        public void UiOngoingTestDeadlineTaskNotOngoing24Hours()
         {
             Entry testData = new Entry();
             testData.Type = EntryType.Deadline;
@@ -105,7 +105,7 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void UI_OngoingTest_DeadlineTaskNotOngoing_Past()
+        public void UiOngoingTestDeadlineTaskNotOngoingPast()
         {
             Entry testData = new Entry();
             testData.Type = EntryType.Deadline;
