@@ -6,6 +6,9 @@ using System.Threading;
 
 namespace Calendo.GoogleCalendar
 {
+    /// <summary>
+    /// Performs multithreaded operations
+    /// </summary>
     public class ThreadedGoogleCalendar
     {
         private static Type GoogleCalendarClassType = typeof(GoogleCalendar);
@@ -59,7 +62,7 @@ namespace Calendo.GoogleCalendar
         /// <summary>
         /// Performs the operation in a separate thread
         /// </summary>
-        /// <param name="method"></param>
+        /// <param name="method">Method to run on separate thread</param>
         private static void RunThread(ThreadStart method)
         {
             Thread threadInstance = new Thread(method);

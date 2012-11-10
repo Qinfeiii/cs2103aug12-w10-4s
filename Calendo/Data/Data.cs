@@ -1,7 +1,5 @@
 ﻿//@author A0080933E
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace Calendo.Data

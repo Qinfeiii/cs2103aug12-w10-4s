@@ -7,13 +7,19 @@ using Calendo.Diagnostics;
 
 namespace Calendo.Logic
 {
+    /// <summary>
+    /// Hour format
+    /// </summary>
     public enum HourFormat
     {
         Military = 0,
         AM = 1,
         PM = 2
     }
-
+    
+    /// <summary>
+    /// Helper class for Time Converter
+    /// </summary>
     public class TimeHelper
     {
         private const int INVALID_VALUE = -1;
@@ -22,7 +28,7 @@ namespace Calendo.Logic
         /// Is it a leap year?
         /// </summary>
         /// <param name="year">Year</param>
-        /// <returns>Returns true if it is a leap year, false otherwise</returns>
+        /// <returns>True if it is a leap year, false otherwise</returns>
         private static bool IsLeapYear(int year)
         {
             bool isLeap = false;
@@ -46,7 +52,7 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="month">Month</param>
         /// <param name="year">Year</param>
-        /// <returns></returns>
+        /// <returns>Maximum number of days</returns>
         private static int MaxDays(int month, int year)
         {
             if (month >= 1 && month <= 12 && year >= 0)
@@ -67,11 +73,11 @@ namespace Calendo.Logic
         }
 
         /// <summary>
-        /// Convert hour to military time
+        /// Convert hour to 24 hour format
         /// </summary>
         /// <param name="hour">Hour in integer</param>
         /// <param name="hourFormat">Hour Format</param>
-        /// <returns></returns>
+        /// <returns>Hour in 24 hour clock</returns>
         private static int ConvertHour(int hour, HourFormat hourFormat)
         {
             bool isAM = (hourFormat == HourFormat.AM);
@@ -107,7 +113,7 @@ namespace Calendo.Logic
         /// Gets the hour format
         /// </summary>
         /// <param name="timeString">String representation of hour</param>
-        /// <returns>Returns hour format</returns>
+        /// <returns>Hour format</returns>
         public static HourFormat GetHourFormat(string timeString)
         {
             Debug.Assert(timeString != null);
@@ -135,7 +141,7 @@ namespace Calendo.Logic
         /// Gets the year from string
         /// </summary>
         /// <param name="yearFragment">String representation of year</param>
-        /// <returns>4 digit year in numeric format</returns>
+        /// <returns>Year in numeric format</returns>
         public static int GetYear(string yearFragment)
         {
             int year = ConvertValue(yearFragment, 0, 9999);
@@ -214,7 +220,7 @@ namespace Calendo.Logic
         /// Converts a string to an integer
         /// </summary>
         /// <param name="str">Integer in string format</param>
-        /// <returns>Return the converted numeric value. or -1 if conversion failed</returns>
+        /// <returns>Converted numeric value or -1 if conversion failed</returns>
         private static int ConvertInt(string str)
         {
             try
@@ -241,7 +247,7 @@ namespace Calendo.Logic
         /// <param name="value">Value to be converted</param>
         /// <param name="lowerBound">Converted value should be at least this amount</param>
         /// <param name="upperBound">Converted value should be at most this amount</param>
-        /// <returns>Returns converted value, otherwise -1 on failure</returns>
+        /// <returns>Converted value, otherwise -1 on failure</returns>
         private static int ConvertValue(string value, int lowerBound, int upperBound)
         {
             Debug.Assert(lowerBound > INVALID_VALUE);
@@ -262,9 +268,9 @@ namespace Calendo.Logic
         /// <summary>
         /// Gets the substring spanning from start to end of string
         /// </summary>
-        /// <param name="input"></param>
-        /// <param name="start"></param>
-        /// <returns></returns>
+        /// <param name="input">Input string</param>
+        /// <param name="start">Start of substring</param>
+        /// <returns>Substring spanning from start to end</returns>
         private static string GetSubstring(string input, int start)
         {
             Debug.Assert(input != null);

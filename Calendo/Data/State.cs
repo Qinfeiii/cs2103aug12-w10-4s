@@ -10,6 +10,10 @@ using System.Diagnostics;
 
 namespace Calendo.Data
 {
+    /// <summary>
+    /// Represents a state
+    /// </summary>
+    /// <typeparam name="T">Serializable generic type</typeparam>
     [Serializable]
     [XmlRoot("Data")]
     public class State<T> where T : new()
@@ -17,6 +21,9 @@ namespace Calendo.Data
         private const string ERROR_UNSERIALIZABLE = "Object is not serializable";
         private const int INVALID_INDEX = -1;
         private static Stack<T> RedoStack = new Stack<T>();
+        private int undoOffset = INVALID_INDEX;
+        private bool hasUndo = true;
+        private List<T> stateList;
 
         /// <summary>
         /// Create a State object to represent object states
@@ -34,8 +41,6 @@ namespace Calendo.Data
             get;
             set;
         }
-
-        private List<T> stateList;
 
         /// <summary>
         /// List of States
@@ -77,13 +82,10 @@ namespace Calendo.Data
             hasUndo = true;
         }
 
-        private int undoOffset = INVALID_INDEX;
-        private bool hasUndo = true;
-
         /// <summary>
         /// Revert to state before last state
         /// </summary>
-        /// <returns>Return true if state is changed</returns>
+        /// <returns>True if state is changed</returns>
         public bool Undo()
         {
             if (!HasUndo)
@@ -131,7 +133,7 @@ namespace Calendo.Data
         /// <summary>
         /// Revert to state in redo stack
         /// </summary>
-        /// <returns>Return true if state is changed</returns>
+        /// <returns>True if state is changed</returns>
         public bool Redo()
         {
             if (RedoStack.Count > 0)
@@ -160,7 +162,7 @@ namespace Calendo.Data
         /// <summary>
         /// Clones the object
         /// </summary>
-        /// <param name="obj">Provided object</param>
+        /// <param name="obj">Object to clone</param>
         /// <returns>Deep copy of the object</returns>
         private T PerformClone(T obj)
         {

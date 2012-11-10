@@ -20,7 +20,7 @@ namespace Calendo.GoogleCalendar
         /// <summary>
         /// Export stub, sets last run message to "Export"
         /// </summary>
-        /// <returns>Returns true by default</returns>
+        /// <returns>Returns true</returns>
         public override bool Export()
         {
             LastRunMessage = "Export";
@@ -30,7 +30,7 @@ namespace Calendo.GoogleCalendar
         /// <summary>
         /// Import stub, sets last run message to "Import"
         /// </summary>
-        /// <returns>Returns true by default</returns>
+        /// <returns>Returns true</returns>
         public override bool Import()
         {
             LastRunMessage = "Import";

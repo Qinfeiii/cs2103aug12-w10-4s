@@ -145,11 +145,11 @@ namespace Calendo.Logic
         }
 
         /// <summary>
-        /// Gets the task type
+        /// Gets the entry type
         /// </summary>
         /// <param name="startTime">Start Time</param>
         /// <param name="endTime">End Time</param>
-        /// <returns></returns>
+        /// <returns>Entry Type</returns>
         private EntryType GetTaskType(TaskTime startTime, TaskTime endTime)
         {
             bool hasStartTime = HasTimeFormat(startTime);
@@ -247,7 +247,7 @@ namespace Calendo.Logic
         /// Checks if there is a non-empty string amongst list of provided strings
         /// </summary>
         /// <param name="strings">Strings to check</param>
-        /// <returns>Returns true if there is at least one non-empty string</returns>
+        /// <returns>True if there is at least one non-empty string</returns>
         private bool HasText(params string[] strings)
         {
             foreach (string value in strings)
@@ -347,7 +347,7 @@ namespace Calendo.Logic
         /// Get a task by ID
         /// </summary>
         /// <param name="id">Task ID, 1-based</param>
-        /// <returns>Returns Entry object matching the ID, null if not found</returns>
+        /// <returns>Entry object matching the ID, null if not found</returns>
         public Entry Get(int id)
         {
             if (id >= 1 && id <= storage.Entries.Count)
@@ -410,7 +410,6 @@ namespace Calendo.Logic
         /// </summary>
         public void Load()
         {
-            // Subscribers are not notified, it is up to subscriber to update display
             this.storage.Load();
         }
 
@@ -429,7 +428,7 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="date">Date in Day/Month/Year</param>
         /// <param name="time">Time in Hour/Minutes (24 hour)</param>
-        /// <returns>Returns TaskTime object</returns>
+        /// <returns>TaskTime object</returns>
         private TaskTime ConvertTime(string date, string time)
         {
             TimeConverter timeConvert = new TimeConverter();
