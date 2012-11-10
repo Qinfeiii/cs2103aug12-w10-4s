@@ -185,8 +185,8 @@ namespace CalendoUnitTests
             Assert.IsTrue(taskManager.Entries[0].StartTime.Day == 1);
             Assert.IsTrue(taskManager.Entries[0].StartTime.Month == 12);
 
-            // Invalid time
-            taskManager.Change(1, null, "1/2", "-1:00");
+            // Invalid date and time
+            taskManager.Change(1, null, "2/2/123", "-1:00", "12/12");
             Assert.IsTrue(taskManager.Entries[0].StartTime.Day == 1);
             Assert.IsTrue(taskManager.Entries[0].StartTime.Month == 12);
 
