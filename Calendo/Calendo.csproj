@@ -95,11 +95,14 @@
     <Compile Include="Converters\StringArrayToStringConverter.cs" />
     <Compile Include="Data\Data.cs" />
     <Compile Include="Data\State.cs" />
+    <Compile Include="GoogleCalendar\GoogleCalendarStub.cs" />
     <Compile Include="GoogleCalendar\ThreadedGoogleCalendar.cs" />
     <Compile Include="Logic\Command.cs" />
     <Compile Include="Logic\CommandExtractors.cs" />
     <Compile Include="Logic\ModifyFlag.cs" />
+    <Compile Include="Logic\TaskTime.cs" />
     <Compile Include="Logic\TimeFormat.cs" />
+    <Compile Include="Logic\TimeHelper.cs" />
     <Compile Include="UiViewModel.cs" />
     <Compile Include="UiTaskHelper.cs" />
     <Page Include="Debug\DebugMode.xaml">

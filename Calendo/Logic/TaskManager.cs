@@ -17,6 +17,10 @@ namespace Calendo.Logic
         private const string ERROR_END_BEFORE_START = "End date cannot be before start date";
         private const string KEYWORD_REMOVE = "-";
         private const string STORAGE_PATH = "archive.txt";
+        private const bool ALLOW_CONTINUE_ON_ERROR = false;
+        private const ModifyFlag CHANGE_DESCRIPTION = ModifyFlag.Description;
+        private const ModifyFlag CHANGE_START = ModifyFlag.StartDate | ModifyFlag.StartTime | ModifyFlag.EraseStartDate | ModifyFlag.EraseStartTime;
+        private const ModifyFlag CHANGE_END = ModifyFlag.EndDate | ModifyFlag.EndTime | ModifyFlag.EraseEndDate | ModifyFlag.EraseEndTime;
         private static TaskManager CurrentInstance = new TaskManager();
         private StateStorage<List<Entry>> storage;
         private List<Delegate> subscribers = new List<Delegate>();
@@ -83,8 +87,9 @@ namespace Calendo.Logic
         /// <param name="startTime">Start Time</param>
         /// <param name="endDate">End Date</param>
         /// <param name="endTime">End Time</param>
-        public void Add(string description, string startDate, string startTime, string endDate, string endTime)
+        public void Add(string description, string startDate = "", string startTime = "", string endDate = "", string endTime = "")
         {
+            description = SanitizeString(description);
             startDate = SanitizeString(startDate);
             if (startDate.Contains("-") && !HasText(endDate))
             {
@@ -117,6 +122,14 @@ namespace Calendo.Logic
             entry.StartTimeFormat = startTime.Format;
             entry.EndTime = endTime.Time;
             entry.EndTimeFormat = endTime.Format;
+            if (!ALLOW_CONTINUE_ON_ERROR)
+            {
+                if (startTime.HasError || endTime.HasError)
+                {
+                    // Do not allow entry to be added
+                    return;
+                }
+            }
             this.Add(entry);
         }
 
@@ -128,32 +141,34 @@ namespace Calendo.Logic
         {
             this.storage.Entries.Add(entry);
             this.Save();
+            this.RecordLog(entry, "Add");
         }
 
         /// <summary>
-        /// Gets the task type
+        /// Gets the entry type
         /// </summary>
         /// <param name="startTime">Start Time</param>
         /// <param name="endTime">End Time</param>
-        /// <returns></returns>
+        /// <returns>Entry Type</returns>
         private EntryType GetTaskType(TaskTime startTime, TaskTime endTime)
         {
-            bool isStartFormatNone = HasNoTimeFormat(startTime);
-            bool isEndFormatNone = HasNoTimeFormat(endTime);
+            bool hasStartTime = HasTimeFormat(startTime);
+            bool hasEndTime = HasTimeFormat(endTime);
 
-            if (isStartFormatNone)
+            if (!hasStartTime)
             {
-                if (!isEndFormatNone)
+                if (hasEndTime)
                 {
                     // End time not to be used
                     endTime.Format = TimeFormat.None;
+                    endTime.HasError = true;
                 }
                 // No start time, means it is a floating task
                 return EntryType.Floating;
             }
             else
             {
-                if (isEndFormatNone)
+                if (!hasEndTime)
                 {
                     // Has only start time
                     return EntryType.Deadline;
@@ -164,6 +179,7 @@ namespace Calendo.Logic
                     {
                         // End is before start, mark end as invalid
                         endTime.Format = TimeFormat.None;
+                        endTime.HasError = true;
                         DebugTool.Alert(ERROR_END_BEFORE_START);
                         return EntryType.Deadline;
                     }
@@ -181,9 +197,10 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="taskTime">TaskTime object</param>
         /// <returns>True if no time format</returns>
-        private bool HasNoTimeFormat(TaskTime taskTime)
+        private bool HasTimeFormat(TaskTime taskTime)
         {
-            return (taskTime == null) || (taskTime.Format == TimeFormat.None);
+            Debug.Assert(taskTime != null);
+            return (taskTime.Format != TimeFormat.None);
         }
 
         /// <summary>
@@ -194,7 +211,7 @@ namespace Calendo.Logic
         /// <param name="startTime">Start Time</param>
         /// <param name="endDate">End Date</param>
         /// <param name="endTime">End Time</param>
-        public void Change(int id, string description, string startDate, string startTime, string endDate, string endTime)
+        public void Change(int id, string description = "", string startDate = "", string startTime = "", string endDate = "", string endTime = "")
         {
             TaskTime startDateTime = this.ConvertTime(startDate, startTime);
             TaskTime endDateTime = this.ConvertTime(endDate, endTime);
@@ -218,10 +235,10 @@ namespace Calendo.Logic
             }
 
             // Flag parameters for removal if requested
-            flag = flag.Add(ModifyFlag.StartDate | ModifyFlag.EraseStartDate, startDate == KEYWORD_REMOVE);
-            flag = flag.Add(ModifyFlag.StartTime | ModifyFlag.EraseStartTime, startTime == KEYWORD_REMOVE);
-            flag = flag.Add(ModifyFlag.EndDate | ModifyFlag.EraseEndDate, endDate == KEYWORD_REMOVE);
-            flag = flag.Add(ModifyFlag.EndTime | ModifyFlag.EraseEndTime, endTime == KEYWORD_REMOVE);
+            flag = flag.Add(ModifyFlag.EraseStartDate, startDate == KEYWORD_REMOVE);
+            flag = flag.Add(ModifyFlag.EraseStartTime, startTime == KEYWORD_REMOVE);
+            flag = flag.Add(ModifyFlag.EraseEndDate, endDate == KEYWORD_REMOVE);
+            flag = flag.Add(ModifyFlag.EraseEndTime, endTime == KEYWORD_REMOVE);
 
             this.Change(id, flag, description, startDateTime, endDateTime);
         }
@@ -230,7 +247,7 @@ namespace Calendo.Logic
         /// Checks if there is a non-empty string amongst list of provided strings
         /// </summary>
         /// <param name="strings">Strings to check</param>
-        /// <returns>Returns true if there is at least one non-empty string</returns>
+        /// <returns>True if there is at least one non-empty string</returns>
         private bool HasText(params string[] strings)
         {
             foreach (string value in strings)
@@ -258,45 +275,52 @@ namespace Calendo.Logic
             Entry entry = this.Get(id);
             if (entry != null)
             {
-                // If the relevant flag is set, update that value, otherwise ignore the value
+                string entryDescription = entry.Description;
                 if (flag.Contains(ModifyFlag.Description))
                 {
-                    entry.Description = description;
+                    entryDescription = description;
                 }
 
-                if (flag.Contains(ModifyFlag.StartTime | ModifyFlag.StartDate))
+                TaskTime entryStart = new TaskTime(entry.StartTime, entry.StartTimeFormat);
+                TaskTime entryEnd = new TaskTime(entry.EndTime, entry.EndTimeFormat);
+
+                if (flag.Contains(CHANGE_START))
                 {
-                    ModifyFlag startFlag = flag.Unset(ModifyFlag.EndDate | ModifyFlag.EndTime);
-                    TaskTime entryTime = new TaskTime(entry.StartTime, entry.StartTimeFormat);
-                    TaskTime mergedTime = TimeConverter.MergeTime(startTime, entryTime, startFlag);
-                    entry.StartTime = mergedTime.Time;
-                    entry.StartTimeFormat = mergedTime.Format;
+                    ModifyFlag startFlag = flag.Unset(CHANGE_END);
+                    entryStart = TimeConverter.MergeTime(startTime, entryStart, startFlag);
                 }
 
-                if (flag.Contains(ModifyFlag.EndTime | ModifyFlag.EndDate))
+                if (flag.Contains(CHANGE_END))
                 {
-                    ModifyFlag endFlag = flag.Unset(ModifyFlag.StartDate | ModifyFlag.StartTime);
-                    TaskTime entryTime = new TaskTime(entry.EndTime, entry.EndTimeFormat);
-                    TaskTime mergedTime = TimeConverter.MergeTime(endTime, entryTime, endFlag);
-                    entry.EndTime = mergedTime.Time;
-                    entry.EndTimeFormat = mergedTime.Format;
+                    ModifyFlag endFlag = flag.Unset(CHANGE_START);
+                    entryEnd = TimeConverter.MergeTime(endTime, entryEnd, endFlag);
                 }
 
-                TaskTime startTaskTime = new TaskTime(entry.StartTime, entry.StartTimeFormat);
-                TaskTime endTaskTime = new TaskTime(entry.EndTime, entry.EndTimeFormat);
-                entry.Type = this.GetTaskType(startTaskTime, endTaskTime);
+                entry.Type = this.GetTaskType(entryStart, entryEnd);
 
-                // Re-update in case there are invalid times caught by checking task type
-                entry.StartTime = startTaskTime.Time;
-                entry.StartTimeFormat = startTaskTime.Format;
-                entry.EndTime = endTaskTime.Time;
-                entry.EndTimeFormat = endTaskTime.Format;
+                if (!ALLOW_CONTINUE_ON_ERROR)
+                {
+                    if (entryStart.HasError || entryEnd.HasError || startTime.HasError || endTime.HasError)
+                    {
+                        // Do not allow entry to be changed
+                        return;
+                    }
+                }
+
+                // Make changes if checks pass
+                entry.Description = entryDescription;
+                entry.StartTime = entryStart.Time;
+                entry.StartTimeFormat = entryStart.Format;
+                entry.EndTime = entryEnd.Time;
+                entry.EndTimeFormat = entryEnd.Format;
+
                 this.Save();
             }
             else
             {
                 DebugTool.Alert(ERROR_ENTRY_NOT_FOUND);
             }
+            this.RecordLog(entry, "Change", id.ToString(), flag.ToString());
         }
 
 
@@ -316,13 +340,14 @@ namespace Calendo.Logic
             {
                 DebugTool.Alert(ERROR_ENTRY_NOT_FOUND);
             }
+            this.RecordLog(entry, "Remove", id.ToString());
         }
 
         /// <summary>
         /// Get a task by ID
         /// </summary>
         /// <param name="id">Task ID, 1-based</param>
-        /// <returns>Returns Entry object matching the ID, null if not found</returns>
+        /// <returns>Entry object matching the ID, null if not found</returns>
         public Entry Get(int id)
         {
             if (id >= 1 && id <= storage.Entries.Count)
@@ -341,6 +366,7 @@ namespace Calendo.Logic
         public void Undo()
         {
             this.storage.Undo();
+            this.RecordLog(null, "Undo");
             this.UpdateSubscribers();
         }
 
@@ -350,6 +376,7 @@ namespace Calendo.Logic
         public void Redo()
         {
             this.storage.Redo();
+            this.RecordLog(null, "Redo");
             this.UpdateSubscribers();
         }
 
@@ -383,7 +410,6 @@ namespace Calendo.Logic
         /// </summary>
         public void Load()
         {
-            // Subscribers are not notified, it is up to subscriber to update display
             this.storage.Load();
         }
 
@@ -394,13 +420,7 @@ namespace Calendo.Logic
         /// <returns>If input string was null, return an empty string. Otherwise return the original string.</returns>
         private string SanitizeString(string input)
         {
-            string convertedString = "";
-            if (input != null)
-            {
-                convertedString = input;
-            }
-            Debug.Assert(convertedString != null);
-            return convertedString;
+            return TimeConverter.SanitizeString(input);
         }
 
         /// <summary>
@@ -408,12 +428,31 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="date">Date in Day/Month/Year</param>
         /// <param name="time">Time in Hour/Minutes (24 hour)</param>
-        /// <returns>Returns TaskTime object</returns>
+        /// <returns>TaskTime object</returns>
         private TaskTime ConvertTime(string date, string time)
         {
             TimeConverter timeConvert = new TimeConverter();
             return timeConvert.Convert(date, time);
         }
 
+        /// <summary>
+        /// Records the operation to the log
+        /// </summary>
+        /// <param name="entry">Entry to be recorded</param>
+        /// <param name="parameters">Parameters involved in operation</param>
+        private void RecordLog(Entry entry, params string[] parameters)
+        {
+            string entryDescription = "[Empty entry]";
+            string entryFormat = "[ID: {0}, {1}]";
+            if (entry != null)
+            {
+                entryDescription = String.Format(entryFormat, entry.ID, entry.Description);
+            }
+
+            string parameterDescription = String.Join(", ", parameters);
+            string parameterFormat = " [Parameters: {0}]";
+            parameterDescription = String.Format(parameterFormat, parameterDescription);
+            DebugTool.WriteLog(entryDescription + parameterDescription);
+        }
     }
 }

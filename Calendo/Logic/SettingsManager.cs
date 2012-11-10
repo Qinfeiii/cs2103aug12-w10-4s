@@ -80,7 +80,7 @@ namespace Calendo.Logic
         /// Gets the setting specified
         /// </summary>
         /// <param name="settingName">Name of the setting</param>
-        /// <returns>Returns the value of the setting, null otherwise</returns>
+        /// <returns>Setting value, null if non-existant setting</returns>
         public string GetSetting(string settingName)
         {
             Debug.Assert(settingName != null);
@@ -91,7 +91,6 @@ namespace Calendo.Logic
             }
             else
             {
-                // No setting by this name
                 return null;
             }
         }

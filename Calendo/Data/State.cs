@@ -10,12 +10,20 @@ using System.Diagnostics;
 
 namespace Calendo.Data
 {
+    /// <summary>
+    /// Represents a state
+    /// </summary>
+    /// <typeparam name="T">Serializable generic type</typeparam>
     [Serializable]
     [XmlRoot("Data")]
     public class State<T> where T : new()
     {
         private const string ERROR_UNSERIALIZABLE = "Object is not serializable";
+        private const int INVALID_INDEX = -1;
         private static Stack<T> RedoStack = new Stack<T>();
+        private int undoOffset = INVALID_INDEX;
+        private bool hasUndo = true;
+        private List<T> stateList;
 
         /// <summary>
         /// Create a State object to represent object states
@@ -23,7 +31,6 @@ namespace Calendo.Data
         public State()
         {
             this.Value = new T();
-            //this.States = new List<T>();
         }
 
         /// <summary>
@@ -34,8 +41,6 @@ namespace Calendo.Data
             get;
             set;
         }
-
-        private List<T> stateList;
 
         /// <summary>
         /// List of States
@@ -48,7 +53,7 @@ namespace Calendo.Data
                 // Recreate state list if it was null
                 if (stateList == null)
                 {
-                    stateList = new List<T>();
+                    this.States = new List<T>();
                 }
                 // There must be at least one item in state list
                 if (stateList.Count == 0)
@@ -66,30 +71,52 @@ namespace Calendo.Data
         /// <summary>
         /// Adds a state
         /// </summary>
-        public void AddState()
+        public void AddState(bool resetRedo = true)
         {
             this.States.Add(PerformClone(Value));
-            RedoStack.Clear();
+            if (resetRedo)
+            {
+                RedoStack.Clear();
+            }
+            undoOffset = INVALID_INDEX;
+            hasUndo = true;
         }
 
         /// <summary>
         /// Revert to state before last state
         /// </summary>
-        /// <returns>Return true if state is changed</returns>
+        /// <returns>True if state is changed</returns>
         public bool Undo()
         {
-            if (this.States.Count > 1)
-            {
-                // First state does not count
-                RedoStack.Push(this.States[States.Count - 1]);
-                this.States.RemoveAt(this.States.Count - 1);
-                this.Value = PerformClone(this.States[States.Count - 1]);
-                return true;
-            }
-            else
+            if (!HasUndo)
             {
                 return false;
             }
+            if (this.States.Count > 1)
+            {
+                // Update current undo offset
+                if (undoOffset == INVALID_INDEX)
+                {
+                    undoOffset = this.States.Count - 1;
+                }
+                undoOffset--;
+
+                if (undoOffset >= 0)
+                {
+                    // Push current state
+                    RedoStack.Push(this.States[this.States.Count - 1]);
+                    T undoState = PerformClone(this.States[undoOffset]);
+                    this.States.Add(undoState);
+                    this.Value = PerformClone(undoState);
+                    if (undoOffset == 0)
+                    {
+                        // Cannot undo anymore
+                        hasUndo = false;
+                    }
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -99,21 +126,20 @@ namespace Calendo.Data
         {
             get
             {
-                // First state does not count
-                return (this.States.Count > 1);
+                return (this.States.Count > 1) && hasUndo;
             }
         }
 
         /// <summary>
         /// Revert to state in redo stack
         /// </summary>
-        /// <returns>Return true if state is changed</returns>
+        /// <returns>True if state is changed</returns>
         public bool Redo()
         {
             if (RedoStack.Count > 0)
             {
                 this.Value = PerformClone(RedoStack.Pop());
-                this.States.Add(Value);
+                this.AddState(false);
                 return true;
             }
             else
@@ -136,13 +162,14 @@ namespace Calendo.Data
         /// <summary>
         /// Clones the object
         /// </summary>
-        /// <param name="obj">Provided object</param>
+        /// <param name="obj">Object to clone</param>
         /// <returns>Deep copy of the object</returns>
         private T PerformClone(T obj)
         {
             Debug.Assert(typeof(T).IsSerializable, ERROR_UNSERIALIZABLE);
             MemoryStream memoryStream = new MemoryStream();
-            BinaryFormatter formatter = new BinaryFormatter(null, new StreamingContext(StreamingContextStates.Clone));
+            StreamingContext streamingContext = new StreamingContext(StreamingContextStates.Clone);
+            BinaryFormatter formatter = new BinaryFormatter(null, streamingContext);
             formatter.Serialize(memoryStream, obj);
             memoryStream.Seek(0, SeekOrigin.Begin);
             T clone = (T)formatter.Deserialize(memoryStream);
