@@ -57,7 +57,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AutoSuggestTest.cs" />
+    <Compile Include="AutoSuggestTests.cs" />
     <Compile Include="CommandProcessorTest.cs" />
     <Compile Include="ConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
