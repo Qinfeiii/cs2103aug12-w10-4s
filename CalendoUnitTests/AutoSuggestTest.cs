@@ -17,7 +17,7 @@ namespace UiUnitTests
         }
 
         [TestMethod]
-        public void UI_AutoSuggestMatchAlias()
+        public void UiAutoSuggestMatchAlias()
         {
             AutoSuggestEntry testEntry = new AutoSuggestEntry("test", "test description", EntryType.Master, new string[] { "alpha", "beta", "charlie" });
             bool actual = AutoSuggest.CheckAliasesForCommand("al", testEntry);
@@ -26,6 +26,26 @@ namespace UiUnitTests
 
             actual = AutoSuggest.CheckAliasesForCommand("no", testEntry);
             expected = false;
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void UiAutoSuggestEntryHasNoAliases()
+        {
+            AutoSuggestEntry testEntry = new AutoSuggestEntry("test", "test description", EntryType.Master, null);
+            bool expected = false;
+            bool actual = testEntry.HasAliases;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void UiAutoSuggestEntryHasAliases()
+        {
+            AutoSuggestEntry testEntry = new AutoSuggestEntry("another test", "another description", EntryType.Master, new string[] { "first", "second", "third" });
+            bool expected = true;
+            bool actual = testEntry.HasAliases;
+
             Assert.AreEqual(expected, actual);
         }
     }
