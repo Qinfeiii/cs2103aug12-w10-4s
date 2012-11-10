@@ -75,6 +75,7 @@ namespace UiUnitTests
 
             AutoSuggestEntry suggestion = AutoSuggest.SuggestionList[0];
             Assert.IsTrue(suggestion.Command == "/add");
+            Assert.IsTrue(suggestion.IsMaster);
         }
 
         [TestMethod]
