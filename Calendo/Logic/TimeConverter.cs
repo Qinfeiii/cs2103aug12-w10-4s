@@ -247,12 +247,6 @@ namespace Calendo.Logic
                         // Event occurs next year
                         newDate = newDate.AddYears(1);
                     }
-                    else
-                    {
-                        // Due to requests, checking for dates in the past is disabled
-                        //hasError = true;
-                        //isValidDate = false;
-                    }
                 }
             }
         }
