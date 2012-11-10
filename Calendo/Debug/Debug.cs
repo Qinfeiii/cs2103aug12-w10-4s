@@ -49,7 +49,7 @@ namespace Calendo.Diagnostics
                 return CurrentMessage;
             }
         }
-        
+
 
         /// <summary>
         /// Notify handler for DebugTool notifications
@@ -84,7 +84,8 @@ namespace Calendo.Diagnostics
         /// <summary>
         /// Get or set debug enable switch
         /// </summary>
-        public static bool Enable {
+        public static bool Enable
+        {
             get { return IsEnable; }
             set { IsEnable = value; }
         }
@@ -113,12 +114,11 @@ namespace Calendo.Diagnostics
 
                 WriteLog(String.Format(MESSAGE_DEBUG_LOAD, Enable.ToString()));
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
                 // Invalid file
-                MessageBox.Show("Error: " + e.ToString());
+                MessageBox.Show("Error: " + exception.ToString());
             }
-             
         }
 
         /// <summary>

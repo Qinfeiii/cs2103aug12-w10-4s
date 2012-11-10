@@ -74,7 +74,7 @@ namespace Calendo.GoogleCalendar
         {
             GoogleCalendar googleCalendar = (GoogleCalendar)Activator.CreateInstance(GoogleCalendarClassType);
             googleCalendar.Export();
-            
+
         }
 
         /// <summary>

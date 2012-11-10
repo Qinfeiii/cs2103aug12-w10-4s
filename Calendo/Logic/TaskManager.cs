@@ -419,7 +419,11 @@ namespace Calendo.Logic
             return timeConvert.Convert(date, time);
         }
 
-
+        /// <summary>
+        /// Records the operation to the log
+        /// </summary>
+        /// <param name="entry">Entry to be recorded</param>
+        /// <param name="parameters">Parameters involved in operation</param>
         private void RecordLog(Entry entry, params string[] parameters)
         {
             string entryDescription = "[Empty entry]";
@@ -428,7 +432,7 @@ namespace Calendo.Logic
             {
                 entryDescription = String.Format(entryFormat, entry.ID, entry.Description);
             }
-            
+
             string parameterDescription = String.Join(", ", parameters);
             string parameterFormat = " [Parameters: {0}]";
             parameterDescription = String.Format(parameterFormat, parameterDescription);
