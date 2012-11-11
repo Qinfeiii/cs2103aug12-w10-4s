@@ -52,6 +52,7 @@ namespace Calendo
         }
         // End Fixes
 
+        // @author A0080860H
         private void CommandBarLostFocus(object sender, RoutedEventArgs e)
         {
             if (CommandBar.Text.Length == 0)
