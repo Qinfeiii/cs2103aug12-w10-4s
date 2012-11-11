@@ -29,8 +29,8 @@ namespace Calendo.GoogleCalendar
             if (auth == "")
                 return false;
             storage.Load();
-            deleteGcalTasks(getTasksIds(getTaskResponse(auth)), auth);
-            if (postTasks(storage.Entries, auth) == false)
+            DeleteGcalTasks(GetTasksIds(GetTaskResponse(auth)), auth);
+            if (PostTasks(storage.Entries, auth) == false)
             {
                 MessageBox.Show(ERROR_MESSAGE);
                 return false;
@@ -42,7 +42,7 @@ namespace Calendo.GoogleCalendar
         {
             if (auth == "")
                 return false;
-            List<Entry> taskList = getTaskDetails(getTaskResponse(auth));
+            List<Entry> taskList = GetTaskDetails(GetTaskResponse(auth));
             storage.Load();
             storage.Entries.Clear();
 
@@ -87,9 +87,9 @@ namespace Calendo.GoogleCalendar
             return authCode;
         }
 
-        private Boolean deleteGcalTasks(List<String> taskIds, string auth)
+        private Boolean DeleteGcalTasks(List<String> taskIds, string auth)
         {
-            string taskListId = getTaskListId(auth);
+            string taskListId = GetTaskListId(auth);
             foreach (string taskId in taskIds)
             {
                 HttpWebRequest httpWReq = (HttpWebRequest)WebRequest.Create("https://www.googleapis.com/tasks/v1/lists/" + taskListId + "/tasks/" + taskId + "?key=AIzaSyDQPMYzYwXWh4JUZX16RnV2DNJddg_5INo&access_token=" + auth);
@@ -108,12 +108,12 @@ namespace Calendo.GoogleCalendar
             return true;
         }
         
-        private Boolean postTasks(List<Entry> tasks, string auth)
+        private Boolean PostTasks(List<Entry> tasks, string auth)
         {
             Thread.Sleep(5000);
             foreach (Entry task in tasks)
             {
-                string taskListId = getTaskListId(auth);
+                string taskListId = GetTaskListId(auth);
                 /*
                  * Creating a http request
                  */
@@ -150,10 +150,10 @@ namespace Calendo.GoogleCalendar
             return true;
         }
 
-        private string getTaskResponse(string auth)
+        private string GetTaskResponse(string auth)
         {
             string sURL;
-            string taskListId = getTaskListId(auth);
+            string taskListId = GetTaskListId(auth);
             sURL = "https://www.googleapis.com/tasks/v1/lists/" + taskListId + "/tasks?access_token=" + auth;
 
             WebRequest wrGETURL;
@@ -178,7 +178,7 @@ namespace Calendo.GoogleCalendar
             return tasks;
         }
 
-        private string getTaskListId(String auth)
+        private string GetTaskListId(String auth)
         {
             string sURL;
             sURL = " https://www.googleapis.com/tasks/v1/users/@me/lists?access_token=" + auth;
@@ -210,7 +210,7 @@ namespace Calendo.GoogleCalendar
             return taskListId;
         }
 
-        private List<String> getTasksIds(string tasks)
+        private List<String> GetTasksIds(string tasks)
         {
             JSON<TaskResponse> jsonObject = new JSON<TaskResponse>();
             TaskResponse values = jsonObject.Deserialize(tasks);
@@ -223,7 +223,7 @@ namespace Calendo.GoogleCalendar
             return taskList;
         }
 
-        private List<Entry> getTaskDetails(string tasks)
+        private List<Entry> GetTaskDetails(string tasks)
         {
             JSON<TaskResponse> jsonObject = new JSON<TaskResponse>();
             TaskResponse values = jsonObject.Deserialize(tasks);
