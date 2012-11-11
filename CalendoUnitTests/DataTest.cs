@@ -12,6 +12,9 @@ namespace CalendoUnitTests
     [TestClass]
     public class DataTest
     {
+        /// <summary>
+        /// Tests if entries can be loaded from file.
+        /// </summary>
         [TestMethod]
         public void DataLoad()
         {
@@ -22,21 +25,28 @@ namespace CalendoUnitTests
             Assert.IsNotNull(UTStorage.Entries);
         }
 
+        /// <summary>
+        /// Tests if entries persist after saving.
+        /// </summary>
         [TestMethod]
         public void DataSave()
         {
             Storage<List<string>> UTStorage = new Storage<List<string>>("test1.txt");
             Assert.IsNotNull(UTStorage);
 
+            // Check for entry persistance
+            string testValue = "Test";
+
             UTStorage.Save();
             UTStorage.Load();
             Assert.IsTrue(UTStorage.Entries.Count == 0);
-            UTStorage.Entries.Add("Test");
+            UTStorage.Entries.Add(testValue);
             UTStorage.Save();
-            Assert.IsTrue(UTStorage.Entries[0] == "Test");
+            Assert.IsTrue(UTStorage.Entries[0] == testValue);
             UTStorage.Load();
-            Assert.IsTrue(UTStorage.Entries[0] == "Test");
+            Assert.IsTrue(UTStorage.Entries[0] == testValue);
 
+            // Checks if entries can be modified directly
             List<string> testList = new List<string>();
             testList.Add("A");
             testList.Add("B");
@@ -46,14 +56,20 @@ namespace CalendoUnitTests
             UTStorage.Load();
             Assert.IsTrue(UTStorage.Entries.Count == 2);
 
+            // Checks clear functionality
             UTStorage.Entries.Clear();
             UTStorage.Save();
+            UTStorage.Load();
             Assert.IsTrue(UTStorage.Entries.Count == 0);
         }
 
+        /// <summary>
+        /// Tests situations where the data file is corrupted.
+        /// </summary>
         [TestMethod]
         public void DataIncompatible()
         {
+            // Populate entries
             Storage<List<string>> UTStorage = new Storage<List<string>>("test2.txt");
             UTStorage.Load();
             UTStorage.Entries.Clear();
@@ -63,20 +79,27 @@ namespace CalendoUnitTests
             UTStorage.Load();
             Assert.IsTrue(UTStorage.Entries.Count == 2);
 
+            // Checks concurrency operations
             Storage<State<int>> UTStorageINT = new Storage<State<int>>("test2.txt");
             UTStorageINT.Load();
             UTStorageINT.Save();
             UTStorage.Load();
-            // The contents should be overriden with the new one
             Assert.IsTrue(UTStorage.Entries.Count != 2);
 
+            // Checks unserializable case
             Storage<Stack<string>> UnsupportedStorage = new Storage<Stack<string>>("test3.txt");
+            Assert.IsTrue(UnsupportedStorage.Entries != null);
         }
 
+        /// <summary>
+        /// Tests situations where the data file is unreadable/locked.
+        /// </summary>
         [TestMethod]
         public void DataUnwritable()
         {
-            Storage<List<string>> UTStoragePre = new Storage<List<string>>("test3.txt");
+            string fileToLock = "test3.txt";
+
+            Storage<List<string>> UTStoragePre = new Storage<List<string>>(fileToLock);
             UTStoragePre.Load();
             UTStoragePre.Entries.Clear();
             UTStoragePre.Entries.Add("Test1");
@@ -84,27 +107,30 @@ namespace CalendoUnitTests
             UTStoragePre.Save();
 
             // Lock the file to prevent other processes from modifying it
-            Stream fileStream = new FileStream("test3.txt", FileMode.OpenOrCreate);
+            Stream fileStream = new FileStream(fileToLock, FileMode.OpenOrCreate);
             fileStream.ReadByte();
-            Storage<List<string>> UTStorage = new Storage<List<string>>("test3.txt");
+
+            // Checks backup functionality
+            Storage<List<string>> UTStorage = new Storage<List<string>>(fileToLock);
             UTStorage.Load();
             UTStorage.Save();
-            // Loading from data file
             Assert.IsTrue(UTStorage.Entries.Count == 0);
             UTStorage.Entries.Add("Test Add Lock");
             UTStorage.Save();
             UTStorage.Load();
-            // Should be able to read from backup instead of locked file
             Assert.IsTrue(UTStorage.Entries.Count == 1);
             UTStorage.Entries.Clear();
             UTStorage.Save();
             fileStream.Close();
 
-            // Check if file is altered (it should not)
+            // Check if original file is altered (it should not)
             UTStorage.Load();
             Assert.IsTrue(UTStorage.Entries.Count == 2);
         }
 
+        /// <summary>
+        /// Tests if entries can be modified.
+        /// </summary>
         [TestMethod]
         public void DataEntry()
         {
@@ -125,16 +151,15 @@ namespace CalendoUnitTests
             Assert.IsTrue(cloneEntry.Description == testEntry.Description);
             Assert.IsTrue(cloneEntry.EndTime == testEntry.EndTime);
             Assert.IsTrue(cloneEntry.StartTime == testEntry.StartTime);
-
             Assert.IsTrue(cloneEntry.StartTimeFormat == testEntry.StartTimeFormat);
             Assert.IsTrue(cloneEntry.EndTimeFormat == testEntry.EndTimeFormat);
             Assert.IsTrue(cloneEntry.Type == testEntry.Type);
             Assert.IsTrue(cloneEntry.Meta == testEntry.Meta);
-
-            testEntry.ID = 1;
-            Assert.IsFalse(cloneEntry.ID == testEntry.ID);
         }
 
+        /// <summary>
+        /// Tests State class functionality.
+        /// </summary>
         [TestMethod]
         public void DataState()
         {
@@ -161,61 +186,71 @@ namespace CalendoUnitTests
             Assert.IsFalse(statevar.Value == 0);
         }
 
+        /// <summary>
+        /// Tests StateStorage class functionality.
+        /// </summary>
         [TestMethod]
         public void DataStateStorage()
         {
-            StateStorage<List<Entry>> UTState = new StateStorage<List<Entry>>();
-            UTState.Entries.Clear();
-            UTState.Save();
+            StateStorage<List<Entry>> storage = new StateStorage<List<Entry>>();
+            storage.Entries.Clear();
+            storage.Save();
 
             Entry testEntry = new Entry();
             testEntry.ID = 15;
-            UTState.Entries.Add(testEntry);
-            UTState.Save();
-            UTState.Entries.Add((Entry)testEntry.Clone());
-            UTState.Save();
-            UTState.Load();
-            Assert.IsTrue(UTState.Entries.Count == 2);
-            UTState.Undo();
-            Assert.IsTrue(UTState.Entries.Count == 1);
-            UTState.Redo();
-            Assert.IsTrue(UTState.Entries.Count == 2);
-            UTState.Save();
+            storage.Entries.Add(testEntry);
+            storage.Save();
+            storage.Entries.Add((Entry)testEntry.Clone());
+            storage.Save();
+            storage.Load();
+            Assert.IsTrue(storage.Entries.Count == 2);
+            storage.Undo();
+            Assert.IsTrue(storage.Entries.Count == 1);
+            storage.Redo();
+            Assert.IsTrue(storage.Entries.Count == 2);
+            storage.Save();
 
-            StateStorage<List<Entry>> UTState2 = new StateStorage<List<Entry>>("data.txt");
-            UTState2.Clear(); // Remove all states
+            StateStorage<List<Entry>> storage2 = new StateStorage<List<Entry>>("data.txt");
+            storage2.Clear(); // Remove all states
 
             // There should be no undo or redo
-            Assert.IsFalse(UTState2.Undo());
-            Assert.IsFalse(UTState2.Redo());
+            Assert.IsFalse(storage2.Undo());
+            Assert.IsFalse(storage2.Redo());
 
-            UTState2.Save();
+            storage2.Save();
 
             // Replace current entries
-            UTState2.Entries = new List<Entry>();
+            storage2.Entries = new List<Entry>();
             Entry testEntry2 = new Entry();
-            testEntry2.Description = "A";
-            UTState2.Entries.Add(testEntry2);
-            UTState2.Save();
-            Assert.IsTrue(UTState2.HasUndo);
-            Assert.IsFalse(UTState2.HasRedo);
-            UTState2.Undo();
-            Assert.IsTrue(UTState2.HasRedo);
+            testEntry2.Description = "Test";
+            storage2.Entries.Add(testEntry2);
+            storage2.Save();
+            Assert.IsTrue(storage2.HasUndo);
+            Assert.IsFalse(storage2.HasRedo);
+            storage2.Undo();
+            Assert.IsTrue(storage2.HasRedo);
         }
 
+        /// <summary>
+        /// Tests the JSON serialization and deserialization methods.
+        /// </summary>
         [TestMethod]
         public void GCJSON()
         {
             Entry testEntry = new Entry();
-            testEntry.Description = "test";
+            string testDescription = "Test json";
+            testEntry.Description = testDescription;
             JSON<Entry> jsonParser = new JSON<Entry>();
             string jsonString = jsonParser.Serialize(testEntry);
             Entry duplicate = jsonParser.Deserialize(jsonString);
             string jsonDup = jsonParser.Serialize(duplicate);
-            Assert.IsTrue(duplicate.Description == "test");
+            Assert.IsTrue(duplicate.Description == testDescription);
             Assert.IsTrue(jsonDup == jsonString);
         }
 
+        /// <summary>
+        /// Tests JSON time conversion.
+        /// </summary>
         [TestMethod]
         public void GCJSONTime()
         {

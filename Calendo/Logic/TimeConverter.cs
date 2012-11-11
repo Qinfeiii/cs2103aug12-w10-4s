@@ -16,6 +16,7 @@ namespace Calendo.Logic
         private readonly string[] KEYWORDS = new string[] { "-" };
         private readonly char[] DELIMITTER_DATE = new char[] { '.', '/', '-' };
         private readonly char[] DELIMITTER_TIME = new char[] { ':', '.' };
+        private TimeHelper timeHelper = new TimeHelper();
 
         /// <summary>
         /// Gets the TimeFormat associated with the date and time
@@ -59,7 +60,6 @@ namespace Calendo.Logic
 
             // Convert time
             ConvertTime(time, ref convertedTime, ref errorMessage, ref isValidTime);
-
 
             if (errorMessage.Length > 0)
             {
@@ -109,7 +109,8 @@ namespace Calendo.Logic
         private bool HasKeyword(string inputString)
         {
             inputString = inputString.Trim();
-            foreach (string keyword in KEYWORDS) {
+            foreach (string keyword in KEYWORDS)
+            {
                 if (inputString == keyword)
                 {
                     return true;
@@ -140,7 +141,7 @@ namespace Calendo.Logic
             int minute = 0;
 
             // Handle AM or PM
-            HourFormat hourFormat = TimeHelper.GetHourFormat(timeString);
+            HourFormat hourFormat = timeHelper.GetHourFormat(timeString);
             if (hourFormat != HourFormat.Military)
             {
                 // Get the remainder excluding AM and PM
@@ -153,13 +154,13 @@ namespace Calendo.Logic
             // Hour
             if (timeFragment.Length > 0)
             {
-                hour = TimeHelper.GetHour(timeFragment[0], hourFormat);
+                hour = timeHelper.GetHour(timeFragment[0], hourFormat);
             }
 
             // Minute
             if (timeFragment.Length > 1)
             {
-                minute = TimeHelper.GetMinute(timeFragment[1]);
+                minute = timeHelper.GetMinute(timeFragment[1]);
             }
 
             if (timeString == "")
@@ -209,20 +210,20 @@ namespace Calendo.Logic
             // Year
             if (dateFragment.Length > 2)
             {
-                year = TimeHelper.GetYear(dateFragment[2]);
+                year = timeHelper.GetYear(dateFragment[2]);
                 isYearProvided = true;
             }
 
             // Month
             if (dateFragment.Length > 1)
             {
-                month = TimeHelper.GetMonth(dateFragment[1]);
+                month = timeHelper.GetMonth(dateFragment[1]);
             }
 
             // Day
             if (dateFragment.Length > 0)
             {
-                day = TimeHelper.GetDay(dateFragment[0], year, month);
+                day = timeHelper.GetDay(dateFragment[0], year, month);
             }
 
             if (dateString == "")

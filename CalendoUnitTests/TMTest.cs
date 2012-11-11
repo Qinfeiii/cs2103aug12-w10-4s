@@ -10,8 +10,11 @@ namespace CalendoUnitTests
     [TestClass]
     public class TMTest
     {
-        TaskManager taskManager = TaskManager.Instance;
+        private TaskManager taskManager = TaskManager.Instance;
 
+        /// <summary>
+        /// Tests if TaskManager can be initialized.
+        /// </summary>
         [TestMethod]
         public void TMCreate()
         {
@@ -20,28 +23,23 @@ namespace CalendoUnitTests
             taskManager.Save();
         }
 
+        /// <summary>
+        /// Tests if entries can be added.
+        /// </summary>
         [TestMethod]
         public void TMAdd()
         {
             // Prevent past tests from affecting this test
             taskManager.Entries.Clear();
 
-            // Add Valid
-            taskManager.Add("Test Floating", null, null, null, null);
-            taskManager.Add("Test Deadline 1", "31/12");
-            taskManager.Add("Test Deadline 2", "", "23:59");
-            taskManager.Add("Test Deadline 3", "1/1/" + (DateTime.Today.Year + 1).ToString(), "12:59 AM");
-            taskManager.Add("Test Timed", "1/12", "14.00", "31.1", "3:02PM");
-            taskManager.Add("Test Deadline 4", "", "0:01");
-            taskManager.Add("Test Timed 2", "1/12-31/12", "14.00"); // Functionality removed in favor of new parameters
-            taskManager.Add("Test Timed 3", "28/2/2100-29/2/2400", "", "", "");
-
             // Test floating
+            taskManager.Add("Test Floating", null, null, null, null);
             Assert.IsTrue(taskManager.Entries[0].Description == "Test Floating");
             Assert.IsTrue(taskManager.Entries[0].StartTimeFormat == TimeFormat.None);
             Assert.IsTrue(taskManager.Entries[0].Type == EntryType.Floating);
 
             // Test Deadline with only date
+            taskManager.Add("Test Deadline 1", "31/12");
             Assert.IsTrue(taskManager.Entries[1].Description == "Test Deadline 1");
             Assert.IsTrue(taskManager.Entries[1].StartTime.Year >= DateTime.Today.Year);
             Assert.IsTrue(taskManager.Entries[1].StartTime.Month == 12);
@@ -50,12 +48,14 @@ namespace CalendoUnitTests
             Assert.IsTrue(taskManager.Entries[1].Type == EntryType.Deadline);
 
             // Test Deadline with only time (in future)
+            taskManager.Add("Test Deadline 2", "", "23:59");
             Assert.IsTrue(taskManager.Entries[2].Description == "Test Deadline 2");
             Assert.IsTrue(taskManager.Entries[2].StartTime.Hour == 23);
             Assert.IsTrue(taskManager.Entries[2].StartTime.Minute == 59);
             Assert.IsTrue(taskManager.Entries[2].StartTimeFormat == TimeFormat.Time);
 
             // Test Deadline with both date and time
+            taskManager.Add("Test Deadline 3", "1/1/" + (DateTime.Today.Year + 1).ToString(), "12:59 AM");
             Assert.IsTrue(taskManager.Entries[3].Description == "Test Deadline 3");
             Assert.IsTrue(taskManager.Entries[3].StartTime.Month == 1);
             Assert.IsTrue(taskManager.Entries[3].StartTime.Day == 1);
@@ -64,6 +64,7 @@ namespace CalendoUnitTests
             Assert.IsTrue(taskManager.Entries[3].StartTimeFormat == TimeFormat.DateTime);
 
             // Test Timed task
+            taskManager.Add("Test Timed", "1/12", "14.00", "31.1", "3:02PM");
             Assert.IsTrue(taskManager.Entries[4].Description == "Test Timed");
             Assert.IsTrue(taskManager.Entries[4].StartTime.Month == 12);
             Assert.IsTrue(taskManager.Entries[4].StartTime.Day == 1);
@@ -79,6 +80,7 @@ namespace CalendoUnitTests
             Assert.IsTrue(taskManager.Entries[4].Type == EntryType.Timed);
 
             // Test Deadline with only time (in past)
+            taskManager.Add("Test Deadline 4", "", "0:01");
             Assert.IsTrue(taskManager.Entries[5].Description == "Test Deadline 4");
             Assert.IsTrue(taskManager.Entries[5].StartTime.Hour == 0);
             Assert.IsTrue(taskManager.Entries[5].StartTime.Minute == 1);
@@ -86,6 +88,7 @@ namespace CalendoUnitTests
             Assert.IsTrue(taskManager.Entries[5].StartTimeFormat == TimeFormat.DateTime);
 
             // Test Timed task
+            taskManager.Add("Test Timed 2", "1/12-31/12", "14.00"); 
             Assert.IsTrue(taskManager.Entries[6].Description == "Test Timed 2");
             Assert.IsTrue(taskManager.Entries[6].StartTime.Month == 12);
             Assert.IsTrue(taskManager.Entries[6].StartTime.Day == 1);
@@ -98,6 +101,7 @@ namespace CalendoUnitTests
             Assert.IsTrue(taskManager.Entries[6].Type == EntryType.Timed);
 
             // Test Timed task
+            taskManager.Add("Test Timed 3", "28/2/2100-29/2/2400", "", "", "");
             Assert.IsTrue(taskManager.Entries[7].Description == "Test Timed 3");
             Assert.IsTrue(taskManager.Entries[7].StartTime.Month == 2);
             Assert.IsTrue(taskManager.Entries[7].StartTime.Day == 28);
@@ -110,26 +114,34 @@ namespace CalendoUnitTests
             Assert.IsTrue(taskManager.Entries[7].Type == EntryType.Timed);
         }
 
+        /// <summary>
+        /// Tests if malformed entries can be handled properly.
+        /// </summary>
         [TestMethod]
         public void TMAddInvalid()
         {
             // Prevent past tests from affecting this test
             taskManager.Entries.Clear();
 
-            // Non-existant date
-            taskManager.Add("Test Invalid 1", "32/12", "0:00 PM");  // Bad date and invalid time
+            // Checks for non-existant date or time
+
+            // Bad date and invalid time
+            taskManager.Add("Test Invalid 1", "32/12", "0:00 PM");  
             Assert.IsTrue(taskManager.Entries.Count == 0);
 
-            taskManager.Add("Test Invalid 2", "1/2/" + (DateTime.Today.Year.ToString()), "25:00"); // Day in past (same year) and invalid time
+            // Day in past (same year) and invalid time
+            taskManager.Add("Test Invalid 2", "1/2/" + (DateTime.Today.Year.ToString()), "25:00"); 
             Assert.IsTrue(taskManager.Entries.Count == 0);
 
-            taskManager.Add("Test Invalid 3", "1/1/2011", null, "1/1/2010", null); // Day in past and null string
+            // Day in past and null string
+            taskManager.Add("Test Invalid 3", "1/1/2011", null, "1/1/2010", null); 
             Assert.IsTrue(taskManager.Entries.Count == 0);
 
             taskManager.Add("Test Invalid 4", "a/b/c", "-1:m");
             Assert.IsTrue(taskManager.Entries.Count == 0);
 
-            // Partially valid should also be rejected
+            // Partially valid input should also be rejected
+
             taskManager.Add("Test Invalid 5", "a/b/c", "23:59");
             Assert.IsTrue(taskManager.Entries.Count == 0);
 
@@ -140,11 +152,16 @@ namespace CalendoUnitTests
             Assert.IsTrue(taskManager.Entries.Count == 0);
         }
 
+        /// <summary>
+        /// Tests if entries can be modified.
+        /// </summary>
         [TestMethod]
         public void TMChange()
         {
             // Prevent past tests from affecting this test
             taskManager.Entries.Clear();
+
+            // Seed the task list with entries
             taskManager.Add("Test Timed", "1/12", "14:00", "31/1", "3:02PM");
             taskManager.Add("Test Floating");
             taskManager.Add("Test Floating 2", "1/1", "12:00PM", "2/1", null);
@@ -172,6 +189,9 @@ namespace CalendoUnitTests
             Assert.IsTrue(taskManager.Entries[2].EndTimeFormat == TimeFormat.None);
         }
 
+        /// <summary>
+        /// Tests if malformed change requests can be handled properly.
+        /// </summary>
         [TestMethod]
         public void TMChangeInvalid()
         {
@@ -181,26 +201,33 @@ namespace CalendoUnitTests
             // Invalid change operations should not alter the task
 
             // Invalid date
-            taskManager.Change(1, null, "31/2");
+            taskManager.Change(1, "New", "31/2");
+            Assert.IsTrue(taskManager.Entries[0].Description == "Test Timed");
             Assert.IsTrue(taskManager.Entries[0].StartTime.Day == 1);
             Assert.IsTrue(taskManager.Entries[0].StartTime.Month == 12);
 
             // Invalid date and time
             taskManager.Change(1, null, "2/2/123", "-1:00", "12/12");
+            Assert.IsTrue(taskManager.Entries[0].Description == "Test Timed");
             Assert.IsTrue(taskManager.Entries[0].StartTime.Day == 1);
             Assert.IsTrue(taskManager.Entries[0].StartTime.Month == 12);
 
             // Start date after end
             taskManager.Change(1, null, "2/2/13");
+            Assert.IsTrue(taskManager.Entries[0].Description == "Test Timed");
             Assert.IsTrue(taskManager.Entries[0].StartTime.Day == 1);
             Assert.IsTrue(taskManager.Entries[0].StartTime.Month == 12);
 
             // End date before start
             taskManager.Change(1, null, null, null, null, "2/2/2012");
+            Assert.IsTrue(taskManager.Entries[0].Description == "Test Timed");
             Assert.IsTrue(taskManager.Entries[0].StartTime.Day == 1);
             Assert.IsTrue(taskManager.Entries[0].StartTime.Month == 12);
         }
 
+        /// <summary>
+        /// Tests if entries can be removed.
+        /// </summary>
         [TestMethod]
         public void TMRemove()
         {
@@ -215,12 +242,16 @@ namespace CalendoUnitTests
             taskManager.Remove(taskManager.Entries.Count + 1);
             taskManager.Remove(-1);
 
+            // Remove second entry
             taskManager.Remove(2);
             Assert.IsTrue(taskManager.Entries.Count == 2);
             Assert.IsTrue(taskManager.Entries[0].Description == "Test Floating 1");
             Assert.IsTrue(taskManager.Entries[1].Description == "Test Floating 3");
         }
 
+        /// <summary>
+        /// Tests the undo and redo functionality.
+        /// </summary>
         [TestMethod]
         public void TMUndoRedo()
         {
@@ -243,6 +274,9 @@ namespace CalendoUnitTests
             Assert.IsTrue(taskManager.Entries[1].Description == "Test Floating 3");
         }
 
+        /// <summary>
+        /// Tests the subscriber functionality
+        /// </summary>
         [TestMethod]
         public void TMSubscriber()
         {
@@ -254,14 +288,21 @@ namespace CalendoUnitTests
             Assert.IsTrue(isUpdated == true);
         }
 
+        /// <summary>
+        /// Tests multithreading of Google Calendar.
+        /// </summary>
         [TestMethod]
         public void TMGoogleCalendar()
         {
             ThreadedGoogleCalendar.GoogleCalendarType = typeof(GoogleCalendarStub);
             ThreadedGoogleCalendar.AuthorizationMethod = new ThreadedGoogleCalendar.AuthorizationCall(delegate() { });
+
+            // Test export thread
             taskManager.Export();
             ThreadedGoogleCalendar.CurrentThread.Join();
             Assert.IsTrue(GoogleCalendarStub.LastRun == "Export");
+
+            // Test import thread
             taskManager.Import();
             ThreadedGoogleCalendar.CurrentThread.Join();
             Assert.IsTrue(GoogleCalendarStub.LastRun == "Import");

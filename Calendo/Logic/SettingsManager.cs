@@ -36,7 +36,7 @@ namespace Calendo.Logic
             get;
             set;
         }
-        
+
         /// <summary>
         /// Value represented by KeyPair
         /// </summary>
@@ -55,7 +55,8 @@ namespace Calendo.Logic
         /// <summary>
         /// Creates a new instance of SettingsManager
         /// </summary>
-        public SettingsManager() {
+        public SettingsManager()
+        {
             this.settingsStorage = new Storage<List<KeyPair<string, string>>>("settings.txt");
             this.settingsDictionary = new Dictionary<string, int>();
             this.settingsStorage.Load();
