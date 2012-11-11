@@ -13,7 +13,7 @@ namespace CalendoUnitTests
         private TaskManager taskManager = TaskManager.Instance;
 
         /// <summary>
-        /// Tests if TaskManager can be initialized.
+        /// Tests if TaskManager can be initialized
         /// </summary>
         [TestMethod]
         public void TMCreate()
@@ -24,7 +24,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests if entries can be added.
+        /// Tests if entries can be added
         /// </summary>
         [TestMethod]
         public void TMAdd()
@@ -115,7 +115,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests if malformed entries can be handled properly.
+        /// Tests if malformed entries can be handled properly
         /// </summary>
         [TestMethod]
         public void TMAddInvalid()
@@ -153,7 +153,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests if entries can be modified.
+        /// Tests if entries can be modified
         /// </summary>
         [TestMethod]
         public void TMChange()
@@ -190,7 +190,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests if malformed change requests can be handled properly.
+        /// Tests if malformed change requests can be handled properly
         /// </summary>
         [TestMethod]
         public void TMChangeInvalid()
@@ -226,7 +226,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests if entries can be removed.
+        /// Tests if entries can be removed
         /// </summary>
         [TestMethod]
         public void TMRemove()
@@ -250,7 +250,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests the undo and redo functionality.
+        /// Tests the undo and redo functionality
         /// </summary>
         [TestMethod]
         public void TMUndoRedo()
@@ -289,7 +289,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests multithreading of Google Calendar.
+        /// Tests multithreading of Google Calendar
         /// </summary>
         [TestMethod]
         public void TMGoogleCalendar()

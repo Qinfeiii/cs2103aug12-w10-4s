@@ -13,7 +13,7 @@ namespace CalendoUnitTests
     public class DataTest
     {
         /// <summary>
-        /// Tests if entries can be loaded from file.
+        /// Tests if entries can be loaded from file
         /// </summary>
         [TestMethod]
         public void DataLoad()
@@ -26,7 +26,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests if entries persist after saving.
+        /// Tests if entries persist after saving
         /// </summary>
         [TestMethod]
         public void DataSave()
@@ -64,7 +64,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests situations where the data file is corrupted.
+        /// Tests situations where the data file is corrupted
         /// </summary>
         [TestMethod]
         public void DataIncompatible()
@@ -92,7 +92,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests situations where the data file is unreadable/locked.
+        /// Tests situations where the data file is unreadable or locked
         /// </summary>
         [TestMethod]
         public void DataUnwritable()
@@ -129,7 +129,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests if entries can be modified.
+        /// Tests if entries can be modified
         /// </summary>
         [TestMethod]
         public void DataEntry()
@@ -158,7 +158,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests State class functionality.
+        /// Tests State class functionality
         /// </summary>
         [TestMethod]
         public void DataState()
@@ -187,7 +187,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests StateStorage class functionality.
+        /// Tests StateStorage class functionality
         /// </summary>
         [TestMethod]
         public void DataStateStorage()
@@ -232,7 +232,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests the JSON serialization and deserialization methods.
+        /// Tests the JSON serialization and deserialization methods
         /// </summary>
         [TestMethod]
         public void GCJSON()
@@ -249,7 +249,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests JSON time conversion.
+        /// Tests JSON time conversion
         /// </summary>
         [TestMethod]
         public void GCJSONTime()
