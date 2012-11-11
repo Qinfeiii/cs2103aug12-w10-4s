@@ -33,14 +33,14 @@ namespace Calendo.GoogleCalendar
             get { return authCode; }
         }
 
-        private void OKButton_Click(object sender, RoutedEventArgs e)
+        private void OKButtonClick(object sender, RoutedEventArgs e)
         {
             authCode = this.authTextBox.Text;
             this.DialogResult = true;
             this.Close();
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        private void CloseButtonClick(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
@@ -59,7 +59,7 @@ namespace Calendo.GoogleCalendar
             FormShadow.Color = ((SolidColorBrush)activeBrush).Color;
         }
 
-        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void TitleBarMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.Cursor = Cursors.SizeAll;
             DragMove();

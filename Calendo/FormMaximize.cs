@@ -48,12 +48,12 @@ namespace Calendo
             {
                 MonitorInfo monitorInfo = new MonitorInfo();
                 GetMonitorInfo(monitor, monitorInfo);
-                Rectangle rcWorkArea = monitorInfo.WorkArea;
-                Rectangle rcMonitorArea = monitorInfo.MonitorArea;
-                minmaxInfo.MaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
-                minmaxInfo.MaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
-                minmaxInfo.MaxSize.X = Math.Abs(rcWorkArea.Right - rcWorkArea.Left);
-                minmaxInfo.MaxSize.Y = Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top);
+                Rectangle workArea = monitorInfo.WorkArea;
+                Rectangle monitorArea = monitorInfo.MonitorArea;
+                minmaxInfo.MaxPosition.X = Math.Abs(workArea.Left - monitorArea.Left);
+                minmaxInfo.MaxPosition.Y = Math.Abs(workArea.Top - monitorArea.Top);
+                minmaxInfo.MaxSize.X = Math.Abs(workArea.Right - workArea.Left);
+                minmaxInfo.MaxSize.Y = Math.Abs(workArea.Bottom - workArea.Top);
             }
             Marshal.StructureToPtr(minmaxInfo, lParam, true);
         }
