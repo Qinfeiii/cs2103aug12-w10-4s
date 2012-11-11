@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Calendo.AutoSuggest;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace UiUnitTests
+namespace CalendoUnitTests
 {
     [TestClass]
     public class AutoSuggestTests
