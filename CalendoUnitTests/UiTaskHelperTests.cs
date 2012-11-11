@@ -1,10 +1,11 @@
 ﻿//@author A0080860H
+
 using System;
 using Calendo;
 using Calendo.Logic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace UiUnitTests
+namespace CalendoUnitTests
 {
     [TestClass]
     public class UiTaskHelperTests

@@ -1,4 +1,5 @@
 ﻿//@author Jerome
+
 using System;
 using System.Windows;
 using System.Windows.Media;
@@ -6,7 +7,7 @@ using Calendo.Converters;
 using Calendo.Logic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace UiUnitTests
+namespace CalendoUnitTests
 {
     [TestClass]
     public class ConverterTests
