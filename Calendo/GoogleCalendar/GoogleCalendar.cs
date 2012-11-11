@@ -18,7 +18,7 @@ using System.Threading;
 
 namespace Calendo.GoogleCalendar
 {
-    class GoogleCalendar
+    public class GoogleCalendar
     {
         private TaskManager storage = TaskManager.Instance;
         private static string auth = "";
@@ -102,7 +102,6 @@ namespace Calendo.GoogleCalendar
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.Message + ". Please try again later.");
                     return false;
                 }
             }
@@ -125,7 +124,7 @@ namespace Calendo.GoogleCalendar
                 httpWReq.Timeout = 10000;
                 JSON<TaskResponse> jsonObject = new JSON<TaskResponse>();
                 string postData = "{\"title\": \"" + task.Description + "\"";
-                if (task.Type != EntryType.FLOATING)
+                if (task.Type != EntryType.Floating)
                     postData += ",\"due\": \"" + jsonObject.DateToJSON(task.StartTime) + "\"";
                 postData += "}";
 
@@ -238,11 +237,11 @@ namespace Calendo.GoogleCalendar
                 if (values.Items[c].due != null)
                 {
                     entry.StartTime = jsonObject.JSONToDate(values.Items[c].due);
-                    entry.StartTimeFormat = TimeFormat.DATE;
-                    entry.Type = EntryType.DEADLINE;
+                    entry.StartTimeFormat = TimeFormat.Date;
+                    entry.Type = EntryType.Deadline;
                 }
                 else
-                    entry.Type = EntryType.FLOATING;
+                    entry.Type = EntryType.Floating;
                 taskList.Add(entry);
             }
             return taskList;
