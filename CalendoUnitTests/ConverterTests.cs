@@ -255,11 +255,7 @@ namespace CalendoUnitTests
         [TestMethod]
         public void UiEntryToBrushOngoing()
         {
-            int currentYear = DateTime.Now.Year;
-            int currentMonth = DateTime.Now.Month;
-            int currentDay = DateTime.Now.Day;
-
-            DateTime today = new DateTime(currentYear, currentMonth, currentDay, 13, 50, 0);
+            DateTime today = DateTime.Now;
             DateTime tomorrow = today.AddDays(1);
 
             Entry testEntry = new Entry()
