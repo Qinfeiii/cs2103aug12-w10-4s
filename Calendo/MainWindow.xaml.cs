@@ -42,7 +42,6 @@ namespace Calendo
             RedoCommand.InputGestures.Add(new KeyGesture(Key.Y, ModifierKeys.Control));
             DelCommand.InputGestures.Add(new KeyGesture(Key.Delete));
             DataContext = ViewModel;
-            //ViewModel.ShowMessage("Ready.");
         }
 
         
