@@ -1,6 +1,7 @@
 ﻿//@author A0080860H
 using System.Collections.Generic;
 using Calendo.AutoSuggest;
+using Calendo.Diagnostics;
 using Calendo.Logic;
 using System.ComponentModel;
 
@@ -13,6 +14,8 @@ namespace Calendo
 
         public List<AutoSuggestEntry> SuggestionList { get { return AutoSuggestSystem.SuggestionList; } }
         public Dictionary<int, Entry> TaskList { get; set; }
+
+        public string StatusBarText { get; set; }
 
         public int AutoSuggestRow
         {
@@ -30,7 +33,14 @@ namespace Calendo
             AutoSuggestSystem = new AutoSuggest.AutoSuggest(CommandProcessor.GetInputCommandList());
             TaskManager.UpdateHandler updateHandler = UpdateItemsList;
             TaskManager.Instance.AddSubscriber(updateHandler);
+            DebugTool.AddSubscriber(ShowMessage);
             UpdateItemsList();
+        }
+
+        public void ShowMessage(string message)
+        {
+            StatusBarText = message.Trim();
+            OnPropertyChanged("StatusBarText");
         }
 
         public void ExecuteCommand(string command)

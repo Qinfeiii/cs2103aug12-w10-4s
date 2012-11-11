@@ -14,7 +14,7 @@ namespace Calendo.Logic
     {
         private const string ERROR_ENTRY_NOT_FOUND = "Entry not found";
         private const string ERROR_INVALID_DATETIME = "Specified Date or Time is invalid";
-        private const string ERROR_END_BEFORE_START = "End date cannot be before start date";
+        private const string ERROR_END_BEFORE_START = "End Date must be after Start Date";
         private const string KEYWORD_REMOVE = "-";
         private const string STORAGE_PATH = "archive.txt";
         private const bool ALLOW_CONTINUE_ON_ERROR = false;
