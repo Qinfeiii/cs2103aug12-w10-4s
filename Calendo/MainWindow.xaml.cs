@@ -43,14 +43,14 @@ namespace Calendo
             DataContext = ViewModel;
         }
 
-        // Fixes for maximize
+        
         //@author A0080933E
-        void FormSourceInitialized(object sender, EventArgs e)
+        private void FormSourceInitialized(object sender, EventArgs e)
         {
-            System.IntPtr handle = (new WindowInteropHelper(this)).Handle;
+            // Fix for maximize
+            IntPtr handle = (new WindowInteropHelper(this)).Handle;
             HwndSource.FromHwnd(handle).AddHook(new HwndSourceHook(FormMaximize.WindowProc));
         }
-        // End Fixes
 
         //@author A0080860H
         private void CommandBarLostFocus(object sender, RoutedEventArgs e)
@@ -441,11 +441,11 @@ namespace Calendo
         private void ResizeLeft()
         {
             resizeX -= CURSOR_OFFSET;
-            double newWidth = Width - resizeX;
-            if (newWidth >= MinWidth)
+            double newWidth = this.Width - resizeX;
+            if (newWidth >= this.MinWidth)
             {
-                Width = newWidth;
-                Left += resizeX;
+                this.Width = newWidth;
+                this.Left += resizeX;
             }
         }
 
@@ -453,13 +453,13 @@ namespace Calendo
         private void ResizeRight()
         {
             resizeX += CURSOR_OFFSET;
-            if (resizeX < MinWidth)
+            if (resizeX < this.MinWidth)
             {
-                Width = MinWidth;
+                this.Width = this.MinWidth;
             }
             else
             {
-                Width = resizeX;
+                this.Width = resizeX;
             }
         }
 
@@ -467,11 +467,11 @@ namespace Calendo
         private void ResizeTop()
         {
             resizeY -= CURSOR_OFFSET;
-            double newHeight = Height - resizeY;
-            if (newHeight >= MinHeight)
+            double newHeight = this.Height - resizeY;
+            if (newHeight >= this.MinHeight)
             {
-                Height = newHeight;
-                Top += resizeY;
+                this.Height = newHeight;
+                this.Top += resizeY;
             }
         }
 
@@ -479,13 +479,13 @@ namespace Calendo
         private void ResizeBottom()
         {
             resizeY += CURSOR_OFFSET;
-            if (resizeY < MinHeight)
+            if (resizeY < this.MinHeight)
             {
-                Height = MinHeight;
+                this.Height = this.MinHeight;
             }
             else
             {
-                Height = resizeY;
+                this.Height = resizeY;
             }
         }
 
