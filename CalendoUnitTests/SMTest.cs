@@ -9,7 +9,7 @@ namespace CalendoUnitTests
     public class SMTest
     {
         /// <summary>
-        /// Tests if settings can be added.
+        /// Tests if settings can be added
         /// </summary>
         [TestMethod]
         public void SMAdd()
@@ -29,7 +29,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests if settings can be loaded from file.
+        /// Tests if settings can be loaded from file
         /// </summary>
         [TestMethod]
         public void SMLoad()
@@ -41,7 +41,7 @@ namespace CalendoUnitTests
         }
 
         /// <summary>
-        /// Tests if settings can be modified and persist after saving.
+        /// Tests if settings can be modified and persist after saving
         /// </summary>
         [TestMethod]
         public void SMModify()
