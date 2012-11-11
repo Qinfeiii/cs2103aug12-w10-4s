@@ -30,11 +30,12 @@ namespace Calendo.GoogleCalendar
 
         public virtual bool Export()
         {
-            DebugTool.Alert(EXPORT_MESSAGE);
             if (AuthorizationCode == "")
             {
                 return false;
             }
+
+            DebugTool.Alert(EXPORT_MESSAGE);
             storage.Load();
             List<string> idList = GetTasksIds(GetTaskResponse(AuthorizationCode));
             if (idList == null)
@@ -56,12 +57,12 @@ namespace Calendo.GoogleCalendar
 
         public virtual bool Import()
         {
-            DebugTool.Alert(IMPORT_MESSAGE);
             if (AuthorizationCode == "")
             {
                 return false;
             }
 
+            DebugTool.Alert(IMPORT_MESSAGE);
             List<Entry> taskList = GetTaskDetails(GetTaskResponse(AuthorizationCode));
             if (taskList == null)
             {
