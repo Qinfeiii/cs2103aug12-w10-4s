@@ -24,7 +24,7 @@ namespace Calendo.Diagnostics
         private const string LOG_FORMAT = "{0:G}: [{1}] {2}";
         private const string CONFIG_FILEPATH = "debugcfg.txt";
         private const string MESSAGE_DEBUG_LOAD = "Debug file loaded, debugging state = {0}";
-        private static bool IsEnable = true;
+        private static bool IsPopupEnable = false;
         private static bool IsConfigLoaded = false;
         private static bool IsHasNotification = false;
         private static string CurrentMessage = "";
@@ -93,11 +93,11 @@ namespace Calendo.Diagnostics
                 {
                     LoadConfig();
                 }
-                return IsEnable;
+                return IsPopupEnable;
             }
             set
             {
-                IsEnable = value;
+                IsPopupEnable = value;
             }
         }
 
@@ -111,7 +111,6 @@ namespace Calendo.Diagnostics
                 Stream fileStream = new FileStream(CONFIG_FILEPATH, FileMode.OpenOrCreate);
                 StreamReader sr = new StreamReader(fileStream);
                 string config = sr.ReadLine();
-                PopupEnable = true;
                 if (config == "0")
                 {
                     PopupEnable = false;
@@ -135,10 +134,10 @@ namespace Calendo.Diagnostics
         /// <param name="message">Message to display</param>
         public static void Alert(string message)
         {
-//            if (DebugTool.PopupEnable)
-//            {
-//                MessageBox.Show(message);
-//            }
+            if (DebugTool.PopupEnable)
+            {
+                MessageBox.Show(message);
+            }
             UpdateSubscribers(message);
             WriteLog(message, MessageType.Alert);
         }
