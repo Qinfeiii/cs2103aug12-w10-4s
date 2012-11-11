@@ -68,7 +68,7 @@ namespace Calendo
             OnPropertyChanged("TaskList");
         }
 
-        private int TaskListSorter(Entry first, Entry second)
+        public int TaskListSorter(Entry first, Entry second)
         {
             // We want items sorted by Overdue -> Active -> Floating
             bool isFirstOverdue = UiTaskHelper.IsTaskOverdue(first);
