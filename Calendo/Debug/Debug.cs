@@ -135,10 +135,10 @@ namespace Calendo.Diagnostics
         /// <param name="message">Message to display</param>
         public static void Alert(string message)
         {
-            if (DebugTool.PopupEnable)
-            {
-                MessageBox.Show(message);
-            }
+//            if (DebugTool.PopupEnable)
+//            {
+//                MessageBox.Show(message);
+//            }
             UpdateSubscribers(message);
             WriteLog(message, MessageType.Alert);
         }

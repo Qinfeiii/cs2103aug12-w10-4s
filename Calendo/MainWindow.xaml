@@ -408,7 +408,29 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+                    
+                    <TextBlock Name="NotificationBar" Grid.Row="4" VerticalAlignment="Bottom"
+                               FontSize="14" FontWeight="Bold"
+                               Padding="12,0"
+                               Background="Yellow" TextWrapping="WrapWithOverflow" Opacity="0" IsHitTestVisible="False" Panel.ZIndex="1"
+                               Text="{Binding StatusBarText, NotifyOnTargetUpdated=True}">
+                        <TextBlock.Triggers>
+                            <EventTrigger RoutedEvent="Binding.TargetUpdated">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             Duration="00:00:00" BeginTime="00:00:00" 
+                                             From="0" To="1" />
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             Duration="00:00:02" BeginTime="00:00:01"
+                                             From="1" To="0" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </TextBlock.Triggers>
+                    </TextBlock>
                 </Grid>
+                
 
                 <Rectangle x:Name="ResizeTopLeft" Grid.Row="0" Grid.Column="0" Width="{StaticResource BorderWidth}"
                            Height="{StaticResource BorderWidth}" Cursor="SizeNWSE" MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"
