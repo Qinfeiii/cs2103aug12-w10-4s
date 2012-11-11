@@ -1,0 +1,30 @@
+﻿<Window x:Class="Calendo.GoogleCalendar.AskAuth"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Authorization Code" Height="171" Width="300" Background="Transparent" AllowsTransparency="True"
+    WindowStyle="None" ResizeMode="NoResize" Activated="WindowActivated" Deactivated="WindowDeactivated">
+    <Window.Resources>
+        <SolidColorBrush x:Key="Brush_CriticalBorder" Color="#FFCA5100"/>
+        <SolidColorBrush x:Key="Brush_InactiveBackground" Color="White"/>
+        <SolidColorBrush x:Key="Brush_ActiveBackground" Color="White"/>
+        <SolidColorBrush x:Key="Brush_InactiveBorder" Color="Gray"/>
+        <SolidColorBrush x:Key="Brush_ActiveBorder" Color="#FF007ACC" />
+    </Window.Resources>
+    <Border x:Name="FormBorder"
+     BorderBrush="{StaticResource Brush_InactiveBorder}" BorderThickness="1,1,1,1"
+     CornerRadius="2,2,2,2"
+     Width="Auto" Margin="10 10 10 10">
+        <!-- Shadow Effect -->
+        <Border.Effect>
+            <DropShadowEffect x:Name="FormShadow" Color="Black" Direction="300" 
+                                        ShadowDepth="0" Opacity=".5" BlurRadius="10" />
+        </Border.Effect>
+        <Grid x:Name="Grid" Background="White">
+            <TextBox Height="26" Margin="10,78,10,0" Name="authTextBox" VerticalAlignment="Top" />
+            <Button Content="Ok" Height="23" Margin="0,116,91,0" Name="button1" VerticalAlignment="Top" Click="OKButtonClick" HorizontalAlignment="Right" Width="75" IsDefault="True" />
+            <TextBlock TextWrapping="Wrap" Text="In order to synchronize with Google Calendar, we would need your authorization code." Height="37" HorizontalAlignment="Left" Margin="10,32,0,0" Name="label1" VerticalAlignment="Top" Width="258" />
+            <Button Content="Cancel" Margin="0,116,10,0" Name="button2" Height="23" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Click="CloseButtonClick" IsCancel="True" />
+            <Label x:Name="TitleBar" Content="Authorization Code" Background="#FFCA5100" Foreground="White" HorizontalAlignment="Left" Height="27" VerticalAlignment="Top" Width="278" MouseLeftButtonDown="TitleBarMouseLeftButtonDown"/>
+        </Grid>
+    </Border>
+</Window>
