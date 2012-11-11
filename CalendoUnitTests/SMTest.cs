@@ -8,35 +8,53 @@ namespace CalendoUnitTests
     [TestClass]
     public class SMTest
     {
+        /// <summary>
+        /// Tests if settings can be added.
+        /// </summary>
+        [TestMethod]
+        public void SMAdd()
+        {
+            string testSettingName = "test 1";
+            string testSettingValue = "test1 value";
+            
+            // Save a setting
+            SettingsManager settingsManager = new SettingsManager();
+            settingsManager.Clear();
+            settingsManager.SetSetting(testSettingName, testSettingValue);
+            Assert.IsTrue(settingsManager.GetSetting(testSettingName) == testSettingValue);
+
+            // Test if setting can be accessed from another instance
+            SettingsManager secondaryInstance = new SettingsManager();
+            Assert.IsTrue(secondaryInstance.GetSetting(testSettingName) == testSettingValue);
+        }
+
+        /// <summary>
+        /// Tests if settings can be loaded from file.
+        /// </summary>
         [TestMethod]
         public void SMLoad()
         {
             SettingsManager settingsManager = new SettingsManager();
             settingsManager.Clear();
+            Assert.IsNull(settingsManager.GetSetting(""));
             Assert.IsNull(settingsManager.GetSetting("non-existant"));
         }
 
-        [TestMethod]
-        public void SMAdd()
-        {
-            SettingsManager settingsManager = new SettingsManager();
-            settingsManager.Clear();
-            settingsManager.SetSetting("test 1", "test1 value");
-            Assert.IsTrue(settingsManager.GetSetting("test 1") == "test1 value");
-
-            // Test if setting can be accessed
-            SettingsManager sm2 = new SettingsManager();
-            Assert.IsTrue(sm2.GetSetting("test 1") == "test1 value");
-        }
-
+        /// <summary>
+        /// Tests if settings can be modified and persist after saving.
+        /// </summary>
         [TestMethod]
         public void SMModify()
         {
+            string testSettingName = "Test modify";
+            string testSettingValue = "test modify value";
+            string testSettingNewValue = "test new value";
+
             SettingsManager settingsManager = new SettingsManager();
             settingsManager.Clear();
-            settingsManager.SetSetting("test 2", "test2 value");
-            settingsManager.SetSetting("test 2", "test2 new value");
-            Assert.IsTrue(settingsManager.GetSetting("test 2") == "test2 new value");
+            settingsManager.SetSetting(testSettingName, testSettingValue);
+            settingsManager.SetSetting(testSettingName, testSettingNewValue);
+            Assert.IsTrue(settingsManager.GetSetting(testSettingName) == testSettingNewValue);
         }
     }
 }

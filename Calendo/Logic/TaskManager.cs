@@ -103,6 +103,7 @@ namespace Calendo.Logic
             TaskTime startDateTime = this.ConvertTime(startDate, startTime);
             TaskTime endDateTime = this.ConvertTime(endDate, endTime);
             this.Add(description, startDateTime, endDateTime);
+            this.RecordLog("Add", description, startDate, startTime, endDate, endTime);
         }
 
         /// <summary>
@@ -141,7 +142,6 @@ namespace Calendo.Logic
         {
             this.storage.Entries.Add(entry);
             this.Save();
-            this.RecordLog(entry, "Add");
         }
 
         /// <summary>
@@ -241,6 +241,7 @@ namespace Calendo.Logic
             flag = flag.Add(ModifyFlag.EraseEndTime, endTime == KEYWORD_REMOVE);
 
             this.Change(id, flag, description, startDateTime, endDateTime);
+            this.RecordLog("Change", id.ToString(), description, startDate, startTime, endDate, endTime);
         }
 
         /// <summary>
@@ -320,7 +321,6 @@ namespace Calendo.Logic
             {
                 DebugTool.Alert(ERROR_ENTRY_NOT_FOUND);
             }
-            this.RecordLog(entry, "Change", id.ToString(), flag.ToString());
         }
 
 
@@ -340,7 +340,7 @@ namespace Calendo.Logic
             {
                 DebugTool.Alert(ERROR_ENTRY_NOT_FOUND);
             }
-            this.RecordLog(entry, "Remove", id.ToString());
+            this.RecordLog("Remove", id.ToString());
         }
 
         /// <summary>
@@ -440,19 +440,12 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="entry">Entry to be recorded</param>
         /// <param name="parameters">Parameters involved in operation</param>
-        private void RecordLog(Entry entry, params string[] parameters)
+        private void RecordLog(params string[] parameters)
         {
-            string entryDescription = "[Empty entry]";
-            string entryFormat = "[ID: {0}, {1}]";
-            if (entry != null)
-            {
-                entryDescription = String.Format(entryFormat, entry.ID, entry.Description);
-            }
-
             string parameterDescription = String.Join(", ", parameters);
             string parameterFormat = " [Parameters: {0}]";
             parameterDescription = String.Format(parameterFormat, parameterDescription);
-            DebugTool.WriteLog(entryDescription + parameterDescription);
+            DebugTool.WriteLog(parameterDescription, MessageType.Info);
         }
     }
 }
