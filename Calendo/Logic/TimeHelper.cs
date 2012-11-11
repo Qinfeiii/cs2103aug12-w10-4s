@@ -53,7 +53,7 @@ namespace Calendo.Logic
         /// <param name="month">Month</param>
         /// <param name="year">Year</param>
         /// <returns>Maximum number of days</returns>
-        private int MaxDays(int month, int year)
+        private int MaxDaysInMonth(int month, int year)
         {
             if (month >= 1 && month <= 12 && year >= 0)
             {
@@ -83,29 +83,28 @@ namespace Calendo.Logic
             bool isAM = (hourFormat == HourFormat.AM);
             bool isPM = (hourFormat == HourFormat.PM);
 
-            if (hour >= 0)
+            if (hour == 12 && isAM)
             {
-                if (hour == 12 && isAM)
-                {
-                    // 12 Midnight case
-                    hour = 0;
-                }
-                else if (hour == 12 && isPM)
-                {
-                    // 12 Noon case
-                    hour = 12;
-                }
-                else if (hour > 0 && isPM)
-                {
-                    // 1 to 11PM case
-                    hour += 12;
-                }
-                else if (hour == 0 && isPM)
-                {
-                    // 0 PM case (0 AM is valid)
-                    hour = INVALID_VALUE;
-                }
+                // 12 Midnight case
+                hour = 0;
             }
+            else if (hour == 12 && isPM)
+            {
+                // 12 Noon case
+                hour = 12;
+            }
+            else if (hour > 0 && isPM)
+            {
+                // 1 to 11PM case
+                hour += 12;
+            }
+            else if (hour == 0 && isPM)
+            {
+                // 0 PM case (0 AM is valid)
+                hour = INVALID_VALUE;
+            }
+
+            Debug.Assert(hour <= 24);
             return hour;
         }
 
@@ -114,7 +113,7 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="timeString">String representation of hour</param>
         /// <returns>Hour format</returns>
-        public HourFormat GetHourFormat(string timeString)
+        public HourFormat GetHourFormat(ref string timeString)
         {
             Debug.Assert(timeString != null);
 
@@ -133,6 +132,13 @@ namespace Calendo.Logic
                 {
                     hourFormat = HourFormat.PM;
                 }
+            }
+
+            if (hourFormat != HourFormat.Military)
+            {
+                // Get the remainder excluding AM and PM
+                timeString = timeString.Substring(0, timeString.Length - 2);
+                timeString = timeString.Trim();
             }
             return hourFormat;
         }
@@ -178,11 +184,11 @@ namespace Calendo.Logic
         /// <returns>Numeric representation of day</returns>
         public int GetDay(string dayFragment, int year = 0, int month = 0)
         {
-            int maxDays = MaxDays(month, year);
+            int maxDays = MaxDaysInMonth(month, year);
             int day = INVALID_VALUE;
             if (maxDays > 0)
             {
-                day = ConvertValue(dayFragment, 1, MaxDays(month, year));
+                day = ConvertValue(dayFragment, 1, maxDays);
             }
             return day;
         }
@@ -195,13 +201,12 @@ namespace Calendo.Logic
         /// <returns>Numeric representation of hour</returns>
         public int GetHour(string hourFragment, HourFormat hourFormat = HourFormat.Military)
         {
-            int minHour = 0;
             int maxHour = 24;
             if (hourFormat != HourFormat.Military)
             {
                 maxHour = 12;
             }
-            int hour = ConvertValue(hourFragment, minHour, maxHour);
+            int hour = ConvertValue(hourFragment, 0, maxHour);
             hour = ConvertHour(hour, hourFormat);
             return hour;
         }
@@ -217,7 +222,7 @@ namespace Calendo.Logic
         }
 
         /// <summary>
-        /// Converts a string to an integer
+        /// Converts a string to a non-negative integer
         /// </summary>
         /// <param name="str">Integer in string format</param>
         /// <returns>Converted numeric value or -1 if conversion failed</returns>
@@ -226,14 +231,11 @@ namespace Calendo.Logic
             try
             {
                 int convertedValue = int.Parse(str);
-                if (convertedValue > INVALID_VALUE)
+                if (convertedValue < INVALID_VALUE)
                 {
-                    return convertedValue;
+                    convertedValue = INVALID_VALUE;
                 }
-                else
-                {
-                    return INVALID_VALUE;
-                }
+                return convertedValue;
             }
             catch
             {

@@ -54,11 +54,8 @@ namespace Calendo.Logic
             bool hasError = false;
             StringBuilder errorMessage = new StringBuilder();
 
-            // Convert date
             DateTime convertedTime = DateTime.Today;
             ConvertDate(date, ref convertedTime, ref errorMessage, ref isValidDate);
-
-            // Convert time
             ConvertTime(time, ref convertedTime, ref errorMessage, ref isValidTime);
 
             if (errorMessage.Length > 0)
@@ -141,13 +138,7 @@ namespace Calendo.Logic
             int minute = 0;
 
             // Handle AM or PM
-            HourFormat hourFormat = timeHelper.GetHourFormat(timeString);
-            if (hourFormat != HourFormat.Military)
-            {
-                // Get the remainder excluding AM and PM
-                timeString = timeString.Substring(0, timeString.Length - 2);
-                timeString = timeString.Trim();
-            }
+            HourFormat hourFormat = timeHelper.GetHourFormat(ref timeString);
 
             string[] timeFragment = timeString.Split(DELIMITTER_TIME, 2);
 
@@ -156,7 +147,6 @@ namespace Calendo.Logic
             {
                 hour = timeHelper.GetHour(timeFragment[0], hourFormat);
             }
-
             // Minute
             if (timeFragment.Length > 1)
             {
@@ -165,11 +155,11 @@ namespace Calendo.Logic
 
             if (timeString == "")
             {
-                // No time supplied
                 isValidTime = false;
             }
-            else if (hour == INVALID_VALUE || minute == INVALID_VALUE)
+            else if (IsInvalid(hour, minute))
             {
+                // There are errors
                 errorMessage.AppendLine(ERROR_INVALID_TIME);
                 isValidTime = false;
             }
@@ -206,20 +196,17 @@ namespace Calendo.Logic
 
             // Date: Day/Month[/Year]
             string[] dateFragment = dateString.Split(DELIMITTER_DATE, 3);
-
             // Year
             if (dateFragment.Length > 2)
             {
                 year = timeHelper.GetYear(dateFragment[2]);
                 isYearProvided = true;
             }
-
             // Month
             if (dateFragment.Length > 1)
             {
                 month = timeHelper.GetMonth(dateFragment[1]);
             }
-
             // Day
             if (dateFragment.Length > 0)
             {
@@ -228,12 +215,11 @@ namespace Calendo.Logic
 
             if (dateString == "")
             {
-                // No date provided
                 isValidDate = false;
             }
-            else if (year == INVALID_VALUE || month == INVALID_VALUE || day == INVALID_VALUE)
+            else if (IsInvalid(year, month, day))
             {
-                // Date provided, but there are errors
+                // There are errors
                 errorMessage.AppendLine(ERROR_INVALID_DATE);
                 isValidDate = false;
             }
@@ -241,15 +227,28 @@ namespace Calendo.Logic
             if (isValidDate)
             {
                 newDate = new DateTime(year, month, day);
-                if (newDate < DateTime.Today)
+                if (!isYearProvided && newDate < DateTime.Today)
                 {
-                    if (!isYearProvided)
-                    {
-                        // Event occurs next year
-                        newDate = newDate.AddYears(1);
-                    }
+                    // Event occurs next year
+                    newDate = newDate.AddYears(1);
                 }
             }
+        }
+
+        /// <summary>
+        /// Checks if any value is invalid
+        /// </summary>
+        /// <param name="values">Integer values to check</param>
+        /// <returns>Returns true if at least one value is invalid</returns>
+        private bool IsInvalid(params int[] values)
+        {
+            foreach (int value in values) {
+                if (value == INVALID_VALUE)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -257,9 +256,9 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="source">Source time</param>
         /// <param name="destination">Target time</param>
-        /// <param name="flag">Modify Flag</param>
+        /// <param name="modifyFlag">Modify Flag</param>
         /// <returns>Returns merged times</returns>
-        public static TaskTime MergeTime(TaskTime source, TaskTime destination, ModifyFlag flag)
+        public static TaskTime MergeTime(TaskTime source, TaskTime destination, ModifyFlag modifyFlag)
         {
             int day = destination.Time.Day;
             int month = destination.Time.Month;
@@ -268,28 +267,25 @@ namespace Calendo.Logic
             int hour = destination.Time.Hour;
             TimeFormat format = destination.Format;
 
-            // Only override required fields
-            if (flag.Contains(ModifyFlag.StartDate | ModifyFlag.EndDate))
+            // Override changed fields
+            if (modifyFlag.Contains(ModifyFlag.StartDate | ModifyFlag.EndDate))
             {
                 day = source.Time.Day;
                 month = source.Time.Month;
                 year = source.Time.Year;
                 format = format.AddDate();
             }
-
-            if (flag.Contains(ModifyFlag.StartTime | ModifyFlag.EndTime))
+            if (modifyFlag.Contains(ModifyFlag.StartTime | ModifyFlag.EndTime))
             {
                 minute = source.Time.Minute;
                 hour = source.Time.Hour;
                 format = format.AddTime();
             }
-
-            if (flag.Contains(ModifyFlag.EraseStartDate | ModifyFlag.EraseEndDate))
+            if (modifyFlag.Contains(ModifyFlag.EraseStartDate | ModifyFlag.EraseEndDate))
             {
                 format = format.RemoveDate();
             }
-
-            if (flag.Contains(ModifyFlag.EraseStartTime | ModifyFlag.EraseEndTime))
+            if (modifyFlag.Contains(ModifyFlag.EraseStartTime | ModifyFlag.EraseEndTime))
             {
                 format = format.RemoveTime();
             }

@@ -17,7 +17,7 @@ namespace Calendo.Data
     {
         private const string DEFAULT_FILE_PATH = "data.txt";
         private const string DEFAULT_BACKUP_PATH = "backup.txt";
-        private const string MESSAGE_BACKUP = "Using backup file: " + DEFAULT_BACKUP_PATH;
+        private const string MESSAGE_BACKUP = "\r\nUsing backup file: " + DEFAULT_BACKUP_PATH;
         private const string ERROR_UNWRITABLE = "Unable to write file";
         private const string ERROR_INCOMPATIBLE = "Data file is unreadable";
         private const string ERROR_UNSERIALIZABLE = "Object is not serializable";
@@ -192,7 +192,7 @@ namespace Calendo.Data
 
                 if (currentFilePath != DEFAULT_BACKUP_PATH)
                 {
-                    errorMessage += "\r\n" + MESSAGE_BACKUP;
+                    errorMessage += MESSAGE_BACKUP;
                     Load(true);
                 }
 

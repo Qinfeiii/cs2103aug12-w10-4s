@@ -88,11 +88,7 @@ namespace Calendo.Data
         /// <returns>True if state is changed</returns>
         public bool Undo()
         {
-            if (!HasUndo)
-            {
-                return false;
-            }
-            if (this.States.Count > 1)
+            if (this.States.Count > 1 && HasUndo)
             {
                 // Update current undo offset
                 if (undoOffset == INVALID_INDEX)
