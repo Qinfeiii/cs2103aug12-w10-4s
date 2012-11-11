@@ -5,8 +5,6 @@ using System.Linq;
 
 namespace Calendo.Logic
 {
-    //TODO: Refactor by abstraction
-    //TODO: LOTS of re-factoring required
     public class CommandProcessor
     {
         string inputString;

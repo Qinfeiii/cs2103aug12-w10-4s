@@ -52,6 +52,7 @@ namespace CommandProcessorTest
             Assert.AreEqual(RESULT_ADD_DURATION_TASK_END_DATETIME, taskList[2].EndTime);
         }
 
+        // Deprecated
         [TestMethod]
         public void Delete()
         {
@@ -67,6 +68,7 @@ namespace CommandProcessorTest
             Assert.AreEqual(0, taskList.Count);
         }
 
+        // Deprecated
         [TestMethod]
         public void Change()
         {
