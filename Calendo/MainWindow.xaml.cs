@@ -494,6 +494,7 @@ namespace Calendo
             }
         }
 
+        //@author A0080860H
         private void DeleteButtonClick(object sender, RoutedEventArgs e)
         {
             SelectTaskFromCommandButton(sender);
