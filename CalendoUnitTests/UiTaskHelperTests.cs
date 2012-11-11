@@ -74,7 +74,7 @@ namespace CalendoUnitTests
         {
             Entry testData = new Entry();
             testData.Type = EntryType.Deadline;
-            testData.StartTime = DateTime.Now.AddSeconds(1); // Done to account for slowness in execution.
+            testData.StartTime = DateTime.Now.AddSeconds(1);
 
             bool expected = true;
             bool actual = UiTaskHelper.IsTaskOngoing(testData);
