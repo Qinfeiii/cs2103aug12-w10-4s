@@ -89,8 +89,15 @@ namespace CalendoUnitTests
             Storage<List<string>> UTStorage = new Storage<List<string>>("test3.txt");
             UTStorage.Load();
             UTStorage.Save();
-            // Should not be able to load anything
+            // Loading from data file
             Assert.IsTrue(UTStorage.Entries.Count == 0);
+            UTStorage.Entries.Add("Test Add Lock");
+            UTStorage.Save();
+            UTStorage.Load();
+            // Should be able to read from backup instead of locked file
+            Assert.IsTrue(UTStorage.Entries.Count == 1);
+            UTStorage.Entries.Clear();
+            UTStorage.Save();
             fileStream.Close();
 
             // Check if file is altered (it should not)
