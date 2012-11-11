@@ -383,21 +383,19 @@ namespace Calendo
             TaskList.SelectedItem = selectedPair;
         }
 
-        // @author A0080933E
+        //@author A0080933E
         private void ResizeStart(object sender, MouseEventArgs e)
         {
             isResize = true;
             ((Rectangle)sender).CaptureMouse();
         }
 
-        // @author A0080933E
         private void ResizeEnd(object sender, MouseEventArgs e)
         {
             isResize = false;
             ((Rectangle)sender).ReleaseMouseCapture();
         }
 
-        // @author A0080933E
         private void Resize(object sender, MouseEventArgs e)
         {
             if (!isResize)
@@ -439,7 +437,6 @@ namespace Calendo
             }
         }
 
-        // @author A0080933E
         // Resize on left of window
         private void ResizeLeft()
         {
@@ -452,7 +449,6 @@ namespace Calendo
             }
         }
 
-        // @author A0080933E
         // Resize on right of window
         private void ResizeRight()
         {
@@ -467,7 +463,6 @@ namespace Calendo
             }
         }
 
-        // @author A0080933E
         // Resize on top of window
         private void ResizeTop()
         {
@@ -480,7 +475,6 @@ namespace Calendo
             }
         }
 
-        // @author A0080933E
         // Resize on bottom of window
         private void ResizeBottom()
         {
