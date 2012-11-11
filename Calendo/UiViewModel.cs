@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 namespace Calendo
 {
-    class UiViewModel : INotifyPropertyChanged
+    public class UiViewModel : INotifyPropertyChanged
     {
         private AutoSuggest.AutoSuggest AutoSuggestSystem { get; set; }
         private CommandProcessor CommandProcessor { get; set; }
