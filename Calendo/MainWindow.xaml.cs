@@ -44,6 +44,7 @@ namespace Calendo
         }
 
         // Fixes for maximize
+        // @author A0080933E
         void FormSourceInitialized(object sender, EventArgs e)
         {
             System.IntPtr handle = (new WindowInteropHelper(this)).Handle;
@@ -253,12 +254,6 @@ namespace Calendo
             AutoSuggestBorder.Visibility = ViewModel.SuggestionList.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        private void SettingsButtonClick(object sender, RoutedEventArgs e)
-        {
-            DebugMode dm = new DebugMode();
-            dm.Show();
-        }
-
         private void AutoSuggestListMouseUp(object sender, MouseButtonEventArgs e)
         {
             SetCommandFromSuggestion();
@@ -387,18 +382,21 @@ namespace Calendo
             TaskList.SelectedItem = selectedPair;
         }
 
+        // @author A0080933E
         private void ResizeStart(object sender, MouseEventArgs e)
         {
             isResize = true;
             ((Rectangle)sender).CaptureMouse();
         }
 
+        // @author A0080933E
         private void ResizeEnd(object sender, MouseEventArgs e)
         {
             isResize = false;
             ((Rectangle)sender).ReleaseMouseCapture();
         }
 
+        // @author A0080933E
         private void Resize(object sender, MouseEventArgs e)
         {
             if (!isResize)
@@ -440,6 +438,7 @@ namespace Calendo
             }
         }
 
+        // @author A0080933E
         // Resize on left of window
         private void ResizeLeft()
         {
@@ -452,6 +451,7 @@ namespace Calendo
             }
         }
 
+        // @author A0080933E
         // Resize on right of window
         private void ResizeRight()
         {
@@ -466,6 +466,7 @@ namespace Calendo
             }
         }
 
+        // @author A0080933E
         // Resize on top of window
         private void ResizeTop()
         {
@@ -478,6 +479,7 @@ namespace Calendo
             }
         }
 
+        // @author A0080933E
         // Resize on bottom of window
         private void ResizeBottom()
         {
