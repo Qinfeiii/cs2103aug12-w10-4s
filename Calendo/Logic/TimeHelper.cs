@@ -16,7 +16,7 @@ namespace Calendo.Logic
         AM = 1,
         PM = 2
     }
-    
+
     /// <summary>
     /// Helper class for Time Converter
     /// </summary>
@@ -29,7 +29,7 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="year">Year</param>
         /// <returns>True if it is a leap year, false otherwise</returns>
-        private static bool IsLeapYear(int year)
+        private bool IsLeapYear(int year)
         {
             bool isLeap = false;
             if (year % 4 == 0)
@@ -53,7 +53,7 @@ namespace Calendo.Logic
         /// <param name="month">Month</param>
         /// <param name="year">Year</param>
         /// <returns>Maximum number of days</returns>
-        private static int MaxDays(int month, int year)
+        private int MaxDays(int month, int year)
         {
             if (month >= 1 && month <= 12 && year >= 0)
             {
@@ -78,7 +78,7 @@ namespace Calendo.Logic
         /// <param name="hour">Hour in integer</param>
         /// <param name="hourFormat">Hour Format</param>
         /// <returns>Hour in 24 hour clock</returns>
-        private static int ConvertHour(int hour, HourFormat hourFormat)
+        private int ConvertHour(int hour, HourFormat hourFormat)
         {
             bool isAM = (hourFormat == HourFormat.AM);
             bool isPM = (hourFormat == HourFormat.PM);
@@ -114,7 +114,7 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="timeString">String representation of hour</param>
         /// <returns>Hour format</returns>
-        public static HourFormat GetHourFormat(string timeString)
+        public HourFormat GetHourFormat(string timeString)
         {
             Debug.Assert(timeString != null);
 
@@ -142,7 +142,7 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="yearFragment">String representation of year</param>
         /// <returns>Year in numeric format</returns>
-        public static int GetYear(string yearFragment)
+        public int GetYear(string yearFragment)
         {
             int year = ConvertValue(yearFragment, 0, 9999);
             int century = DateTime.Today.Year / 100;
@@ -164,7 +164,7 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="monthFragment">String representation of month</param>
         /// <returns>Numeric representation of month</returns>
-        public static int GetMonth(string monthFragment)
+        public int GetMonth(string monthFragment)
         {
             return ConvertValue(monthFragment, 1, 12);
         }
@@ -176,7 +176,7 @@ namespace Calendo.Logic
         /// <param name="year">Year</param>
         /// <param name="month">Month</param>
         /// <returns>Numeric representation of day</returns>
-        public static int GetDay(string dayFragment, int year = 0, int month = 0)
+        public int GetDay(string dayFragment, int year = 0, int month = 0)
         {
             int maxDays = MaxDays(month, year);
             int day = INVALID_VALUE;
@@ -193,7 +193,7 @@ namespace Calendo.Logic
         /// <param name="hourFragment">String representation of hour</param>
         /// <param name="hourFormat">Hour format</param>
         /// <returns>Numeric representation of hour</returns>
-        public static int GetHour(string hourFragment, HourFormat hourFormat = HourFormat.Military)
+        public int GetHour(string hourFragment, HourFormat hourFormat = HourFormat.Military)
         {
             int minHour = 0;
             int maxHour = 24;
@@ -211,7 +211,7 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="minuteFragment">String representation of minutes</param>
         /// <returns>Numeric representation of minutes</returns>
-        public static int GetMinute(string minuteFragment)
+        public int GetMinute(string minuteFragment)
         {
             return ConvertValue(minuteFragment, 0, 59);
         }
@@ -221,7 +221,7 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="str">Integer in string format</param>
         /// <returns>Converted numeric value or -1 if conversion failed</returns>
-        private static int ConvertInt(string str)
+        private int ConvertInt(string str)
         {
             try
             {
@@ -248,7 +248,7 @@ namespace Calendo.Logic
         /// <param name="lowerBound">Converted value should be at least this amount</param>
         /// <param name="upperBound">Converted value should be at most this amount</param>
         /// <returns>Converted value, otherwise -1 on failure</returns>
-        private static int ConvertValue(string value, int lowerBound, int upperBound)
+        private int ConvertValue(string value, int lowerBound, int upperBound)
         {
             Debug.Assert(lowerBound > INVALID_VALUE);
             Debug.Assert(upperBound >= lowerBound);
@@ -271,7 +271,7 @@ namespace Calendo.Logic
         /// <param name="input">Input string</param>
         /// <param name="start">Start of substring</param>
         /// <returns>Substring spanning from start to end</returns>
-        private static string GetSubstring(string input, int start)
+        private string GetSubstring(string input, int start)
         {
             Debug.Assert(input != null);
             Debug.Assert(start >= 0);
