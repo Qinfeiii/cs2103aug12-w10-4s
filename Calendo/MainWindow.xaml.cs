@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
@@ -35,11 +36,11 @@ namespace Calendo
             InitializeComponent();
             this.SourceInitialized += new EventHandler(FormSourceInitialized);
             ViewModel = new UiViewModel();
+           
 
             UndoCommand.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
             RedoCommand.InputGestures.Add(new KeyGesture(Key.Y, ModifierKeys.Control));
             DelCommand.InputGestures.Add(new KeyGesture(Key.Delete));
-
             DataContext = ViewModel;
         }
 

@@ -10,8 +10,8 @@ namespace Calendo.Logic
 {
     public class TimeConverter
     {
-        private const string ERROR_INVALID_DATE = "Date is invalid";
-        private const string ERROR_INVALID_TIME = "Time is invalid";
+        private const string ERROR_INVALID_DATE = "Invalid Date specified";
+        private const string ERROR_INVALID_TIME = "Invalid Time specified";
         private const int INVALID_VALUE = -1;
         private readonly string[] KEYWORDS = new string[] { "-" };
         private readonly char[] DELIMITTER_DATE = new char[] { '.', '/', '-' };
