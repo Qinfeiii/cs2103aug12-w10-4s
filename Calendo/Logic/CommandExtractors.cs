@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Calendo.Logic
 {
-    class CommandExtractors
+    public class CommandExtractors
     {
         #region constants
         // This is the list of "actual" command types identified by the program
@@ -24,7 +24,6 @@ namespace Calendo.Logic
         private string[] INPUT_COMMANDS_CHANGE = { "/change", "/update", "/modify", "/!" };
         private string[] INPUT_COMMANDS_UNDO = { "/undo" };
         private string[] INPUT_COMMANDS_REDO = { "/redo" };
-        //private string[] INPUT_COMMANDS_SYNC = { "/sync", "/export" };  
         private string[] INPUT_COMMANDS_SYNC = { "/export" }; // [temporary substitute for demo]
         private string[] INPUT_COMMANDS_IMPORT = { "/import" };
         private string INPUT_COMMAND_EMPTY = "/";
@@ -93,7 +92,6 @@ namespace Calendo.Logic
             if (IsEmptyList(inputStringWords))
                 return;
 
-            //TODO: Abstract
             //This is the command type ENTERED by the user
             string commandTypeInput = inputStringWords.First();
 
@@ -101,7 +99,6 @@ namespace Calendo.Logic
             if (IsEmptyCommand(commandTypeInput))
                 return;
 
-            //TODO: Abstract
             //Extract actual command type from input
             //For example, if user input was "/remove", "/delete", "/rm" or "/del",
             //The command type to be processed is "remove"
@@ -131,7 +128,7 @@ namespace Calendo.Logic
             commandEndTime = RemoveAndReturnCommandTime(INPUT_HANDLES_END_TIME);
         }
 
-        
+
         private void ExtractCommandText(ref string commandText)
         {
             string separator = " ";
@@ -154,7 +151,6 @@ namespace Calendo.Logic
             {
                 // Get date word(s) from input
                 dateWord = inputStringWords[dateIndex + 1];
-                //TODO: Process date (alternative style: keep taking words until next handle
                 // Remove date word(s)
                 inputStringWords.RemoveAt(dateIndex + 1);
             }
