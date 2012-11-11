@@ -44,7 +44,7 @@ namespace Calendo
         }
 
         // Fixes for maximize
-        // @author A0080933E
+        //@author A0080933E
         void FormSourceInitialized(object sender, EventArgs e)
         {
             System.IntPtr handle = (new WindowInteropHelper(this)).Handle;
@@ -52,7 +52,7 @@ namespace Calendo
         }
         // End Fixes
 
-        // @author A0080860H
+        //@author A0080860H
         private void CommandBarLostFocus(object sender, RoutedEventArgs e)
         {
             if (CommandBar.Text.Length == 0)
