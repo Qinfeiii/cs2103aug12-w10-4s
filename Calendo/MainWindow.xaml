@@ -88,6 +88,16 @@
                             </Style.Triggers>
                         </Style>
 
+                        <Style x:Key="NotificationStyle" TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}"
+                                             Value="">
+                                    <Setter Property="Visibility" Value="Hidden" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+
                         <Style x:Key="TransparentWithBorder" TargetType="Control">
                             <Setter Property="Background" Value="Transparent" />
                             <Setter Property="BorderThickness" Value="3" />
@@ -412,20 +422,20 @@
                     <TextBlock Name="NotificationBar" Grid.Row="4" VerticalAlignment="Bottom"
                                FontSize="14" FontWeight="Bold"
                                Padding="12,0"
-                               Background="Yellow" TextWrapping="WrapWithOverflow" Opacity="0" IsHitTestVisible="False" Panel.ZIndex="1"
+                               Background="Yellow" Style="{StaticResource NotificationStyle}" TextWrapping="WrapWithOverflow" Opacity="0" IsHitTestVisible="False" Panel.ZIndex="1"
                                Text="{Binding StatusBarText, NotifyOnTargetUpdated=True}">
                         <TextBlock.Triggers>
                             <EventTrigger RoutedEvent="Binding.TargetUpdated">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
                                              Duration="00:00:00" BeginTime="00:00:00" 
                                              From="0" To="1" />
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
                                              Duration="00:00:02" BeginTime="00:00:01"
                                              From="1" To="0" />
-                                    </Storyboard>
-                                </BeginStoryboard>
+                                        </Storyboard>
+                                    </BeginStoryboard>
                             </EventTrigger>
                         </TextBlock.Triggers>
                     </TextBlock>
