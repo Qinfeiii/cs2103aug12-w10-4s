@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Calendo.Logic
 {
@@ -16,7 +17,7 @@ namespace Calendo.Logic
         //The following is public so that it can be "read" by the UI for auto-completion
         public Dictionary<string, string[]> GetInputCommandList()
         {
-            return extractors.DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE;
+            return extractors.INPUT_COMMANDS_BY_COMMAND_TYPE;
         }
         public List<Entry> TaskList { get { return taskManager.Entries; } }
 
@@ -49,7 +50,7 @@ namespace Calendo.Logic
                 case CommandExtractors.COMMAND_TYPE_REDO:
                     ExecuteRedo();
                     break;
-                case CommandExtractors.COMMAND_TYPE_SYNC:
+                case CommandExtractors.COMMAND_TYPE_EXPORT:
                     ExecuteSync();
                     break;
                 case CommandExtractors.COMMAND_TYPE_IMPORT:
@@ -147,6 +148,7 @@ namespace Calendo.Logic
         // Public method called by UI to execute user-input command
         public void ExecuteCommand(string userInput)
         {
+            Debug.Assert(userInput != null);
             inputString = userInput;
             command = new Command(userInput, ref extractors);
             HandleCommand();

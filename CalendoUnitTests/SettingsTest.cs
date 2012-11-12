@@ -6,13 +6,13 @@ using Calendo.Logic;
 namespace CalendoUnitTests
 {
     [TestClass]
-    public class SMTest
+    public class SettingsTest
     {
         /// <summary>
         /// Tests if settings can be added
         /// </summary>
         [TestMethod]
-        public void SMAdd()
+        public void SettingsAdd()
         {
             string testSettingName = "test 1";
             string testSettingValue = "test1 value";
@@ -32,7 +32,7 @@ namespace CalendoUnitTests
         /// Tests if settings can be loaded from file
         /// </summary>
         [TestMethod]
-        public void SMLoad()
+        public void SettingsLoad()
         {
             SettingsManager settingsManager = new SettingsManager();
             settingsManager.Clear();
@@ -44,7 +44,7 @@ namespace CalendoUnitTests
         /// Tests if settings can be modified and persist after saving
         /// </summary>
         [TestMethod]
-        public void SMModify()
+        public void SettingsModify()
         {
             string testSettingName = "Test modify";
             string testSettingValue = "test modify value";
