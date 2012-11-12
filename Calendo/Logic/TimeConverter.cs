@@ -66,7 +66,20 @@ namespace Calendo.Logic
 
             TaskTime taskDuration = new TaskTime();
             taskDuration.Format = GetFormat(isValidDate, isValidTime);
+            convertedTime = AdvanceDay(convertedTime, taskDuration);
+            taskDuration.Time = convertedTime;
+            taskDuration.HasError = hasError;
+            return taskDuration;
+        }
 
+        /// <summary>
+        /// Advance to next day if specified time is before current time
+        /// </summary>
+        /// <param name="convertedTime">Current time</param>
+        /// <param name="taskDuration">Task Time</param>
+        /// <returns>Return updated time</returns>
+        private DateTime AdvanceDay(DateTime convertedTime, TaskTime taskDuration)
+        {
             if (convertedTime < DateTime.Now)
             {
                 if (taskDuration.Format == TimeFormat.Time)
@@ -76,9 +89,7 @@ namespace Calendo.Logic
                     taskDuration.Format = TimeFormat.DateTime;
                 }
             }
-            taskDuration.Time = convertedTime;
-            taskDuration.HasError = hasError;
-            return taskDuration;
+            return convertedTime;
         }
 
         /// <summary>
@@ -227,12 +238,23 @@ namespace Calendo.Logic
             if (isValidDate)
             {
                 newDate = new DateTime(year, month, day);
-                if (!isYearProvided && newDate < DateTime.Today)
-                {
-                    // Event occurs next year
-                    newDate = newDate.AddYears(1);
-                }
+                newDate = AdvanceYear(newDate, isYearProvided);
             }
+        }
+
+        /// <summary>
+        /// Advance to next year if computed time is before current time
+        /// </summary>
+        /// <param name="newDate">Current date</param>
+        /// <param name="isYearProvided">Only perform advancing if year provided</param>
+        /// <returns>Return updated time</returns>
+        private DateTime AdvanceYear(DateTime newDate, bool isYearProvided)
+        {
+            if (!isYearProvided && newDate < DateTime.Today)
+            {
+                newDate = newDate.AddYears(1);
+            }
+            return newDate;
         }
 
         /// <summary>

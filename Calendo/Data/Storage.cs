@@ -129,11 +129,7 @@ namespace Calendo.Data
             Stream fileStream = null;
             try
             {
-                fileStream = new FileStream(currentFilePath, FileMode.Create);
-                XmlSerializerNamespaces xmlNamespace = new XmlSerializerNamespaces();
-                xmlNamespace.Add("", ""); // omit XML namespaces
-                serializer.Serialize(fileStream, dataObject, xmlNamespace);
-                fileStream.Close();
+                fileStream = SaveFile(currentFilePath, fileStream);
                 return true;
             }
             catch
@@ -177,26 +173,13 @@ namespace Calendo.Data
             Stream fileStream = null;
             try
             {
-                fileStream = new FileStream(currentFilePath, FileMode.OpenOrCreate);
-                if (fileStream.Length != 0)
-                {
-                    dataObject = (Data<T>)serializer.Deserialize(fileStream);
-                }
-                fileStream.Close();
+                fileStream = LoadFile(currentFilePath, fileStream);
                 return true;
             }
             catch
             {
                 // Invalid file, use backup file
-                string errorMessage = ERROR_INCOMPATIBLE;
-                dataObject = new Data<T>();
-
-                if (currentFilePath != DEFAULT_BACKUP_PATH)
-                {
-                    errorMessage += MESSAGE_BACKUP;
-                    Load(true);
-                    DebugTool.Alert(errorMessage);
-                }
+                UseBackUp(currentFilePath);
                 return false;
             }
             finally
@@ -205,6 +188,56 @@ namespace Calendo.Data
                 {
                     fileStream.Close();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Save the file to stream
+        /// </summary>
+        /// <param name="currentFilePath">File path</param>
+        /// <param name="fileStream">File Stream</param>
+        /// <returns>Returns stream containing handle to file</returns>
+        private Stream SaveFile(string currentFilePath, Stream fileStream)
+        {
+            fileStream = new FileStream(currentFilePath, FileMode.Create);
+            XmlSerializerNamespaces xmlNamespace = new XmlSerializerNamespaces();
+            xmlNamespace.Add("", ""); // omit XML namespaces
+            serializer.Serialize(fileStream, dataObject, xmlNamespace);
+            fileStream.Close();
+            return fileStream;
+        }
+
+        /// <summary>
+        /// Loads the file to stream
+        /// </summary>
+        /// <param name="currentFilePath">File path</param>
+        /// <param name="fileStream">File Stream</param>
+        /// <returns>Returns stream containing handle to file</returns>
+        private Stream LoadFile(string currentFilePath, Stream fileStream)
+        {
+            fileStream = new FileStream(currentFilePath, FileMode.OpenOrCreate);
+            if (fileStream.Length != 0)
+            {
+                dataObject = (Data<T>)serializer.Deserialize(fileStream);
+            }
+            fileStream.Close();
+            return fileStream;
+        }
+
+        /// <summary>
+        /// Use backup file
+        /// </summary>
+        /// <param name="currentFilePath">Current file path</param>
+        private void UseBackUp(string currentFilePath)
+        {
+            string errorMessage = ERROR_INCOMPATIBLE;
+            dataObject = new Data<T>();
+
+            if (currentFilePath != DEFAULT_BACKUP_PATH)
+            {
+                errorMessage += MESSAGE_BACKUP;
+                Load(true);
+                DebugTool.Alert(errorMessage);
             }
         }
     }
