@@ -1,6 +1,6 @@
-﻿using System;
+﻿//@author A0080933E
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,13 +33,14 @@ namespace Calendo.GoogleCalendar
             get { return authCode; }
         }
 
-        private void button1_Click(object sender, RoutedEventArgs e)
+        private void OKButtonClick(object sender, RoutedEventArgs e)
         {
-            authCode = this.textBox1.Text;
+            authCode = this.authTextBox.Text;
+            this.DialogResult = true;
             this.Close();
         }
 
-        private void button2_Click(object sender, RoutedEventArgs e)
+        private void CloseButtonClick(object sender, RoutedEventArgs e)
         {
             this.Close();
         }
@@ -58,7 +59,7 @@ namespace Calendo.GoogleCalendar
             FormShadow.Color = ((SolidColorBrush)activeBrush).Color;
         }
 
-        private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void TitleBarMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.Cursor = Cursors.SizeAll;
             DragMove();

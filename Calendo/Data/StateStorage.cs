@@ -51,7 +51,7 @@ namespace Calendo.Data
         /// <summary>
         /// Saves the data
         /// </summary>
-        /// <returns>Returns true if file has been changed</returns>
+        /// <returns>True if file has been changed</returns>
         public override bool Save()
         {
             this.dataStorage.Entries.AddState();
@@ -62,7 +62,7 @@ namespace Calendo.Data
         /// <summary>
         /// Loads the data
         /// </summary>
-        /// <returns>Returns true if the file has been read</returns>
+        /// <returns>True if the file has been read</returns>
         public override bool Load()
         {
             bool loadResult = this.dataStorage.Load();
@@ -106,7 +106,7 @@ namespace Calendo.Data
         /// <summary>
         /// Undo changes done by undo command
         /// </summary>
-        /// <returns>Returns true if a state is reverted, false if no action taken</returns>
+        /// <returns>True if a state is reverted, false if no action taken</returns>
         public bool Redo()
         {
             bool redoResult = this.currentState.Redo();

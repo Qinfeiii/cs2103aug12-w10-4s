@@ -6,14 +6,47 @@ using System.Threading;
 
 namespace Calendo.GoogleCalendar
 {
+    /// <summary>
+    /// Performs multithreaded operations
+    /// </summary>
     public class ThreadedGoogleCalendar
     {
+        private static Type GoogleCalendarClassType = typeof(GoogleCalendar);
+        private static Delegate AuthMethod = new AuthorizationCall(delegate() { GoogleCalendar.Authorize(); });
+        private static Thread ActiveThread = null;
+
+        public delegate void AuthorizationCall();
+
+        /// <summary>
+        /// Sets the Google Calendar class used
+        /// </summary>
+        public static Type GoogleCalendarType
+        {
+            set { GoogleCalendarClassType = value; }
+        }
+
+        /// <summary>
+        /// Sets the authorization method used
+        /// </summary>
+        public static Delegate AuthorizationMethod
+        {
+            set { AuthMethod = value; }
+        }
+
+        /// <summary>
+        /// Gets the current thread
+        /// </summary>
+        public static Thread CurrentThread
+        {
+            get { return ActiveThread; }
+        }
+
         /// <summary>
         /// Export to Google Calendar
         /// </summary>
         public static void Export()
         {
-            GoogleCalendar.Authorize();
+            AuthMethod.DynamicInvoke();
             RunThread(new ThreadStart(ThreadedExport));
         }
 
@@ -22,17 +55,18 @@ namespace Calendo.GoogleCalendar
         /// </summary>
         public static void Import()
         {
-            GoogleCalendar.Authorize();
+            AuthMethod.DynamicInvoke();
             RunThread(new ThreadStart(ThreadedImport));
         }
 
         /// <summary>
         /// Performs the operation in a separate thread
         /// </summary>
-        /// <param name="method"></param>
+        /// <param name="method">Method to run on separate thread</param>
         private static void RunThread(ThreadStart method)
         {
             Thread threadInstance = new Thread(method);
+            ActiveThread = threadInstance;
             threadInstance.Start();
         }
 
@@ -41,8 +75,9 @@ namespace Calendo.GoogleCalendar
         /// </summary>
         private static void ThreadedExport()
         {
-            GoogleCalendar googleCalendar = new GoogleCalendar();
+            GoogleCalendar googleCalendar = (GoogleCalendar)Activator.CreateInstance(GoogleCalendarClassType);
             googleCalendar.Export();
+
         }
 
         /// <summary>
@@ -50,7 +85,7 @@ namespace Calendo.GoogleCalendar
         /// </summary>
         private static void ThreadedImport()
         {
-            GoogleCalendar googleCalendar = new GoogleCalendar();
+            GoogleCalendar googleCalendar = (GoogleCalendar)Activator.CreateInstance(GoogleCalendarClassType);
             googleCalendar.Import();
         }
     }

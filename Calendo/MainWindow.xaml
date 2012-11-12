@@ -88,6 +88,16 @@
                             </Style.Triggers>
                         </Style>
 
+                        <Style x:Key="NotificationStyle" TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}"
+                                             Value="">
+                                    <Setter Property="Visibility" Value="Hidden" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+
                         <Style x:Key="TransparentWithBorder" TargetType="Control">
                             <Setter Property="Background" Value="Transparent" />
                             <Setter Property="BorderThickness" Value="3" />
@@ -108,7 +118,7 @@
                         <Style x:Key="ListItemStyle" TargetType="ListBoxItem">
                             <Style.Resources>
                                 <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FFCBE8F6" />
-                                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#FFF5F5F5"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#FFCBE8F6"/>
                                 <SolidColorBrush x:Key="ItemInactiveBorder" Color="#FFDADADA"/>
                             </Style.Resources>
                             <Setter Property="BorderThickness" Value="1" />
@@ -128,7 +138,7 @@
                                     </MultiTrigger.Conditions>
                                     <Setter Property="Background" Value="#FFF5F5F5" />
                                     <Setter Property="BorderBrush"
-                                 Value="{StaticResource ItemInactiveBorder}" />
+                                 Value="{StaticResource ItemSelectedBorder}" />
                                 </MultiTrigger>
                                 <MultiTrigger>
                                     <MultiTrigger.Conditions>
@@ -280,7 +290,6 @@
 
                     <!--Filter-->
                     <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch">
-
                         <StackPanel.Resources>
                             <Style TargetType="ComboBox">
                                 <Setter Property="Foreground" Value="#FF5B5B5B" />
@@ -296,6 +305,8 @@
                         <ComboBox Name="FilterSelector" SelectedIndex="0" SelectionChanged="FilterSelectorSelectionChanged">
                             <ComboBoxItem>ALL TASKS</ComboBoxItem>
                             <ComboBoxItem>NEXT 7 DAYS</ComboBoxItem>
+                            <ComboBoxItem>OVERDUE</ComboBoxItem>
+                            <ComboBoxItem>ACTIVE</ComboBoxItem>
                         </ComboBox>
                     </StackPanel>
 
@@ -406,7 +417,28 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+                    
+                    <TextBlock Name="NotificationBar" Grid.Row="4" VerticalAlignment="Top"
+                               FontSize="14" Margin="12,5" Padding="12,2" 
+                               Background="#FFB8B8B8" Style="{StaticResource NotificationStyle}" TextWrapping="WrapWithOverflow" Opacity="1" IsHitTestVisible="False" Panel.ZIndex="1"
+                               Text="{Binding StatusBarText, NotifyOnTargetUpdated=True}" FontFamily="Segoe UI Semibold">
+                        <TextBlock.Triggers>
+                            <EventTrigger RoutedEvent="Binding.TargetUpdated">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             Duration="00:00:00" BeginTime="00:00:00" 
+                                             From="0" To="1" />
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                             Duration="00:00:01" BeginTime="00:00:01"
+                                             From="1" To="0" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                            </EventTrigger>
+                        </TextBlock.Triggers>
+                    </TextBlock>
                 </Grid>
+                
 
                 <Rectangle x:Name="ResizeTopLeft" Grid.Row="0" Grid.Column="0" Width="{StaticResource BorderWidth}"
                            Height="{StaticResource BorderWidth}" Cursor="SizeNWSE" MouseLeftButtonDown="ResizeStart" MouseLeftButtonUp="ResizeEnd"

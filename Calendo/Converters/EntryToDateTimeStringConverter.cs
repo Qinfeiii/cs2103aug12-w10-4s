@@ -13,9 +13,18 @@ namespace Calendo.Converters
             var current = value as Entry;
             if (current != null)
             {
-                DateTime returnDate = (string)parameter == "StartDate" ? current.StartTime : current.EndTime;
-
-                switch (current.StartTimeFormat)
+                DateTime returnDate;
+                TimeFormat returnTimeFormat;
+                if((string) parameter == "StartDate")
+                {
+                    returnDate = current.StartTime;
+                    returnTimeFormat = current.StartTimeFormat;
+                } else
+                {
+                    returnDate = current.EndTime;
+                    returnTimeFormat = current.EndTimeFormat;
+                }
+                switch (returnTimeFormat)
                 {
                     case TimeFormat.None:
                         break;
