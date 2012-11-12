@@ -15,29 +15,29 @@ namespace Calendo.Logic
         public const string COMMAND_TYPE_CHANGE = "change";
         public const string COMMAND_TYPE_UNDO = "undo";
         public const string COMMAND_TYPE_REDO = "redo";
-        public const string COMMAND_TYPE_SYNC = "export"; // "sync" [temporary substitute for demo]
+        public const string COMMAND_TYPE_EXPORT = "export";
         public const string COMMAND_TYPE_IMPORT = "import";
 
         // This is the list of user-inputs the program can handle and process as a "proper" command
-        private string[] INPUT_COMMANDS_ADD = { "/add", "/a", "/+" };
-        private string[] INPUT_COMMANDS_REMOVE = { "/remove", "/delete", "/rm", "/del", "/-" };
-        private string[] INPUT_COMMANDS_CHANGE = { "/change", "/update", "/modify", "/!" };
-        private string[] INPUT_COMMANDS_UNDO = { "/undo" };
-        private string[] INPUT_COMMANDS_REDO = { "/redo" };
-        private string[] INPUT_COMMANDS_SYNC = { "/export" }; // [temporary substitute for demo]
-        private string[] INPUT_COMMANDS_IMPORT = { "/import" };
-        private string INPUT_COMMAND_EMPTY = "/";
+        private readonly string[] INPUT_COMMANDS_ADD = { "/add", "/a", "/+" };
+        private readonly string[] INPUT_COMMANDS_REMOVE = { "/remove", "/delete", "/rm", "/del", "/-" };
+        private readonly string[] INPUT_COMMANDS_CHANGE = { "/change", "/update", "/modify", "/!" };
+        private readonly string[] INPUT_COMMANDS_UNDO = { "/undo" };
+        private readonly string[] INPUT_COMMANDS_REDO = { "/redo" };
+        private readonly string[] INPUT_COMMANDS_SYNC = { "/export" }; // [temporary substitute for demo]
+        private readonly string[] INPUT_COMMANDS_IMPORT = { "/import" };
+        private readonly string INPUT_COMMAND_EMPTY = "/";
 
         // If only one date-time is given, it is defined as the start, not the end
-        private string[] INPUT_HANDLES_START_DATE = { "/date", "/startdate" };
-        private string[] INPUT_HANDLES_START_TIME = { "/time", "/starttime" };
-        private string[] INPUT_HANDLES_END_DATE = { "/enddate" };
-        private string[] INPUT_HANDLES_END_TIME = { "/endtime" };
+        private readonly string[] INPUT_HANDLES_START_DATE = { "/date", "/startdate" };
+        private readonly string[] INPUT_HANDLES_START_TIME = { "/time", "/starttime" };
+        private readonly string[] INPUT_HANDLES_END_DATE = { "/enddate" };
+        private readonly string[] INPUT_HANDLES_END_TIME = { "/endtime" };
         #endregion
 
-        private List<string> VALID_INPUT_COMMAND_LIST;
+        private List<string> VALID_INPUT_COMMANDS;
         // This maps the recognised user-input commands to their "proper" command type
-        public Dictionary<string, string[]> DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE { get; private set; }
+        public Dictionary<string, string[]> INPUT_COMMANDS_BY_COMMAND_TYPE { get; private set; }
 
         private List<string> inputStringWords;
 
@@ -60,23 +60,29 @@ namespace Calendo.Logic
 
         public CommandExtractors()
         {
-            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE = new Dictionary<string, string[]>();
-            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_ADD, INPUT_COMMANDS_ADD);
-            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_REMOVE, INPUT_COMMANDS_REMOVE);
-            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
-            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
-            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
-            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_SYNC, INPUT_COMMANDS_SYNC);
-            DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_IMPORT, INPUT_COMMANDS_IMPORT);
+            INPUT_COMMANDS_BY_COMMAND_TYPE = new Dictionary<string, string[]>();
+            INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_ADD, INPUT_COMMANDS_ADD);
+            INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_REMOVE, INPUT_COMMANDS_REMOVE);
+            INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_CHANGE, INPUT_COMMANDS_CHANGE);
+            INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_UNDO, INPUT_COMMANDS_UNDO);
+            INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_REDO, INPUT_COMMANDS_REDO);
+            INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_EXPORT, INPUT_COMMANDS_SYNC);
+            INPUT_COMMANDS_BY_COMMAND_TYPE.Add(COMMAND_TYPE_IMPORT, INPUT_COMMANDS_IMPORT);
 
-            VALID_INPUT_COMMAND_LIST = new List<string>();
-            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_ADD);
-            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_REMOVE);
-            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_CHANGE);
-            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_UNDO);
-            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_REDO);
-            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_SYNC);
-            VALID_INPUT_COMMAND_LIST.AddRange(INPUT_COMMANDS_IMPORT);
+            VALID_INPUT_COMMANDS = new List<string>();
+            foreach (string[] commands in INPUT_COMMANDS_BY_COMMAND_TYPE.Values)
+            {
+                VALID_INPUT_COMMANDS.AddRange(commands);
+            }
+            /*
+            VALID_INPUT_COMMANDS.AddRange(INPUT_COMMANDS_ADD);
+            VALID_INPUT_COMMANDS.AddRange(INPUT_COMMANDS_REMOVE);
+            VALID_INPUT_COMMANDS.AddRange(INPUT_COMMANDS_CHANGE);
+            VALID_INPUT_COMMANDS.AddRange(INPUT_COMMANDS_UNDO);
+            VALID_INPUT_COMMANDS.AddRange(INPUT_COMMANDS_REDO);
+            VALID_INPUT_COMMANDS.AddRange(INPUT_COMMANDS_SYNC);
+            VALID_INPUT_COMMANDS.AddRange(INPUT_COMMANDS_IMPORT);
+             * */
         }
 
         private void ExtractAndRemoveCommandType(ref string commandType)
@@ -128,12 +134,10 @@ namespace Calendo.Logic
             commandEndTime = RemoveAndReturnCommandTime(INPUT_HANDLES_END_TIME);
         }
 
-
         private void ExtractCommandText(ref string commandText)
         {
             string separator = " ";
-            if (inputStringWords.Count > 0)
-                commandText = inputStringWords.Aggregate((first, rest) => first + separator + rest);
+            commandText = String.Join(separator, inputStringWords);
         }
 
         #region helpers
@@ -202,7 +206,7 @@ namespace Calendo.Logic
 
         private void GetCommandType(string commandTypeInput, ref string commandType)
         {
-            KeyValuePair<string, string[]> commandTypePair = DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
+            KeyValuePair<string, string[]> commandTypePair = INPUT_COMMANDS_BY_COMMAND_TYPE.Single(x => x.Value.Contains(commandTypeInput.ToLower()));
             commandType = commandTypePair.Key;
         }
         private Boolean IsNoCommand()
@@ -220,7 +224,7 @@ namespace Calendo.Logic
         }
         private bool IsValidCommand(string commandTypeInput)
         {
-            return VALID_INPUT_COMMAND_LIST.Contains(commandTypeInput.ToLower());
+            return VALID_INPUT_COMMANDS.Contains(commandTypeInput.ToLower());
         }
 
         private static bool IsInvalidIndex(int dateIndex)
