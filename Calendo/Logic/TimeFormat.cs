@@ -23,7 +23,7 @@ namespace Calendo.Logic
         /// Add date to format
         /// </summary>
         /// <param name="format">Time Format</param>
-        /// <returns></returns>
+        /// <returns>Time format with date added</returns>
         public static TimeFormat AddDate(this TimeFormat format)
         {
             format |= TimeFormat.Date;
@@ -34,7 +34,7 @@ namespace Calendo.Logic
         /// Add time to format
         /// </summary>
         /// <param name="format">Time Format</param>
-        /// <returns></returns>
+        /// <returns>Time format with time added</returns>
         public static TimeFormat AddTime(this TimeFormat format)
         {
             format |= TimeFormat.Time;
@@ -45,7 +45,7 @@ namespace Calendo.Logic
         /// Remove Date from format
         /// </summary>
         /// <param name="format">Time Format</param>
-        /// <returns></returns>
+        /// <returns>Time format sans the date</returns>
         public static TimeFormat RemoveDate(this TimeFormat format)
         {
             format |= TimeFormat.Date;
@@ -57,7 +57,7 @@ namespace Calendo.Logic
         /// Remove time from format
         /// </summary>
         /// <param name="format">Time Format</param>
-        /// <returns></returns>
+        /// <returns>Time format sans the time</returns>
         public static TimeFormat RemoveTime(this TimeFormat format)
         {
             format |= TimeFormat.Time;

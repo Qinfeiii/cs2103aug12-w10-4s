@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using Calendo.AutoSuggest;
 using Calendo.Logic;
@@ -35,22 +36,24 @@ namespace Calendo
             InitializeComponent();
             this.SourceInitialized += new EventHandler(FormSourceInitialized);
             ViewModel = new UiViewModel();
+           
 
             UndoCommand.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
             RedoCommand.InputGestures.Add(new KeyGesture(Key.Y, ModifierKeys.Control));
             DelCommand.InputGestures.Add(new KeyGesture(Key.Delete));
-
             DataContext = ViewModel;
         }
 
-        // Fixes for maximize
-        void FormSourceInitialized(object sender, EventArgs e)
+        
+        //@author A0080933E
+        private void FormSourceInitialized(object sender, EventArgs e)
         {
-            System.IntPtr handle = (new WindowInteropHelper(this)).Handle;
+            // Fix for maximize
+            IntPtr handle = (new WindowInteropHelper(this)).Handle;
             HwndSource.FromHwnd(handle).AddHook(new HwndSourceHook(FormMaximize.WindowProc));
         }
-        // End Fixes
 
+        //@author A0080860H
         private void CommandBarLostFocus(object sender, RoutedEventArgs e)
         {
             if (CommandBar.Text.Length == 0)
@@ -153,7 +156,7 @@ namespace Calendo
             // there isn't actually a TaskList element yet - hence this check.
             if (TaskList != null)
             {
-                TaskList.Items.Filter = o => DateFilter(o) && SearchFilter(o);
+                TaskList.Items.Filter = o => CategoryFilter(o) && SearchFilter(o);
             }
         }
 
@@ -175,20 +178,34 @@ namespace Calendo
             return true;
         }
 
-        private bool DateFilter(object o)
+        private bool CategoryFilter(object o)
         {
+            KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
+            Entry currentEntry = currentPair.Value;
             switch (FilterSelector.SelectedIndex)
             {
                 case 0: // All items.
                     return true;
                 case 1: // Next week.
-                    KeyValuePair<int, Entry> currentPair = (KeyValuePair<int, Entry>)o;
-                    Entry currentEntry = currentPair.Value;
                     if (currentEntry != null)
                     {
                         bool isEntryWithinNextWeek = currentEntry.StartTime.CompareTo(DateTime.Now.AddDays(7)) <= 0;
                         bool isEntryFloating = currentEntry.Type == EntryType.Floating;
                         return !isEntryFloating && isEntryWithinNextWeek;
+                    }
+                    break;
+                case 2: // Overdue.
+                    if (currentEntry != null)
+                    {
+                        bool isEntryOverdue = UiTaskHelper.IsTaskOverdue(currentEntry);
+                        return isEntryOverdue;
+                    }
+                    break;
+                case 3: // Ongoing.
+                    if (currentEntry != null)
+                    {
+                        bool isEntryOngoing = UiTaskHelper.IsTaskOngoing(currentEntry);
+                        return isEntryOngoing;
                     }
                     break;
             }
@@ -237,12 +254,6 @@ namespace Calendo
             ViewModel.SetSuggestions(CommandBar.Text);
 
             AutoSuggestBorder.Visibility = ViewModel.SuggestionList.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-        }
-
-        private void SettingsButtonClick(object sender, RoutedEventArgs e)
-        {
-            DebugMode dm = new DebugMode();
-            dm.Show();
         }
 
         private void AutoSuggestListMouseUp(object sender, MouseButtonEventArgs e)
@@ -373,6 +384,7 @@ namespace Calendo
             TaskList.SelectedItem = selectedPair;
         }
 
+        //@author A0080933E
         private void ResizeStart(object sender, MouseEventArgs e)
         {
             isResize = true;
@@ -430,11 +442,11 @@ namespace Calendo
         private void ResizeLeft()
         {
             resizeX -= CURSOR_OFFSET;
-            double newWidth = Width - resizeX;
-            if (newWidth >= MinWidth)
+            double newWidth = this.Width - resizeX;
+            if (newWidth >= this.MinWidth)
             {
-                Width = newWidth;
-                Left += resizeX;
+                this.Width = newWidth;
+                this.Left += resizeX;
             }
         }
 
@@ -442,13 +454,13 @@ namespace Calendo
         private void ResizeRight()
         {
             resizeX += CURSOR_OFFSET;
-            if (resizeX < MinWidth)
+            if (resizeX < this.MinWidth)
             {
-                Width = MinWidth;
+                this.Width = this.MinWidth;
             }
             else
             {
-                Width = resizeX;
+                this.Width = resizeX;
             }
         }
 
@@ -456,11 +468,11 @@ namespace Calendo
         private void ResizeTop()
         {
             resizeY -= CURSOR_OFFSET;
-            double newHeight = Height - resizeY;
-            if (newHeight >= MinHeight)
+            double newHeight = this.Height - resizeY;
+            if (newHeight >= this.MinHeight)
             {
-                Height = newHeight;
-                Top += resizeY;
+                this.Height = newHeight;
+                this.Top += resizeY;
             }
         }
 
@@ -468,16 +480,17 @@ namespace Calendo
         private void ResizeBottom()
         {
             resizeY += CURSOR_OFFSET;
-            if (resizeY < MinHeight)
+            if (resizeY < this.MinHeight)
             {
-                Height = MinHeight;
+                this.Height = this.MinHeight;
             }
             else
             {
-                Height = resizeY;
+                this.Height = resizeY;
             }
         }
 
+        //@author A0080860H
         private void DeleteButtonClick(object sender, RoutedEventArgs e)
         {
             SelectTaskFromCommandButton(sender);

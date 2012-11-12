@@ -27,7 +27,7 @@ namespace Calendo.Logic
         /// </summary>
         /// <param name="flag">Binary flag</param>
         /// <param name="attribute">Attribute</param>
-        /// <returns>Returns true if flag has at least one of the attributes</returns>
+        /// <returns>True if flag has at least one of the attributes</returns>
         public static bool Contains(this ModifyFlag flag, ModifyFlag attribute)
         {
             return (flag & attribute) != 0;
@@ -39,7 +39,7 @@ namespace Calendo.Logic
         /// <param name="flag">Binary Flag</param>
         /// <param name="attribute">Attribute</param>
         /// <param name="condition">Condition to check with, default is true</param>
-        /// <returns>Returns the merged flag</returns>
+        /// <returns>Flag with attributes added</returns>
         public static ModifyFlag Add(this ModifyFlag flag, ModifyFlag attribute, bool condition = true)
         {
             if (condition)

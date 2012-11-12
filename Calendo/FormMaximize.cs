@@ -18,12 +18,7 @@ namespace Calendo
         /// <summary>
         /// Directly override WinProc messages
         /// </summary>
-        public static System.IntPtr WindowProc(
-              System.IntPtr handle,
-              int message,
-              System.IntPtr wParam,
-              System.IntPtr lParam,
-              ref bool handled)
+        public static IntPtr WindowProc(IntPtr handle, int message, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             switch (message)
             {
@@ -33,7 +28,7 @@ namespace Calendo
                     break;
             }
 
-            return (System.IntPtr)0;
+            return (IntPtr)0;
         }
 
         /// <summary>
@@ -41,24 +36,24 @@ namespace Calendo
         /// </summary>
         /// <param name="handle">Pointer to window</param>
         /// <param name="lParam">Long Parameter</param>
-        private static void WmGetMinMaxInfo(System.IntPtr handle, System.IntPtr lParam)
+        private static void WmGetMinMaxInfo(IntPtr handle, IntPtr lParam)
         {
             MinMaxInfo minmaxInfo = (MinMaxInfo)Marshal.PtrToStructure(lParam, typeof(MinMaxInfo));
 
             // Get current monitor information
             int MONITOR_DEFAULT_TO_NEAREST = 0x00000002;
-            System.IntPtr monitor = MonitorFromWindow(handle, MONITOR_DEFAULT_TO_NEAREST);
+            IntPtr monitor = MonitorFromWindow(handle, MONITOR_DEFAULT_TO_NEAREST);
 
             if (monitor != System.IntPtr.Zero) // Not null pointer
             {
                 MonitorInfo monitorInfo = new MonitorInfo();
                 GetMonitorInfo(monitor, monitorInfo);
-                Rectangle rcWorkArea = monitorInfo.WorkArea;
-                Rectangle rcMonitorArea = monitorInfo.MonitorArea;
-                minmaxInfo.MaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
-                minmaxInfo.MaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
-                minmaxInfo.MaxSize.X = Math.Abs(rcWorkArea.Right - rcWorkArea.Left);
-                minmaxInfo.MaxSize.Y = Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top);
+                Rectangle workArea = monitorInfo.WorkArea;
+                Rectangle monitorArea = monitorInfo.MonitorArea;
+                minmaxInfo.MaxPosition.X = Math.Abs(workArea.Left - monitorArea.Left);
+                minmaxInfo.MaxPosition.Y = Math.Abs(workArea.Top - monitorArea.Top);
+                minmaxInfo.MaxSize.X = Math.Abs(workArea.Right - workArea.Left);
+                minmaxInfo.MaxSize.Y = Math.Abs(workArea.Bottom - workArea.Top);
             }
             Marshal.StructureToPtr(minmaxInfo, lParam, true);
         }

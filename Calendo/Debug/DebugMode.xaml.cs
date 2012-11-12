@@ -1,4 +1,5 @@
-﻿using System;
+﻿// This file is to be excluded from code review
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,8 +23,8 @@ namespace Calendo
     /// </summary>
     public partial class DebugMode : Window
     {
-        // NOTE: This is a testing class with a GUI interface
-        // Used for exploratory testing of experimental features
+        // This is a testing class with a GUI interface
+        // Used for exploratory testing of experimental features or proof-of-concept implementation
         TaskManager tm = TaskManager.Instance;
         CommandProcessor cp = new CommandProcessor();
         public DebugMode()
@@ -46,7 +47,7 @@ namespace Calendo
 
         private void textBox1_TextChanged(object sender, TextChangedEventArgs e)
         {
-            
+
         }
 
         private Dictionary<int, Entry> entryDictionary;
@@ -229,7 +230,6 @@ namespace Calendo
 
         private void SubscriberMethod()
         {
-            //this.textBox1.Text = "The list has been updated";
             this.StatusLabel.Content = "The list has been updated";
             this.UpdateList();
         }

@@ -19,7 +19,20 @@ namespace Calendo.AutoSuggest
         public EntryType Type { get; set; }
         public string[] Aliases { get; set; }
         public bool IsMaster { get { return Type == EntryType.Master; } }
-        public bool HasAliases { get { return IsMaster && Aliases.Length > 1; } }
+        public bool HasAliases
+        {
+            get
+            {
+                if (Aliases != null)
+                {
+                    return IsMaster && Aliases.Length > 1;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
 
         public AutoSuggestEntry(string command, string description, EntryType type, string[] aliases)
         {

@@ -16,10 +16,13 @@ namespace Calendo.Data
     public class Storage<T> where T : new()
     {
         private const string DEFAULT_FILE_PATH = "data.txt";
-        private const string ERROR_UNWRITABLE = "Unable to write file";
+        private const string DEFAULT_BACKUP_PATH = "backup.txt";
+        private const string MESSAGE_BACKUP = "\r\nUsing backup file: " + DEFAULT_BACKUP_PATH;
+        private const string ERROR_UNWRITABLE = "Unable to write to file";
         private const string ERROR_INCOMPATIBLE = "Data file is unreadable";
         private const string ERROR_UNSERIALIZABLE = "Object is not serializable";
 
+        private bool useBackup;
         private string dataFilePath;
         private object dataObject;
         private XmlSerializer serializer;
@@ -30,6 +33,7 @@ namespace Calendo.Data
         public Storage()
         {
             dataFilePath = DEFAULT_FILE_PATH;
+            useBackup = false;
             Initialize();
         }
 
@@ -54,9 +58,9 @@ namespace Calendo.Data
                 // Initialize XMLserializer to use the Data<T> type template
                 serializer = XmlSerializer.FromTypes(new[] { typeof(Data<T>) })[0];
             }
-            catch (Exception e)
+            catch
             {
-                Debug.Assert(serializer != null, ERROR_UNSERIALIZABLE, e.InnerException.Message);
+                DebugTool.Alert(ERROR_UNSERIALIZABLE);
             }
         }
 
@@ -72,6 +76,9 @@ namespace Calendo.Data
             }
         }
 
+        /// <summary>
+        /// Indicates whether to use a wrapper
+        /// </summary>
         protected bool UseWrapper = true;
 
         /// <summary>
@@ -79,7 +86,8 @@ namespace Calendo.Data
         /// </summary>
         public virtual T Entries
         {
-            get {
+            get
+            {
                 if (UseWrapper)
                 {
                     Data<T> dataWrapper = dataObject as Data<T>;
@@ -91,7 +99,8 @@ namespace Calendo.Data
                     return dataWrapper;
                 }
             }
-            set {
+            set
+            {
                 if (UseWrapper)
                 {
                     Data<T> dataWrapper = dataObject as Data<T>;
@@ -108,13 +117,19 @@ namespace Calendo.Data
         /// <summary>
         /// Saves the data
         /// </summary>
-        /// <returns>Returns true if file has been changed</returns>
+        /// <returns>True if file has been changed</returns>
         public virtual bool Save()
         {
+            string currentFilePath = dataFilePath;
+            if (useBackup)
+            {
+                currentFilePath = DEFAULT_BACKUP_PATH;
+            }
+
             Stream fileStream = null;
             try
             {
-                fileStream = new FileStream(dataFilePath, FileMode.Create);
+                fileStream = new FileStream(currentFilePath, FileMode.Create);
                 XmlSerializerNamespaces xmlNamespace = new XmlSerializerNamespaces();
                 xmlNamespace.Add("", ""); // omit XML namespaces
                 serializer.Serialize(fileStream, dataObject, xmlNamespace);
@@ -138,13 +153,31 @@ namespace Calendo.Data
         /// <summary>
         /// Loads the data
         /// </summary>
-        /// <returns>Returns true if the file has been read</returns>
+        /// <returns>True if the file has been read</returns>
         public virtual bool Load()
         {
+            return Load(false);
+        }
+
+        /// <summary>
+        /// Loads the data
+        /// </summary>
+        /// <param name="useBackup">Determines whether to use backup path</param>
+        /// <returns>True if the file has been read</returns>
+        private bool Load(bool useBackup)
+        {
+            this.useBackup = useBackup;
+            string currentFilePath = dataFilePath;
+
+            if (useBackup)
+            {
+                currentFilePath = DEFAULT_BACKUP_PATH;
+            }
+
             Stream fileStream = null;
             try
             {
-                fileStream = new FileStream(dataFilePath, FileMode.OpenOrCreate);
+                fileStream = new FileStream(currentFilePath, FileMode.OpenOrCreate);
                 if (fileStream.Length != 0)
                 {
                     dataObject = (Data<T>)serializer.Deserialize(fileStream);
@@ -154,9 +187,16 @@ namespace Calendo.Data
             }
             catch
             {
-                // Invalid file, recreate empty state
-                DebugTool.Alert(ERROR_INCOMPATIBLE);
+                // Invalid file, use backup file
+                string errorMessage = ERROR_INCOMPATIBLE;
                 dataObject = new Data<T>();
+
+                if (currentFilePath != DEFAULT_BACKUP_PATH)
+                {
+                    errorMessage += MESSAGE_BACKUP;
+                    Load(true);
+                    DebugTool.Alert(errorMessage);
+                }
                 return false;
             }
             finally
