@@ -58,6 +58,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AutoSuggestTests.cs" />
+    <Compile Include="CommandExtractorsTest.cs" />
     <Compile Include="CommandProcessorTest.cs" />
     <Compile Include="ConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
