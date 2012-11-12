@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Calendo.Logic
 {
@@ -147,6 +148,7 @@ namespace Calendo.Logic
         // Public method called by UI to execute user-input command
         public void ExecuteCommand(string userInput)
         {
+            Debug.Assert(userInput != null);
             inputString = userInput;
             command = new Command(userInput, ref extractors);
             HandleCommand();
