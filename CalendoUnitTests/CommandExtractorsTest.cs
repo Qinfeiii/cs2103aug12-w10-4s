@@ -162,7 +162,7 @@ namespace CommandProcessorTest
                 ref testEndDate,
                 ref testEndTime,
                 ref testText);
-            Assert.AreEqual(CommandExtractors.COMMAND_TYPE_SYNC, testType);
+            Assert.AreEqual(CommandExtractors.COMMAND_TYPE_EXPORT, testType);
         }
 
         [TestMethod]
