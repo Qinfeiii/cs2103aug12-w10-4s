@@ -88,7 +88,7 @@ namespace CalendoUnitTests
             Assert.IsTrue(taskManager.Entries[5].StartTimeFormat == TimeFormat.DateTime);
 
             // Test Timed task
-            taskManager.Add("Test Timed 2", "1/12-31/12", "14.00"); 
+            taskManager.Add("Test Timed 2", "1/12-31/12", "14.00");
             Assert.IsTrue(taskManager.Entries[6].Description == "Test Timed 2");
             Assert.IsTrue(taskManager.Entries[6].StartTime.Month == 12);
             Assert.IsTrue(taskManager.Entries[6].StartTime.Day == 1);
@@ -126,15 +126,15 @@ namespace CalendoUnitTests
             // Checks for non-existant date or time
 
             // Bad date and invalid time
-            taskManager.Add("Test Invalid 1", "32/12", "0:00 PM");  
+            taskManager.Add("Test Invalid 1", "32/12", "0:00 PM");
             Assert.IsTrue(taskManager.Entries.Count == 0);
 
             // Day in past (same year) and invalid time
-            taskManager.Add("Test Invalid 2", "1/2/" + (DateTime.Today.Year.ToString()), "25:00"); 
+            taskManager.Add("Test Invalid 2", "1/2/" + (DateTime.Today.Year.ToString()), "25:00");
             Assert.IsTrue(taskManager.Entries.Count == 0);
 
             // Day in past and null string
-            taskManager.Add("Test Invalid 3", "1/1/2011", null, "1/1/2010", null); 
+            taskManager.Add("Test Invalid 3", "1/1/2011", null, "1/1/2010", null);
             Assert.IsTrue(taskManager.Entries.Count == 0);
 
             taskManager.Add("Test Invalid 4", "a/b/c", "-1:m");

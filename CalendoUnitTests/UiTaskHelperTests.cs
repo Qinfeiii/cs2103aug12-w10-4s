@@ -366,7 +366,7 @@ namespace CalendoUnitTests
                 Meta = null,
                 StartTime = justBeforeNonActive,
                 StartTimeFormat = TimeFormat.Date,
-                Type = EntryType.Timed     
+                Type = EntryType.Timed
             };
 
             expected = true;
