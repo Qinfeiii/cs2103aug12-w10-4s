@@ -242,7 +242,8 @@ namespace Calendo.Logic
         /// <returns>Returns true if at least one value is invalid</returns>
         private bool IsInvalid(params int[] values)
         {
-            foreach (int value in values) {
+            foreach (int value in values)
+            {
                 if (value == INVALID_VALUE)
                 {
                     return true;

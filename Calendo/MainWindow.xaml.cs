@@ -36,7 +36,6 @@ namespace Calendo
             InitializeComponent();
             this.SourceInitialized += new EventHandler(FormSourceInitialized);
             ViewModel = new UiViewModel();
-           
 
             UndoCommand.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
             RedoCommand.InputGestures.Add(new KeyGesture(Key.Y, ModifierKeys.Control));
@@ -44,7 +43,7 @@ namespace Calendo
             DataContext = ViewModel;
         }
 
-        
+
         //@author A0080933E
         private void FormSourceInitialized(object sender, EventArgs e)
         {

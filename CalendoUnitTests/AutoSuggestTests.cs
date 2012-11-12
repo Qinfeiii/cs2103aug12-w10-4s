@@ -15,10 +15,10 @@ namespace CalendoUnitTests
         public void TestInitialize()
         {
             Dictionary<string, string[]> aliasDictionary = new Dictionary<string, string[]>();
-            aliasDictionary.Add("add", new string[] {"/add", "/new"});
-            aliasDictionary.Add("remove", new string[] {"/remove", "/rm"});
-            aliasDictionary.Add("change", new string[] {"/change", "/update"});
-            aliasDictionary.Add("undo", new string[] {"/undo"});
+            aliasDictionary.Add("add", new string[] { "/add", "/new" });
+            aliasDictionary.Add("remove", new string[] { "/remove", "/rm" });
+            aliasDictionary.Add("change", new string[] { "/change", "/update" });
+            aliasDictionary.Add("undo", new string[] { "/undo" });
             aliasDictionary.Add("redo", new string[] { "/redo" });
             aliasDictionary.Add("sync", new string[] { "/sync" });
             aliasDictionary.Add("export", new string[] { "/export", "push" });

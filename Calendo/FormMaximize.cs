@@ -22,7 +22,8 @@ namespace Calendo
         {
             switch (message)
             {
-                case WM_GETMINMAXINFO: // Directly handle WM_GETMINMAXINFO message
+                case WM_GETMINMAXINFO:
+                    // Directly handle WM_GETMINMAXINFO message
                     WmGetMinMaxInfo(handle, lParam);
                     handled = true;
                     break;

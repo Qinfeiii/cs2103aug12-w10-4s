@@ -44,7 +44,7 @@ namespace CommandProcessorTest
 
             List<Entry> taskList = commandProcessor.TaskList;
 
-            
+
 
             // Length of taskList should be equal to the number of tasks added
             Assert.AreEqual(taskList.Count, NUMBER_OF_ADD_TESTS + initial);

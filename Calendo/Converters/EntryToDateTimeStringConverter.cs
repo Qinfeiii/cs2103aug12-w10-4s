@@ -15,11 +15,12 @@ namespace Calendo.Converters
             {
                 DateTime returnDate;
                 TimeFormat returnTimeFormat;
-                if((string) parameter == "StartDate")
+                if ((string)parameter == "StartDate")
                 {
                     returnDate = current.StartTime;
                     returnTimeFormat = current.StartTimeFormat;
-                } else
+                }
+                else
                 {
                     returnDate = current.EndTime;
                     returnTimeFormat = current.EndTimeFormat;

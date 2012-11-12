@@ -16,7 +16,7 @@ namespace CalendoUnitTests
         {
             string testSettingName = "test 1";
             string testSettingValue = "test1 value";
-            
+
             // Save a setting
             SettingsManager settingsManager = new SettingsManager();
             settingsManager.Clear();

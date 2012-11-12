@@ -22,7 +22,7 @@ namespace Calendo.GoogleCalendar
         {
             InitializeComponent();
         }
-        
+
         private string authCode = "";
 
         /// <summary>

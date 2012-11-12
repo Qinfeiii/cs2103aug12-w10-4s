@@ -12,7 +12,7 @@ namespace Calendo.Converters
         {
             string[] array = value as string[];
             StringBuilder outputBuilder = new StringBuilder();
-            if(array != null && array.Length > 1)
+            if (array != null && array.Length > 1)
             {
                 for (int i = 1; i < array.Length; i++)
                 {
