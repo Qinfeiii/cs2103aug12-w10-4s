@@ -8,7 +8,7 @@ using Calendo.GoogleCalendar;
 namespace CalendoUnitTests
 {
     [TestClass]
-    public class TMTest
+    public class TaskTest
     {
         private TaskManager taskManager = TaskManager.Instance;
 
@@ -16,7 +16,7 @@ namespace CalendoUnitTests
         /// Tests if TaskManager can be initialized
         /// </summary>
         [TestMethod]
-        public void TMCreate()
+        public void TaskCreate()
         {
             taskManager.Load();
             taskManager.Add("Test1");
@@ -27,7 +27,7 @@ namespace CalendoUnitTests
         /// Tests if entries can be added
         /// </summary>
         [TestMethod]
-        public void TMAdd()
+        public void TaskAdd()
         {
             // Prevent past tests from affecting this test
             taskManager.Entries.Clear();
@@ -118,7 +118,7 @@ namespace CalendoUnitTests
         /// Tests if malformed entries can be handled properly
         /// </summary>
         [TestMethod]
-        public void TMAddInvalid()
+        public void TaskAddInvalid()
         {
             // Prevent past tests from affecting this test
             taskManager.Entries.Clear();
@@ -156,7 +156,7 @@ namespace CalendoUnitTests
         /// Tests if entries can be modified
         /// </summary>
         [TestMethod]
-        public void TMChange()
+        public void TaskChange()
         {
             // Prevent past tests from affecting this test
             taskManager.Entries.Clear();
@@ -193,7 +193,7 @@ namespace CalendoUnitTests
         /// Tests if malformed change requests can be handled properly
         /// </summary>
         [TestMethod]
-        public void TMChangeInvalid()
+        public void TaskChangeInvalid()
         {
             taskManager.Entries.Clear();
             taskManager.Add("Test Timed", "1/12/2012", "14:00", "31/1/2013", "3:02PM");
@@ -229,7 +229,7 @@ namespace CalendoUnitTests
         /// Tests if entries can be removed
         /// </summary>
         [TestMethod]
-        public void TMRemove()
+        public void TaskRemove()
         {
             // Prevent past tests from affecting this test
             taskManager.Entries.Clear();
@@ -253,7 +253,7 @@ namespace CalendoUnitTests
         /// Tests the undo and redo functionality
         /// </summary>
         [TestMethod]
-        public void TMUndoRedo()
+        public void TaskUndoRedo()
         {
             // Prevent past tests from affecting this test
             taskManager.Entries.Clear();
@@ -278,7 +278,7 @@ namespace CalendoUnitTests
         /// Tests the subscriber functionality
         /// </summary>
         [TestMethod]
-        public void TMSubscriber()
+        public void TaskSubscriber()
         {
             bool isUpdated = false;
             taskManager.Entries.Clear();
@@ -292,7 +292,7 @@ namespace CalendoUnitTests
         /// Tests multithreading of Google Calendar
         /// </summary>
         [TestMethod]
-        public void TMGoogleCalendar()
+        public void TaskGoogleCalendar()
         {
             ThreadedGoogleCalendar.GoogleCalendarType = typeof(GoogleCalendarStub);
             ThreadedGoogleCalendar.AuthorizationMethod = new ThreadedGoogleCalendar.AuthorizationCall(delegate() { });

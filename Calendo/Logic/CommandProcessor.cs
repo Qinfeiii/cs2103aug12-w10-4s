@@ -16,7 +16,7 @@ namespace Calendo.Logic
         //The following is public so that it can be "read" by the UI for auto-completion
         public Dictionary<string, string[]> GetInputCommandList()
         {
-            return extractors.DICTIONARY_INPUT_COMMANDS_BY_COMMAND_TYPE;
+            return extractors.INPUT_COMMANDS_BY_COMMAND_TYPE;
         }
         public List<Entry> TaskList { get { return taskManager.Entries; } }
 
@@ -49,7 +49,7 @@ namespace Calendo.Logic
                 case CommandExtractors.COMMAND_TYPE_REDO:
                     ExecuteRedo();
                     break;
-                case CommandExtractors.COMMAND_TYPE_SYNC:
+                case CommandExtractors.COMMAND_TYPE_EXPORT:
                     ExecuteSync();
                     break;
                 case CommandExtractors.COMMAND_TYPE_IMPORT:
