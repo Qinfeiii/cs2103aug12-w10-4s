@@ -168,6 +168,7 @@ namespace Calendo.Data
         {
             this.useBackup = useBackup;
             string currentFilePath = dataFilePath;
+
             if (useBackup)
             {
                 currentFilePath = DEFAULT_BACKUP_PATH;
@@ -194,9 +195,8 @@ namespace Calendo.Data
                 {
                     errorMessage += MESSAGE_BACKUP;
                     Load(true);
+                    DebugTool.Alert(errorMessage);
                 }
-
-                DebugTool.Alert(errorMessage);
                 return false;
             }
             finally

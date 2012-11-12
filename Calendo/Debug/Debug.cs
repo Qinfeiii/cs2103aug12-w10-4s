@@ -24,7 +24,7 @@ namespace Calendo.Diagnostics
         private const string LOG_FORMAT = "{0:G}: [{1}] {2}";
         private const string CONFIG_FILEPATH = "debugcfg.txt";
         private const string MESSAGE_DEBUG_LOAD = "Debug file loaded, debugging state = {0}";
-        private static bool IsPopupEnable = false;
+        private static bool IsPopupEnable = true;
         private static bool IsConfigLoaded = false;
         private static bool IsHasNotification = false;
         private static string CurrentMessage = "";
@@ -134,8 +134,9 @@ namespace Calendo.Diagnostics
         /// <param name="message">Message to display</param>
         public static void Alert(string message)
         {
-            if (DebugTool.PopupEnable)
+            if (DebugTool.PopupEnable && SubscriberList.Count == 0)
             {
+                // No subscribers, show popup instead
                 MessageBox.Show(message);
             }
             UpdateSubscribers(message);
