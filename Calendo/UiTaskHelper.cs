@@ -40,17 +40,18 @@ namespace Calendo
 
             bool isTaskStarting = isTaskDifferencePositive && isTaskADayAway;
 
-            if (currentEntry.Type == EntryType.Timed)
+            switch (currentEntry.Type)
             {
-                bool isStartBeforeNow = currentEntry.StartTime.CompareTo(DateTime.Now) < 0;
-                bool isEndAfterNow = DateTime.Now.CompareTo(currentEntry.EndTime) < 0;
+                case EntryType.Timed:
+                    bool isStartBeforeNow = currentEntry.StartTime.CompareTo(DateTime.Now) < 0;
+                    bool isEndAfterNow = DateTime.Now.CompareTo(currentEntry.EndTime) < 0;
 
-                bool isNowBetweenStartAndEnd = isStartBeforeNow && isEndAfterNow;
-                isOngoing = isTaskStarting || isNowBetweenStartAndEnd;
-            }
-            else if (currentEntry.Type == EntryType.Deadline)
-            {
-                isOngoing = isTaskStarting;
+                    bool isNowBetweenStartAndEnd = isStartBeforeNow && isEndAfterNow;
+                    isOngoing = isTaskStarting || isNowBetweenStartAndEnd;
+                    break;
+                case EntryType.Deadline:
+                    isOngoing = isTaskStarting;
+                    break;
             }
 
             // Floating tasks can't be ongoing.
